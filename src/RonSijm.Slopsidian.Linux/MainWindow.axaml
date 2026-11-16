@@ -73,6 +73,14 @@
           <StackPanel Spacing="8">
             <Button
               Classes="icon ribbon"
+              Click="OpenAssistant"
+              AutomationProperties.Name="Open AI assistant"
+              ToolTip.Tip="AI assistant: Codex, Claude Code or Copilot CLI"
+            >
+              <local:NativeIcon Kind="command" />
+            </Button>
+            <Button
+              Classes="icon ribbon"
               Click="ToggleLeft"
               AutomationProperties.Name="Toggle left sidebar"
               ToolTip.Tip="Toggle left sidebar"

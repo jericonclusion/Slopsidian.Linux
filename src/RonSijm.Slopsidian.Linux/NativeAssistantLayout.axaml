@@ -1,0 +1,123 @@
+<UserControl
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  x:Class="RonSijm.Slopsidian.Linux.NativeAssistantLayout"
+>
+  <UserControl.Resources>
+    <x:Double x:Key="TextControlPlaceholderOpacity">1</x:Double>
+  </UserControl.Resources>
+  <Grid Name="AssistantRoot" Margin="24" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="16">
+    <StackPanel Spacing="12">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="Assistant" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Name="NewConversationButton" Content="New conversation" />
+      </Grid>
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+        <TextBlock Text="CLI" VerticalAlignment="Center" />
+        <ComboBox
+          Grid.Column="1"
+          Name="ProviderBox"
+          HorizontalAlignment="Stretch"
+          AutomationProperties.Name="Assistant CLI provider"
+        >
+          <ComboBoxItem Content="Codex CLI" />
+          <ComboBoxItem Content="Claude Code" />
+          <ComboBoxItem Content="GitHub Copilot CLI" />
+        </ComboBox>
+        <TextBlock Grid.Column="2" Text="Read &amp; suggest" Classes="muted" VerticalAlignment="Center" />
+      </Grid>
+      <Expander Name="CliSettings" Header="CLI settings" HorizontalAlignment="Stretch">
+        <ScrollViewer Name="CliSettingsScroll" MaxHeight="200" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Spacing="8">
+            <TextBlock
+              Text="Install and sign in to the CLI in a terminal first. Your existing login is used."
+              TextWrapping="Wrap"
+              Classes="muted"
+            />
+            <TextBlock Text="Executable" />
+            <TextBox Name="ExecutableBox" AutomationProperties.Name="CLI executable" />
+            <TextBlock Text="Model (optional)" />
+            <TextBox
+              Name="ModelBox"
+              PlaceholderText="CLI default"
+              PlaceholderForeground="{DynamicResource MutedBrush}"
+              AutomationProperties.Name="CLI model"
+            />
+            <Button Content="Save CLI settings" Name="SaveCliSettingsButton" HorizontalAlignment="Left" />
+          </StackPanel>
+        </ScrollViewer>
+      </Expander>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" Name="ConversationScroll" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Name="ConversationContent" Spacing="24">
+        <StackPanel Name="ConversationEmpty" Spacing="12" Margin="0,20,0,0">
+          <TextBlock Text="Work with the notes you choose" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <TextBlock
+            Text="Attach a note or a selection, add its linked notes, then ask a question. You can review the exact message before sending it."
+            TextWrapping="Wrap"
+            LineHeight="24"
+          />
+          <TextBlock
+            Text="Context is sent to the selected provider when you press Send. Replies stay in this window until you copy or save them."
+            Classes="muted"
+            TextWrapping="Wrap"
+            LineHeight="24"
+          />
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+    <Expander
+      Grid.Row="2"
+      Name="ContextExpander"
+      Header="Attached context"
+      IsExpanded="True"
+      HorizontalAlignment="Stretch"
+    >
+      <ScrollViewer Name="ContextScroll" MaxHeight="200" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="8">
+          <WrapPanel Name="AttachmentActions">
+            <Button Content="Active note" Name="AttachActiveButton" Margin="0,0,6,6" />
+            <Button Content="Selection" Name="AttachSelectionButton" Margin="0,0,6,6" />
+            <Button Content="Note…" Name="AttachOtherButton" Margin="0,0,6,6" />
+            <Button Content="Linked notes" Name="AttachLinkedButton" Margin="0,0,6,6" />
+            <Button Content="Backlinks" Name="AttachBacklinksButton" Margin="0,0,6,6" />
+          </WrapPanel>
+          <StackPanel Name="AttachmentList" Spacing="6" />
+          <TextBlock Name="ContextStatus" Text="No notes attached." Classes="muted" TextWrapping="Wrap" FontSize="12" />
+        </StackPanel>
+      </ScrollViewer>
+    </Expander>
+    <StackPanel Grid.Row="3" Spacing="10">
+      <TextBox
+        Name="PromptBox"
+        AcceptsReturn="True"
+        TextWrapping="Wrap"
+        MinHeight="84"
+        MaxHeight="150"
+        MaxLength="8000"
+        PlaceholderText="Ask about your notes…"
+        PlaceholderForeground="{DynamicResource MutedBrush}"
+        AutomationProperties.Name="Assistant request"
+      />
+      <ScrollViewer MaxHeight="56" HorizontalScrollBarVisibility="Disabled">
+        <TextBlock
+          Name="AssistantStatus"
+          Text="Conversation is kept for this window only."
+          Classes="muted"
+          TextWrapping="Wrap"
+        />
+      </ScrollViewer>
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+        <Button Name="PreviewMessageButton" Content="Review message" HorizontalAlignment="Left" />
+        <Button Grid.Column="1" Name="StopButton" Content="Stop" IsVisible="False" />
+        <Button
+          Grid.Column="2"
+          Name="SendButton"
+          Content="Send"
+          Foreground="{DynamicResource AssistantActionBrush}"
+          ToolTip.Tip="Send (Ctrl+Enter)"
+        />
+      </Grid>
+    </StackPanel>
+  </Grid>
+</UserControl>

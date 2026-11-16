@@ -48,7 +48,7 @@ public static class NativePreviewMedia
         var fragment = Uri.UnescapeDataString(subpath.TrimStart('#'));
         if (fragment.StartsWith('^'))
         {
-            return Block(text, fragment[1..]);
+            return Block(text, fragment[1..], out _);
         }
         var headings = NativeMetadata.Parse("", text).Headings;
         var heading = headings.FirstOrDefault(item =>
@@ -61,7 +61,24 @@ public static class NativePreviewMedia
 
     private static string Slug(string title) => title.Trim().Replace(' ', '-');
 
-    private static string Block(string text, string id)
+    public static int FragmentOffset(string text, string fragment)
+    {
+        if (fragment.StartsWith('^'))
+        {
+            _ = Block(text, fragment[1..], out var offset);
+            return offset;
+        }
+        return NativeMetadata
+            .Parse("", text)
+            .Headings.FirstOrDefault(heading =>
+                heading.Title.Equals(fragment, StringComparison.OrdinalIgnoreCase)
+                || Slug(heading.Title).Equals(fragment, StringComparison.OrdinalIgnoreCase)
+            )
+            ?.Offset
+            ?? throw new InvalidDataException("This heading was not found in the note.");
+    }
+
+    private static string Block(string text, string id, out int offset)
     {
         if (!Regex.IsMatch(id, @"\A[\w-]{1,128}\z", RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100)))
         {
@@ -102,6 +119,7 @@ public static class NativePreviewMedia
                     start = previous.Span.Start;
                 }
             }
+            offset = start;
             return text[start..end].Remove(marker.Index - start, Math.Min(marker.Length, end - marker.Index)).TrimEnd();
         }
         throw new InvalidDataException("This block was not found in the embedded note.");

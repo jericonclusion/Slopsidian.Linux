@@ -30,7 +30,7 @@ storage fixes can be incorporated selectively; see CONTRIBUTING.md.
 
 Tests must cover observable workflows, failures and retained drafts. Screenshots
 must compare the native structure with the existing app, rather than accepting
-an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 335 cases, including independent tabs,
+an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 344 cases, including independent tabs,
 recovery sessions, metadata edits, Linux path identity, file transactions,
 Canvas editing and native media previews. Native acceptance remains separate
 from this focused regression suite.
@@ -60,6 +60,7 @@ absence of a row is not evidence of support.
 | File operations | Shared create-folder, rename/reference transaction and vault-trash paths run on Linux; native trash preview, multi-selection and reviewed restore reuse identity-bound tickets |
 | Canvas | Validated source-preserving model, native card widgets, pan/zoom, selection, move/resize, connection drawing, shared source Undo/Redo, responsive card/connection inspector, keyboard connection selection and edge editing; bounded native note sections, raster file cards, group backgrounds and read-only Canvas thumbnails; full parity acceptance remains in progress |
 | Assistants | Native Codex CLI, Claude Code and GitHub Copilot CLI read-and-suggest chat; frozen drafts/selections, link/backlink context, review, cancellation, follow-ups, citations and reply export; live provider-account acceptance remains separate |
+| Native modules/terminal | Independent persisted assistant/terminal switches; real Linux PTY terminal with Unicode, resizing, interrupt, restart and session cleanup; tested on temporary vaults |
 | Bases | Bounded formulas, source-preserving YAML view edits and filtered/grouped/paginated queries with summaries are tested; native table UI and live vault binding are pending |
 | Framework | .NET 10 with Avalonia 12.1.6, AvaloniaEdit 12.0.0 and DataGrid 12.1.2; their selected assemblies target net10.0 |
 | Tux icon | Generated transparent notebook mascot; embedded window asset and Linux menu PNG |

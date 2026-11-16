@@ -52,6 +52,18 @@ of application state. Do not silently enable writes, shell tools or external MCP
 tools when a provider changes its CLI. Record actual account-backed verification
 separately from fixture tests.
 
+## Work on the terminal and modules
+
+Use real PTY tests with an isolated temporary directory and an explicit shell
+(`/bin/bash --noprofile --norc -i`). Tests must not run a developer’s shell startup
+scripts. Cover Unicode, interrupts, session restart, close/disable cleanup and
+profile persistence. UI automation and captures stay on a private display.
+Keep terminal rendering native; no Electron, WebView or browser terminal host.
+
+Native module switches belong in the app profile, independently of vault core
+plugin configuration. Preserve CLI provider settings and restore the previous
+module choice when persistence fails. Enabling a module must not start a process.
+
 ## Prepare a version
 
 Update the native project’s `Version`, changelog and visible documentation in a

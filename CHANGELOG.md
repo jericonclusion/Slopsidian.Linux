@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0-preview.2
+
+- Add independent CLI assistant and Terminal switches under Settings → Native modules.
+- Persist module choices immediately, including before opening a vault; retain CLI
+  provider settings and leave vault plugin configuration unchanged.
+- Add a native interactive Linux terminal backed by a real PTY, with Unicode, ANSI
+  rendering, resizing, copy/paste, interrupt and explicit session restart.
+- Start the shell in the current vault (or home); end its session on terminal close,
+  module disable or application exit.
+- Add real-shell and native-control tests, terminal screenshots and setup guidance.
+- Include the terminal component and dependency license texts in Linux packages.
+
 ## 0.3.0-preview.1
 
 - Add a native assistant for installed Codex CLI, Claude Code and GitHub Copilot CLI.

@@ -18,6 +18,7 @@ public sealed class NativeCanvasView : UserControl, IDisposable
     private readonly Action<string> openPath;
     private readonly Action<string, string, bool> navigate;
     private readonly NativeCanvasSurface surface;
+    private readonly NativePreviewBudget previewBudget = new();
     private readonly TextBlock status = new() { Classes = { "muted" }, TextWrapping = TextWrapping.Wrap };
     private readonly StackPanel error = new() { Spacing = 16, Margin = new Thickness(32), IsVisible = false };
     private readonly TextBlock errorText = new() { TextWrapping = TextWrapping.Wrap, Classes = { "error" } };
@@ -203,8 +204,8 @@ public sealed class NativeCanvasView : UserControl, IDisposable
         {
             Guard();
             if (source.Text != before) { throw new InvalidOperationException("The Canvas changed while this card editor was open. Reopen it before creating the card; your input is retained here."); }
-            if (type == "file" && string.IsNullOrWhiteSpace(changed.Target)) { throw new InvalidDataException("Enter the card's file path inside this vault."); }
-            if (type == "link" && (!Uri.TryCreate(changed.Target, UriKind.Absolute, out var address) || address.Scheme is not ("http" or "https"))) { throw new InvalidDataException("Enter an HTTP or HTTPS website address."); }
+            if (type == "file" && !workspace.Snapshot.Files.Any(file => file.Path == changed.Target)) { throw new InvalidDataException("Choose an existing file inside this vault."); }
+            if (type == "link" && (!Uri.TryCreate(changed.Target, UriKind.Absolute, out var address) || address.Scheme is not ("http" or "https") || address.UserInfo.Length > 0)) { throw new InvalidDataException("Enter an HTTP or HTTPS website address without embedded credentials."); }
             var current = RequireModel();
             var value = type is "file" or "link" ? changed.Target : changed.Text;
             var id = current.AddCard(type, value, changed.X, changed.Y);
@@ -248,17 +249,29 @@ public sealed class NativeCanvasView : UserControl, IDisposable
         if (string.IsNullOrWhiteSpace(pasted)) { return; }
         var current = RequireModel(); var ids = current.Paste(pasted); source.Text = current.Source; surface.Select(ids);
     }
-    private ScrollViewer CardContent(NativeCanvasCard card)
+    private NativeOwnedContent CardContent(NativeCanvasCard card)
     {
+        var owned = new NativeOwnedContent();
         var stack = new StackPanel { Spacing = 10 };
         switch (card.Type)
         {
             case "text": NativeMarkdown.Render(stack, card.Text, link => Run(() => navigate(tab.Path, link, false)), link => Run(() => navigate(tab.Path, link, true))); break;
-            case "group": stack.Children.Add(new TextBlock { Text = card.Text, FontWeight = FontWeight.SemiBold, TextWrapping = TextWrapping.Wrap }); break;
+            case "group":
+                var group = new Grid { Height = Math.Max(1, card.Height - 20) };
+                var title = new TextBlock { Text = card.Text, FontWeight = FontWeight.SemiBold, TextWrapping = TextWrapping.Wrap };
+                if (card.Background.Length > 0)
+                {
+                    group.Children.Add(owned.Own(new NativeFilePreview(workspace, card.Background, "", PreviewNavigate, previewBudget, card.BackgroundStyle)));
+                    group.Children.Add(new Border { Background = NativePalette.Brush("SurfaceBrush"), Padding = new Thickness(4), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Child = title });
+                }
+                else { title.VerticalAlignment = VerticalAlignment.Top; group.Children.Add(title); }
+                owned.Content = group;
+                return owned;
             case "file":
                 var open = new Button { Content = card.Target + card.Subpath, HorizontalAlignment = HorizontalAlignment.Left };
                 open.Click += (_, _) => Run(() => { if (card.Subpath.Length > 0) { navigate(card.Target, card.Subpath, false); } else { openPath(card.Target); } });
                 stack.Children.Add(open);
+                stack.Children.Add(owned.Own(new NativeFilePreview(workspace, card.Target, card.Subpath, PreviewNavigate, previewBudget)));
                 break;
             case "link":
                 var website = new Button { Content = card.Target, HorizontalAlignment = HorizontalAlignment.Left };
@@ -267,7 +280,9 @@ public sealed class NativeCanvasView : UserControl, IDisposable
                 break;
             default: stack.Children.Add(new TextBlock { Text = "Unsupported card type: " + card.Type + ". Its data is retained in Source.", TextWrapping = TextWrapping.Wrap }); break;
         }
-        return new ScrollViewer { Content = stack, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+        owned.Content = new ScrollViewer { Content = stack, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+        return owned;
     }
+    private void PreviewNavigate(string sourcePath, string link, bool markdown) => Run(() => navigate(sourcePath, link, markdown));
     public void Dispose() { disposed = true; source.TextChanged -= SourceChanged; inspectorFlyout.Hide(); surface.Dispose(); }
 }

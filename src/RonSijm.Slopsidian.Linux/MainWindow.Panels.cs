@@ -48,6 +48,11 @@ public partial class MainWindow
 
     private Task OpenPathAsync(string path, int? offset = null) => RunAsync(async () =>
     {
+        if (NativePreviewMedia.IsRaster(System.IO.Path.GetExtension(path).TrimStart('.')))
+        {
+            await new NativeImagePreviewWindow(this, Workspace, path).ShowDialog(this);
+            return;
+        }
         await Workspace.OpenTabAsync(path);
         LoadEditor();
         if (offset is not null) { JumpToOffset(offset.Value); }

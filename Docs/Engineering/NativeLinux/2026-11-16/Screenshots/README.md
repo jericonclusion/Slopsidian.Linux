@@ -4,15 +4,17 @@
 
 Real Avalonia/.NET 10 application captures on Linux, using an isolated Xvfb
 display and synthetic demonstration notes. The active personal desktop was not
-used. The Tux PNG is the actual application artwork, including the foot revision.
+used. Tux remains the application icon and the single README logo. The current
+Canvas/image captures use an authored synthetic workflow diagram rather than
+repeating the mascot.
 
 | Capture | State |
 | --- | --- |
-| `canvas-previews-dark.png` | 1400 × 950, dark Canvas, heading preview, raster card and group background |
+| `canvas-previews-dark.png` | 1400 × 950, dark Canvas, heading preview and diagram raster card |
 | `canvas-previews-light.png` | 1400 × 950, light Canvas, right sidebar and Fit |
 | `canvas-previews-narrow.png` | 900 × 800, wrapped toolbar and fitted board |
 | `canvas-previews-narrow-inspector.png` | 900 × 800, native inspector flyout |
-| `image-preview.png` | 1000 × 800, native read-only raster preview window |
+| `image-preview.png` | 1000 × 800, native read-only diagram raster preview window |
 | `about-linux.png` | 900 × 700, independent fork attribution and client version |
 
 The Canvas source and image bytes were retained throughout the capture session.

@@ -87,7 +87,6 @@ Actual Linux application captures with synthetic demonstration notes:
 
 ![Light Canvas preview](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/canvas-previews-light.png)
 
-![Native image preview](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/image-preview.png)
 
 ## Upstream and credits
 

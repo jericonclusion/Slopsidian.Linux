@@ -312,6 +312,7 @@ public static class NativeAssistantCli
     {
         var text = new StringBuilder();
         var buffer = new char[2048];
+        var truncated = false;
         try
         {
             while (true)
@@ -319,16 +320,21 @@ public static class NativeAssistantCli
                 var count = await reader.ReadAsync(buffer.AsMemory(), deadline.Token);
                 if (count == 0)
                 {
-                    return text.ToString();
+                    return text + (truncated ? "\n[Further CLI diagnostics omitted.]" : "");
                 }
                 if (text.Length + count > maximum)
                 {
-                    throw new InvalidDataException(
-                        "The CLI output exceeded its supported size. Start a new conversation with a smaller request."
-                    );
+                    if (output is not null)
+                    {
+                        throw new InvalidDataException(
+                            "The CLI output exceeded its supported size. Start a new conversation with a smaller request."
+                        );
+                    }
+                    // Codex can echo a large input to stderr. Drain it without retaining the whole log.
+                    truncated = true;
                 }
                 var chunk = new string(buffer, 0, count);
-                text.Append(chunk);
+                text.Append(buffer, 0, Math.Min(count, maximum - text.Length));
                 output?.Invoke(chunk);
             }
         }

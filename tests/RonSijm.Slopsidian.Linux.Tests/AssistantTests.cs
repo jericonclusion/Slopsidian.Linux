@@ -241,6 +241,22 @@ public sealed class AssistantTests : IDisposable
     }
 
     [Fact]
+    public async Task VerboseDiagnosticsAreDrainedWithoutDiscardingASuccessfulAnswer()
+    {
+        var executable = WriteExecutable(
+            "cat >/dev/null\nhead -c 300000 /dev/zero | tr '\\000' x >&2\nprintf 'Useful answer'\n"
+        );
+        var answer = await NativeAssistantCli.RunAsync(
+            NativeAssistantProvider.Codex,
+            new(executable),
+            "ask",
+            _ => { },
+            cancellationToken: Cancellation
+        );
+        Assert.Equal("Useful answer", answer);
+    }
+
+    [Fact]
     public async Task DeadlineAndOutputLimitsStopTheProcessInsteadOfHangingOnPipes()
     {
         var waiting = WriteExecutable("cat >/dev/null\nsleep 30\n");

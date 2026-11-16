@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0-preview.3
+
+- Use GitHub-compatible package filenames and matching download/checksum links.
+- Keep Debian prerelease ordering inside the package while using SemVer filenames.
+- Provide ready-to-run x64/arm64 packages through GitHub Releases and README downloads.
+
 ## 0.2.0-preview.2
 
 - Establish Slopsidian Linux as an independent fork with Linux-only source and CI.

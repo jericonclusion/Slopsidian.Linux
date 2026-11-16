@@ -7,7 +7,7 @@
 An independent, native Linux client for Slopsidian, built with **.NET 10 and
 Avalonia 12**. Local Markdown vaults, native widgets and a slightly unhinged Tux.
 
-**Preview: 0.2.0-preview.2.** The full feature port is in progress. This is a
+**Preview: 0.2.0-preview.3.** The full feature port is in progress. This is a
 separately maintained Linux fork of Ron Sijm’s Slopsidian; it is not an official
 Obsidian client.
 
@@ -30,6 +30,29 @@ Chromium, WebView, Blazor, browser server, Node.js or npm.
 Bases, advanced Markdown/Live Preview, full attachment workflows, slides, audio,
 complete upstream parity and community JavaScript plugin compatibility remain
 unfinished. See [the native roadmap](Docs/Project/NATIVE-PORT.md).
+
+## Download a ready-to-run build
+
+**Preview 0.2.0-preview.3:**
+https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.2.0-preview.3
+
+| Linux system | Debian / Ubuntu package | Portable archive |
+| --- | --- | --- |
+| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/slopsidian-linux_0.2.0-preview.3_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/Slopsidian-Linux-0.2.0-preview.3-linux-x64.tar.gz) |
+| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/slopsidian-linux_0.2.0-preview.3_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/Slopsidian-Linux-0.2.0-preview.3-linux-arm64.tar.gz) |
+
+These builds include .NET; **you do not need to compile the app or install the
+.NET SDK**. For Debian/Ubuntu, download the matching `.deb` and install it:
+
+```sh
+sudo apt install ./slopsidian-linux_0.2.0-preview.3_amd64.deb
+slopsidian-linux
+```
+
+Use the `arm64` package on ARM. With an archive, extract it and run the included
+`slopsidian-linux` launcher. Linux desktop libraries are still required. SHA-256
+checksum files are attached to the release. This is an unsigned preview; the
+unfinished workflows listed above still apply.
 
 ## Run from source
 

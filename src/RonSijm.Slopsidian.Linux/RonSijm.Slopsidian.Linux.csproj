@@ -18,16 +18,10 @@
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
     <ProjectReference Include="../RonSijm.Slopsidian.Core/RonSijm.Slopsidian.Core.csproj" />
     <AvaloniaResource Include="Assets/tux-notebook.png" />
-    <AvaloniaResource Include="../RonSijm.Slopsidian/wwwroot/icons.svg" Link="Assets/icons.svg" />
-    <Content Include="../RonSijm.Slopsidian/wwwroot/icons-LICENSE.txt" Link="licenses/Slopsidian-Icons.txt" CopyToOutputDirectory="PreserveNewest" />
+    <AvaloniaResource Include="Assets/icons.svg" Link="Assets/icons.svg" />
+    <Content Include="Assets/icons-LICENSE.txt" Link="licenses/Slopsidian-Icons.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <Target Name="PrepareNativePublish" AfterTargets="Publish" Condition="'$(SelfContained)' == 'true'">
-    <!-- The reference supplies services, not a second runnable web application. -->
-    <RemoveDir Directories="$(PublishDir)wwwroot" />
-    <ItemGroup>
-      <UnusedWebHost Include="$(PublishDir)RonSijm.Slopsidian;$(PublishDir)RonSijm.Slopsidian.exe;$(PublishDir)RonSijm.Slopsidian.runtimeconfig.json;$(PublishDir)RonSijm.Slopsidian.deps.json;$(PublishDir)*.staticwebassets.*.json" />
-    </ItemGroup>
-    <Delete Files="@(UnusedWebHost)" />
     <Copy SourceFiles="%(ResolvedRuntimePack.PackageDirectory)/LICENSE.TXT"
           DestinationFiles="$(PublishDir)licenses/%(ResolvedRuntimePack.NuGetPackageId)/LICENSE.txt"
           Condition="Exists('%(ResolvedRuntimePack.PackageDirectory)/LICENSE.TXT')" />

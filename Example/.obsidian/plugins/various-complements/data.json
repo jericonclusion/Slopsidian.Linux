@@ -1,9 +1,0 @@
-{
-  "enableCurrentVaultComplement": true,
-  "enableCustomDictionaryComplement": true,
-  "customDictionaryPaths": "70 Data/Workshop dictionary.json",
-  "enableInternalLinkComplement": true,
-  "suggestInternalLinkWithAlias": true,
-  "enableCurrentFileComplement": true,
-  "customDictionaryMinNumberOfCharactersForTrigger": 3
-}

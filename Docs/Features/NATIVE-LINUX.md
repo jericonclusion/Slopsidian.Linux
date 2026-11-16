@@ -1,6 +1,6 @@
 # Native Linux client
 
-Slopsidian Native ports the existing workspace to .NET 10/Avalonia 12 widgets.
+Slopsidian Linux ports the existing workspace to .NET 10/Avalonia 12 widgets.
 Avalonia 12.1.6, AvaloniaEdit 12.0.0 and DataGrid 12.1.2 use their `net10.0`
 assemblies. The self-contained Linux package includes the .NET 10 runtime.
 Some transitive shaping/D-Bus libraries retain compatible `net8.0`/`net9.0`
@@ -8,11 +8,12 @@ assemblies; those do not require installing an older .NET runtime.
 
 The ribbon, file tree, editor, tabs, dialogs and reading view run in the desktop
 process without Electron, Chromium, Blazor, a WebView or a local HTTP server.
-The native and web hosts share the existing vault services through
-`RonSijm.Slopsidian.Core`.
+Vault services inherited from Ron Sijm’s Slopsidian live in
+`RonSijm.Slopsidian.Core`; browser and Windows hosts have been removed.
 
-The full port is in progress. The PR remains a draft until the outstanding
-workflows in `Docs/Project/NATIVE-PORT.md` have been implemented and accepted.
+This independent fork remains a preview. The full native port is in progress;
+`Docs/Project/NATIVE-PORT.md` tracks outstanding workflows. The upstream PR is
+closed without merging, and development continues in Slopsidian.Linux.
 
 ## Available workflows
 
@@ -53,7 +54,12 @@ workflows in `Docs/Project/NATIVE-PORT.md` have been implemented and accepted.
   ends and automatic/explicit sides. It becomes a native popup on narrow views;
   a keyboard-accessible connection picker also selects edges. Canvas and Source
   share Undo/Redo; unknown JSON fields and invalid field input are retained, and
-  invalid source is refused at save. Full Canvas parity is pending.
+  invalid source is refused at save. File cards show native note/heading/block
+  previews and raster images; groups can show image backgrounds. A read-only
+  native image window opens raster attachments. Previews bound reads, decoded
+  dimensions and concurrent work, dispose image resources, and follow open
+  drafts without writing files. Canvas thumbnails show up to 200 cards. Full
+  Canvas parity is pending.
 - Open the interactive native graph, insert templates, create daily notes,
   bookmark notes and save/load native named workspaces. These workflows still
   require complete parity acceptance against the original client.
@@ -92,18 +98,19 @@ version-guarded APIs; native sessions do not overwrite Obsidian workspace.json.
 
 The headless xUnit v3 suite exercises temporary vaults and real Avalonia controls,
 including tab Undo/caret retention, stale-save refusal, exact text, metadata,
-rename transactions and identity-checked trash recovery. It does not replace
-full workflow acceptance or the existing browser/desktop tests.
+rename transactions and identity-checked trash recovery. It does not replace full workflow acceptance. Historical browser tests are
+not part of the Linux fork and do not establish native parity.
 
-The lint command checks formatting, recommended .NET analyzers and
-SonarAnalyzer C#, then treats build warnings as errors. Analyzer scope is the
-native project; existing host code is not blanket-reformatted.
+The lint command checks CSharpier formatting, `dotnet format style`, recommended
+.NET analyzers and SonarAnalyzer C#, then treats solution build warnings as
+errors. Analyzer scope is the native project; inherited Core code is not
+blanket-reformatted.
 
 ## Client version
 
 The Linux client has an independent SemVer release line. Its project file is the
 single version source for About, `--version`, archives and Debian packages.
-Development builds use a prerelease such as `0.2.0-preview.1`; Linux tags use
+Development builds use a prerelease such as `0.2.0-preview.2`; Linux tags use
 `linux-v<version>`. See `NATIVE-LINUX-VERSIONING.md` for the release conventions.
 
 ## Packages
@@ -114,14 +121,14 @@ Development builds use a prerelease such as `0.2.0-preview.1`; Linux tags use
 ```
 
 Outputs under `.runtime/native-linux/<runtime>/out/` include a self-contained
-`Slopsidian-Native-<version>-<runtime>.tar.gz`, a Debian package when `dpkg-deb` is
+`Slopsidian-Linux-<version>-<runtime>.tar.gz`, a Debian package when `dpkg-deb` is
 available, and SHA-256 checksums. The package includes its .NET runtime. Linux
 desktop libraries are still required. Build on Ubuntu 22.04 or newer for the
 declared glibc baseline; Alpine/musl is not a supported target.
 
-Extract the archive and run `./slopsidian-native`, optionally with `--vault` and
+Extract the archive and run `./slopsidian-linux`, optionally with `--vault` and
 `--profile`. On Debian/Ubuntu install the package with
-`sudo apt install ./slopsidian-native_0.2.0~preview.1_amd64.deb`, then launch Slopsidian Native
+`sudo apt install ./slopsidian-linux_0.2.0~preview.2_amd64.deb`, then launch Slopsidian Linux
 from the application menu. Removing the package retains vaults and profiles.
 The packaging script stages publish outputs, notices and launchers only.
 
@@ -141,5 +148,5 @@ paths are not presented as Linux implementations. Publish/Sync hosted services
 are unavailable in the upstream runtime as well.
 
 Packages are unsigned and have no update channel. The native CI workflow
-builds x64/arm64 artifacts; it does not publish releases. Maintainer approval may
-be required before fork PR workflows execute.
+builds x64/arm64 artifacts and creates draft releases for matching version tags.
+Public publication remains a separate maintainer action.

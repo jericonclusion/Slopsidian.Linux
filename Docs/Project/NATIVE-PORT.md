@@ -5,13 +5,15 @@ with native .NET/Avalonia widgets. The Linux application must not render its
 interface with Blazor, Electron or a WebView. A separate basic Markdown editor
 is not the requested end state.
 
-The public PR stays in draft while the port is incomplete. Existing Windows and
-browser acceptance records are not native Linux acceptance records.
+Development continues independently in Slopsidian Linux. The original upstream
+PR is closed without merging. Existing Windows/browser acceptance records do
+not establish native Linux support. See CONTRIBUTING.md for selective upstream
+synchronization.
 
 ## Implementation and verification order
 
 1. Extract existing C# vault services into a shared library, keeping their
-   contracts and guarded I/O. Build native and existing hosts after extraction.
+   contracts and guarded I/O. Keep Core independent of browser interop and build the Linux solution.
 2. Match the existing ribbon, folder tree, tabs, split workspace, side panels,
    status bar, vault chooser, command palette and settings navigation.
 3. Preserve independent document buffers, Undo/Redo, cursor positions and dirty
@@ -26,17 +28,20 @@ browser acceptance records are not native Linux acceptance records.
    dependencies require an actual native compatibility implementation; do not
    substitute flags, empty methods, plugin-byte patches or a hidden WebView.
 8. Rebuild packages, exercise real Linux widgets, audit exact saved bytes and
-   restart behavior, then update the PR with evidence and remaining gaps.
+   restart behavior, then update the Linux documentation with evidence and gaps.
 
 Tests must cover observable workflows, failures and retained drafts. Screenshots
 must compare the native structure with the existing app, rather than accepting
-an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now also checks independent tabs, recovery sessions, metadata edits, Linux path identity, file transactions and native Canvas editing. Native acceptance remains separate from this focused regression suite.
+an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 176 cases, including independent tabs,
+recovery sessions, metadata edits, Linux path identity, file transactions,
+Canvas editing and native media previews. Native acceptance remains separate
+from this focused regression suite.
 
 Run `./tools/lint-native.sh` for .NET recommended analyzers, SonarAnalyzer C#,
 format verification and a build treating warnings as errors. The native-project
 rules include cognitive complexity, duplicated implementations, resource leaks,
 discarded cancellation and unused imports. They are not applied indiscriminately
-to the existing host's legacy code. Analyzer results complement behavioral tests;
+to inherited Core code. Analyzer results complement behavioral tests;
 a successful analyzer run is not a claim of complete parity.
 
 ## Parity evidence
@@ -48,14 +53,14 @@ absence of a row is not evidence of support.
 | Area | Native state |
 | --- | --- |
 | Local Markdown read/write, BOM/CRLF and stale-save refusal | Initial implementation and focused tests exist |
-| Shared service library | Extracted and committed; existing webhost builds without warnings |
+| Shared service library | Own Core project; inherited services moved out of the removed webhost; browser interop removed |
 | Main window/workspace | Native ribbon, folder tree, independent tabs, side panels, command picker and settings; full parity review pending |
 | Draft recovery/session state | Private atomic profile, per-vault session restore, retained deleted-file drafts, native preview/save-as recovery and stale-save refusal; tested |
 | Metadata | Native Outline, Backlinks, Outgoing links, Tags, Properties and Footnotes; rich Markdown edge cases still under review |
 | Search | Native Boolean/regex/path/file/tag/property queries, match-case and all-tab draft snapshots; 35 query cases plus shared workflow regression tests |
 | Saved-file recovery | Compatible vault history, automatic/manual saved-text snapshots, retention/disablement and native preview/review/restore; restart, backup and conflict tests pass |
 | File operations | Shared create-folder, rename/reference transaction and vault-trash paths run on Linux; native trash preview, multi-selection and reviewed restore reuse identity-bound tickets |
-| Canvas | Validated source-preserving model, native card widgets, pan/zoom, selection, move/resize, connection drawing, shared source Undo/Redo, responsive card/connection inspector, keyboard connection selection and edge editing; embedded previews and remaining parity acceptance are still in progress |
+| Canvas | Validated source-preserving model, native card widgets, pan/zoom, selection, move/resize, connection drawing, shared source Undo/Redo, responsive card/connection inspector, keyboard connection selection and edge editing; bounded native note sections, raster file cards, group backgrounds and read-only Canvas thumbnails; full parity acceptance remains in progress |
 | Framework | .NET 10 with Avalonia 12.1.6, AvaloniaEdit 12.0.0 and DataGrid 12.1.2; their selected assemblies target net10.0 |
 | Tux icon | Generated transparent notebook mascot; embedded window asset and Linux menu PNG |
 | Lint/code smells | Recommended .NET analyzers and SonarAnalyzer configured; strict local gate passed with zero warnings and errors |
@@ -63,9 +68,9 @@ absence of a row is not evidence of support.
 
 ## Outstanding native acceptance
 
-The following are still required before the PR can leave draft:
+The following remain required for full native parity:
 
-- Full Canvas and Bases editors, attachments, slides and audio workflows.
+- Full Canvas and Bases editors, attachment tabs/zoom, slides and audio workflows.
 - Advanced Markdown rendering/editing, previews, search result contexts/sorting, composition and conversion.
 - Complete core-module lifecycles, native hotkey editing, rich bookmark/workspace round-trips and graph controls.
 - Community-plugin screens and a documented native compatibility boundary for plugins that depend on browser DOM/Electron APIs.

@@ -1,68 +1,42 @@
-# Native Linux UI captures
+# Native Linux screenshots
 
-Real Avalonia windows captured on an isolated Linux Xvfb display using a synthetic
-Slopsidian demo vault. The native port is still in progress.
+## 0.2.0-preview.2
 
-| Image | Workflow |
+Real Avalonia/.NET 10 application captures on Linux, using an isolated Xvfb
+display and synthetic demonstration notes. The active personal desktop was not
+used. The Tux PNG is the actual application artwork, including the foot revision.
+
+| Capture | State |
 | --- | --- |
-| workspace.png | File tree, independent document tabs, source editor and outline |
-| reading.png | Markdown rendered with native controls |
-| search-properties.png | Typed-property search and YAML property panel |
-| graph.png | Linked and orphan notes in the native graph |
-| settings.png | Native Files and links controls |
-| canvas-dark.png | Native Canvas cards, group and connection on Avalonia 12, dark theme |
-| canvas-light.png | The same native Canvas after changing the theme through Settings |
-| canvas-inspector-dark.png | Native connection selection and editable fields in the dark theme |
-| canvas-inspector-light.png | The native connection inspector in the light theme |
+| `canvas-previews-dark.png` | 1400 × 950, dark Canvas, heading preview, raster card and group background |
+| `canvas-previews-light.png` | 1400 × 950, light Canvas, right sidebar and Fit |
+| `canvas-previews-narrow.png` | 900 × 800, wrapped toolbar and fitted board |
+| `canvas-previews-narrow-inspector.png` | 900 × 800, native inspector flyout |
+| `image-preview.png` | 1000 × 800, native read-only raster preview window |
+| `about-linux.png` | 900 × 700, independent fork attribution and client version |
 
-UI source: aaf4058. The demo contains no personal notes. The application logo is
-maintained in `src/RonSijm.Slopsidian.Linux/Assets/tux-notebook.png` and its exact
-generation prompt is retained with that asset.
+The Canvas source and image bytes were retained throughout the capture session.
+The screenshots demonstrate these preview states; they do not establish full
+feature parity. The source fixture is synthetic and is not a personal vault.
 
-Saved-file recovery captures show native version selection and an explicit restore review. The demo history was created by the real native recovery commands on the same isolated display. Restore behavior is covered by the 114-test regression suite; strict lint/Release build passed with zero warnings/errors.
+## Earlier native captures
 
-The retained-draft screenshot follows real native editor input with autosave disabled, an application restart after removing the synthetic original, and opening Recover drafts. The recovered copy was then saved through the native window and its persisted profile state verified. No user files or desktop input were involved.
+The remaining PNGs are retained as earlier native workflow evidence. Their
+window titles and version may precede the independent Linux branding.
 
-Vault-trash screenshots show real native previews, multiple selection and review of the selected destination folder. Both synthetic notes were then restored through the reviewed native action and their saved contents/location checked. External-change refusal and partial success are exercised by headless widget tests.
+| Earlier capture | Workflow |
+| --- | --- |
+| `workspace.png` | File tree, document tabs, source editor and outline |
+| `reading.png` | Native Markdown reading |
+| `search-properties.png` | Typed-property search and YAML panel |
+| `graph.png` | Native linked-note graph |
+| `settings.png` | Native Files and links controls |
+| `canvas-dark.png`, `canvas-light.png` | Initial native Canvas |
+| `canvas-inspector-dark.png`, `canvas-inspector-light.png` | Connection inspector |
+| `draft-recovery.png` | Retained draft preview |
+| `recovery-history.png`, `recovery-review.png` | Saved-file history and restore review |
+| `vault-trash.png`, `vault-trash-review.png` | Trash selection and reviewed restore |
 
-Canvas UI source: `97582ed`. The Canvas captures use Avalonia 12.1.6 with the editor/DataGrid `net10.0`
-assemblies selected by restore. The same private-display run verified native
-editor input, save bytes, Undo/Redo and copying a historical snapshot to the
-isolated X11 clipboard. A 760×520 window was inspected, including wrapped Canvas
-actions and Fit. These captures demonstrate the current Canvas implementation;
-embedded file previews, edge editing and full Canvas acceptance were still open
-in that revision.
-The upgraded xUnit v3 suite passes all 152 tests.
-
-Upgrade validation completed locally:
-
-- Restore selected `net10.0` compile/runtime assets for Avalonia, desktop,
-  AvaloniaEdit, DataGrid and SkiaSharp.
-- `dotnet format src/RonSijm.Slopsidian.Linux --no-restore --verify-no-changes --severity warn` passed.
-- A non-incremental Release build of the native test project and its dependencies
-  passed with recommended .NET/Sonar analyzers and warnings treated as errors.
-- `dotnet build RonSijm.Slopsidian.sln --no-restore --configuration Release --warnaserror` passed with zero warnings/errors, including both existing hosts.
-- All 152 Release tests passed with xUnit v3.
-- The x64 archive and Debian package were rebuilt; CLI version, runtime metadata,
-  dependency versions, notices, package contents and SHA-256 checksums passed.
-  The package includes Microsoft.NETCore.App 10.0.15.
-
-Some transitive libraries still select compatible older target assemblies. The
-application and selected Avalonia stack use .NET 10; an older .NET runtime does
-not need to be installed. ARM64 runtime execution and remote CI were not
-asserted by this local x64 check.
-
-The selection-inspector captures use UI source `8921964`. A connection was
-selected with the native keyboard-accessible picker, its label was edited with
-real keyboard input, and Ctrl+S persisted that exact label in the synthetic
-Canvas JSON. The native inspector was also opened as a popup at 760×520, closed
-with Escape and restored as an inline panel after resizing. Both themes were
-inspected through the real Settings flow. The global Outline sidebar was hidden
-with its existing command to give this Canvas workspace more room.
-
-All 155 Release tests pass after this addition, including selection without
-source changes, connection properties, unknown-data preservation, invalid input,
-Undo/Redo, saving/deleting an edge, automatic vertical endpoints inside a group,
-zoom-independent hit targets, focused card typing and stale-vault refusal. The
-Release analyzer build and full format verification pass without warnings or
-errors. Embedded previews and the remaining full Canvas acceptance stay open.
+Earlier captures and their original implementation commits remain historical
+evidence. Current behavior and limits are described in the client guide and
+native roadmap; current verification belongs to the preview checkpoint report.

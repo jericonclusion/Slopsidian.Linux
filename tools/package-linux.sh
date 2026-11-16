@@ -31,7 +31,7 @@ bundle="Slopsidian-Linux-$native_version-$rid"
 stage_dir="$work_dir/$bundle"
 out_dir="$work_dir/out"
 # These paths are fixed below this script's repository, never supplied by the caller.
-rm -rf -- "$publish_dir" "$stage_dir" "$work_dir/deb"
+rm -rf -- "$publish_dir" "$stage_dir" "$work_dir/deb" "$out_dir"
 mkdir -p "$publish_dir" "$stage_dir/app" "$out_dir"
 dotnet publish src/RonSijm.Slopsidian.Linux -c Release -r "$rid" --self-contained true \
   -p:RestoreSources=https://api.nuget.org/v3/index.json -p:DebugType=None -p:DebugSymbols=false \

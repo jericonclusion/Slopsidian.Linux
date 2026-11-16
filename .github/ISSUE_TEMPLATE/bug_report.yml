@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a Linux client problem
+title: "[Bug]: "
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Client version
+      description: Copy the version from About or slopsidian-linux --version.
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Linux distribution, architecture and desktop session
+      placeholder: Ubuntu 24.04, x64, GNOME on Wayland/XWayland
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps, expected result and actual result
+      description: Use a small synthetic example where possible. Remove personal note content.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or relevant error details

@@ -88,13 +88,19 @@ jobs:
           sha256sum --check SHA256SUMS-linux-arm64.txt
           cd ..
           client_version="${RELEASE_TAG#linux-v}"
-          cat > release-notes.md <<'NOTES'
-          Native Linux preview built with .NET 10 and Avalonia 12.
+          printf 'Slopsidian Linux %s\n\n' "$client_version" > release-notes.md
+          awk -v heading="## $client_version" '
+            $0 == heading { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+            END { if (!found) exit 1 }
+          ' CHANGELOG.md >> release-notes.md
+          cat >> release-notes.md <<'NOTES'
           Includes self-contained x64/arm64 archives, Debian packages and SHA-256 checksums.
+          No compilation or .NET SDK installation is needed to use the app.
 
-          Full upstream feature and community-plugin parity is still in progress.
-          See CHANGELOG.md and Docs/Project/NATIVE-PORT.md for changes and current limits.
-          Packages are unsigned; there is no automatic update channel.
+          See README.md and Docs/Features/NATIVE-ASSISTANT.md for setup and current capabilities.
+          This remains a preview. Packages are unsigned and have no automatic update channel.
           NOTES
           prerelease=()
           if [[ "$client_version" == *-* ]]; then prerelease+=(--prerelease); fi

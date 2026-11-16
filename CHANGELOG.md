@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.0-preview.1
+
+- Add a native assistant for installed Codex CLI, Claude Code and GitHub Copilot CLI.
+- Attach frozen note drafts, source selections, linked notes and backlinks; inspect
+  messages before sending and follow exact note/heading/block citations.
+- Support follow-ups, provider-specific executable/model settings, cancellation,
+  copied replies and guarded save-as-new-note actions.
+- Bound context, process output and execution time; retain failed requests and
+  cancel assistant work when its window closes or the vault changes.
+- Add tested Bases formula, YAML editing and filtered/grouped query foundations.
+  The native Bases table interface remains unfinished and is not exposed by this release.
+- Focus README and contribution guidance on Slopsidian Linux, with assistant setup,
+  screenshots and current capability limits documented separately.
+
 ## 0.2.0-preview.3
 
 - Use GitHub-compatible package filenames and matching download/checksum links.

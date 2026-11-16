@@ -116,9 +116,22 @@ public partial class MainWindow
         }
     }
 
-    private IReadOnlyList<NativeCommand> Commands() =>
+    private NativeCommand[] Commands() =>
+        AllCommands()
+            .Where(command =>
+                command.Id switch
+                {
+                    "assistant:open" => profile.State.Preferences.CliAssistantEnabled,
+                    "terminal:open" => profile.State.Preferences.TerminalEnabled,
+                    _ => true,
+                }
+            )
+            .ToArray();
+
+    private NativeCommand[] AllCommands() =>
         [
             new("assistant:open", "Assistant: Open Codex, Claude Code or Copilot CLI", "", OpenAssistantAsync),
+            new("terminal:open", "Terminal: Open an interactive shell", "", OpenTerminalAsync),
             new("canvas:new-file", "Canvas: Create new Canvas", "", NewCanvasAsync),
             new("file:new", "Create a new note", "Ctrl+N", NewNoteAsync),
             new("vault:open", "Open or create a vault", "Ctrl+Shift+O", ChooseVaultAsync),

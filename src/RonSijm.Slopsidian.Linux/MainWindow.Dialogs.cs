@@ -130,7 +130,8 @@ public partial class MainWindow
         }
         var window = new NativeSettingsWindow(
             profile.State.Preferences,
-            Workspace.Snapshot.Root is null ? null : Workspace.Vault
+            Workspace.Snapshot.Root is null ? null : Workspace.Vault,
+            SetNativeModuleEnabledAsync
         );
         var preferences = await window.ShowDialog<NativePreferences?>(this);
         if (preferences is null)
@@ -144,6 +145,7 @@ public partial class MainWindow
 
     private void ApplyPreferences()
     {
+        ApplyNativeModuleAvailability();
         var preferences = profile.State.Preferences;
         if (Application.Current is not null)
         {

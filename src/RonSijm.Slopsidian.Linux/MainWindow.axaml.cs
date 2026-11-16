@@ -33,6 +33,7 @@ public partial class MainWindow : Window
     {
         profile = appProfile;
         InitializeComponent();
+        ApplyNativeModuleAvailability();
         DocumentTabs.ItemsSource = Workspace.Tabs;
         previewTimer.Tick += async (_, _) =>
         {
@@ -377,17 +378,20 @@ public partial class MainWindow : Window
 
     private async Task PersistProfileAsync()
     {
-        if (!profileWritable || Workspace.Snapshot.Root is null)
+        if (!profileWritable)
         {
             return;
         }
-        SaveEditorView();
-        var session = Workspace.CaptureSession();
-        var sessions = new Dictionary<string, NativeSession>(profile.State.VaultSessions, StringComparer.Ordinal)
+        if (Workspace.Snapshot.Root is not null)
         {
-            [session.Root] = session,
-        };
-        profile.State = profile.State with { Session = session, VaultSessions = sessions };
+            SaveEditorView();
+            var session = Workspace.CaptureSession();
+            var sessions = new Dictionary<string, NativeSession>(profile.State.VaultSessions, StringComparer.Ordinal)
+            {
+                [session.Root] = session,
+            };
+            profile.State = profile.State with { Session = session, VaultSessions = sessions };
+        }
         await profile.SaveAsync(CancellationToken.None);
     }
 
@@ -530,6 +534,7 @@ public partial class MainWindow : Window
     private void OnClosed(object? sender, EventArgs args)
     {
         assistantWindow?.Close();
+        terminalWindow?.Close();
         StopTimers();
         search?.Cancel();
         search?.Dispose();

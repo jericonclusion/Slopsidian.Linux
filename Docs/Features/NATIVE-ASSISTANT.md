@@ -15,6 +15,14 @@ works with your account, then open **Assistant** from the ribbon or command pale
 | Claude Code | https://code.claude.com/docs/en/setup | `claude --version` |
 | GitHub Copilot CLI | https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli | `copilot --version` |
 
+The assistant is enabled by default and can be switched independently under
+**Settings → Native modules → CLI assistant**. Changes apply immediately and
+are saved in the native app profile, even before opening a vault. Switching it
+off hides its ribbon/command-palette entries, closes its window and cancels
+requests. Switching it back on keeps executable/model settings; conversations
+are not restored. These switches do not load Obsidian community plugins or
+change vault `.obsidian/core-plugins.json`.
+
 Choose the provider. In **CLI settings**, set an absolute executable path if the
 command is absent from the desktop's `PATH`. An optional model name is passed as
 one argument. Settings are stored in the private native profile; credentials are
@@ -63,9 +71,9 @@ start a fresh chat and retain attachments and independent provider settings.
 
 ## Scope and data
 
-This preview provides **read-and-suggest chat**, without an interactive terminal,
-automatic note edits, shell commands, external MCP tools, images or a whole-vault
-index. Processes start in an empty private directory outside the vault. Codex uses
+The assistant provides **read-and-suggest chat**, without automatic note edits,
+shell commands, external MCP tools, images or a whole-vault index. A separate
+optional native [Terminal module](NATIVE-TERMINAL.md) provides an interactive shell. Processes start in an empty private directory outside the vault. Codex uses
 its read-only sandbox with shell/apps/plugins/hooks and user config discovery
 disabled, while retaining standard authentication. Claude uses safe mode with
 built-in/MCP tools disabled. Copilot is limited to read tools, with shell/writes

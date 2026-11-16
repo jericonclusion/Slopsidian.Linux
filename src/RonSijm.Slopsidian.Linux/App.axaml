@@ -37,6 +37,7 @@
     </ResourceDictionary>
   </Application.Resources>
   <Application.Styles>
+    <StyleInclude Source="avares://Iciclecreek.Avalonia.Terminal/Themes/Generic.axaml" />
     <FluentTheme>
       <FluentTheme.Palettes>
         <ColorPaletteResources x:Key="Dark" Accent="#8c70c9" />

@@ -48,7 +48,8 @@ public sealed partial class NativeWorkspace : IDisposable
     public bool IsDirty => ActiveTab?.IsDirty ?? false;
     public bool HasDirtyTabs => tabs.Any(tab => tab.IsDirty);
     public long Revision => watch.Revision;
-    public IEnumerable<VaultFile> Notes => Snapshot.Files.Where(file => file.Extension.Equals("md", StringComparison.OrdinalIgnoreCase));
+    public IEnumerable<VaultFile> Notes =>
+        Snapshot.Files.Where(file => file.Extension.Equals("md", StringComparison.OrdinalIgnoreCase));
 
     public async Task OpenVaultAsync(string directory)
     {
@@ -117,7 +118,8 @@ public sealed partial class NativeWorkspace : IDisposable
         }
     }
 
-    public Task SaveAsync() => SaveTabAsync(ActiveTab ?? throw new InvalidOperationException("Open a note before saving."));
+    public Task SaveAsync() =>
+        SaveTabAsync(ActiveTab ?? throw new InvalidOperationException("Open a note before saving."));
 
     public async Task SaveTabAsync(NativeTab tab)
     {
@@ -125,8 +127,14 @@ public sealed partial class NativeWorkspace : IDisposable
         {
             throw new InvalidOperationException("This tab is no longer open.");
         }
-        if (tab.Document.File.Extension.Equals("canvas", StringComparison.OrdinalIgnoreCase)) { _ = new NativeCanvasDocument(tab.Text); }
-        var saved = await vault.WriteAsync(new WriteFileRequest(tab.Path, tab.Text, tab.Document.Version, RequireRoot()), false);
+        if (tab.Document.File.Extension.Equals("canvas", StringComparison.OrdinalIgnoreCase))
+        {
+            _ = new NativeCanvasDocument(tab.Text);
+        }
+        var saved = await vault.WriteAsync(
+            new WriteFileRequest(tab.Path, tab.Text, tab.Document.Version, RequireRoot()),
+            false
+        );
         tab.AcceptSaved(saved);
         FileObserved?.Invoke(tab.Path);
     }
@@ -175,7 +183,11 @@ public sealed partial class NativeWorkspace : IDisposable
     {
         var previous = Snapshot.Files.ToDictionary(file => file.Path, StringComparer.Ordinal);
         Snapshot = await Task.Run(() => vault.GetSnapshotAsync());
-        foreach (var file in Snapshot.Files.Where(file => !previous.TryGetValue(file.Path, out var before) || before.Stat != file.Stat))
+        foreach (
+            var file in Snapshot.Files.Where(file =>
+                !previous.TryGetValue(file.Path, out var before) || before.Stat != file.Stat
+            )
+        )
         {
             FileObserved?.Invoke(file.Path);
         }
@@ -191,8 +203,18 @@ public sealed partial class NativeWorkspace : IDisposable
 
     public NativeSession CaptureSession()
     {
-        var states = tabs.Select(tab => new NativeTabState(tab.Path, tab.Caret, tab.ScrollOffset, tab.Reading, tab.Pinned,
-            tab.IsDirty ? tab.Text : null, tab.Document.Version, tab.Document.HasBom, tab.ViewMode)).ToArray();
+        var states = tabs.Select(tab => new NativeTabState(
+                tab.Path,
+                tab.Caret,
+                tab.ScrollOffset,
+                tab.Reading,
+                tab.Pinned,
+                tab.IsDirty ? tab.Text : null,
+                tab.Document.Version,
+                tab.Document.HasBom,
+                tab.ViewMode
+            ))
+            .ToArray();
         return new NativeSession(RequireRoot(), ActiveTab?.Path, states.Concat(orphanedDrafts).ToArray());
     }
 
@@ -204,8 +226,14 @@ public sealed partial class NativeWorkspace : IDisposable
         }
         foreach (var saved in session.Tabs)
         {
-            if (tabs.Any(tab => tab.Path == saved.Path && tab.IsDirty)) { continue; }
-            if (saved.Draft is not null) { orphanedDrafts.RemoveAll(draft => draft.Path == saved.Path); }
+            if (tabs.Any(tab => tab.Path == saved.Path && tab.IsDirty))
+            {
+                continue;
+            }
+            if (saved.Draft is not null)
+            {
+                orphanedDrafts.RemoveAll(draft => draft.Path == saved.Path);
+            }
             if (Snapshot.Files.All(file => file.Path != saved.Path))
             {
                 if (saved.Draft is not null)
@@ -231,23 +259,41 @@ public sealed partial class NativeWorkspace : IDisposable
     {
         tab.Caret = Math.Clamp(saved.Caret, 0, saved.Draft?.Length ?? tab.Text.Length);
         tab.ScrollOffset = Math.Max(0, saved.ScrollOffset);
-        tab.ViewMode = saved.ViewMode ?? (saved.Reading ? "reading" : NativeTab.InitialMode(tab.Document.File.Extension));
+        tab.ViewMode = saved.ViewMode
+            ?? (saved.Reading ? "reading" : NativeTab.InitialMode(tab.Document.File.Extension));
         tab.Pinned = saved.Pinned;
     }
 
-    public Task<IReadOnlyList<NoteResult>> SearchAsync(string query, CancellationToken cancellationToken) => SearchAsync(query, false, cancellationToken);
+    public Task<IReadOnlyList<NoteResult>> SearchAsync(string query, CancellationToken cancellationToken) =>
+        SearchAsync(query, false, cancellationToken);
 
-    public async Task<IReadOnlyList<NoteResult>> SearchAsync(string query, bool matchCase = false, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<NoteResult>> SearchAsync(
+        string query,
+        bool matchCase = false,
+        CancellationToken cancellationToken = default
+    )
     {
         var root = Snapshot.Root;
         var notes = Notes.ToArray();
         var drafts = tabs.ToDictionary(tab => tab.Path, tab => tab.Text, StringComparer.Ordinal);
-        if (string.IsNullOrWhiteSpace(query)) { return []; }
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return [];
+        }
         var compiled = NativeSearchQuery.Parse(query, matchCase);
-        return await Task.Run(() => SearchSnapshotAsync(notes, drafts, root, compiled, cancellationToken), cancellationToken);
+        return await Task.Run(
+            () => SearchSnapshotAsync(notes, drafts, root, compiled, cancellationToken),
+            cancellationToken
+        );
     }
 
-    private async Task<List<NoteResult>> SearchSnapshotAsync(VaultFile[] notes, Dictionary<string, string> drafts, string? root, NativeSearchQuery query, CancellationToken cancellationToken)
+    private async Task<List<NoteResult>> SearchSnapshotAsync(
+        VaultFile[] notes,
+        Dictionary<string, string> drafts,
+        string? root,
+        NativeSearchQuery query,
+        CancellationToken cancellationToken
+    )
     {
         var results = new List<NoteResult>();
         foreach (var file in notes)
@@ -255,8 +301,17 @@ public sealed partial class NativeWorkspace : IDisposable
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                var result = await SearchFileAsync(file, drafts.GetValueOrDefault(file.Path), root, query, cancellationToken);
-                if (result is not null) { results.Add(result); }
+                var result = await SearchFileAsync(
+                    file,
+                    drafts.GetValueOrDefault(file.Path),
+                    root,
+                    query,
+                    cancellationToken
+                );
+                if (result is not null)
+                {
+                    results.Add(result);
+                }
             }
             catch (VaultException exception) when (exception.StatusCode == 404)
             {
@@ -266,23 +321,47 @@ public sealed partial class NativeWorkspace : IDisposable
         return results;
     }
 
-    private async Task<NoteResult?> SearchFileAsync(VaultFile file, string? draft, string? root, NativeSearchQuery query, CancellationToken cancellationToken)
+    private async Task<NoteResult?> SearchFileAsync(
+        VaultFile file,
+        string? draft,
+        string? root,
+        NativeSearchQuery query,
+        CancellationToken cancellationToken
+    )
     {
-        if (query.RequiresContents && (draft?.Length ?? file.Stat.Size) > 4 * 1024 * 1024) { return null; }
+        if (query.RequiresContents && (draft?.Length ?? file.Stat.Size) > 4 * 1024 * 1024)
+        {
+            return null;
+        }
         var content = "";
-        if (query.RequiresContents) { content = draft ?? (await vault.ReadAsync(file.Path, cancellationToken, root)).Content; }
-        var parsed = query.RequiresMetadata ? NativeMetadata.Parse(file.Path, content) : new NativeMetadata(file.Path, [], [], [], [], [], [], null);
+        if (query.RequiresContents)
+        {
+            content = draft ?? (await vault.ReadAsync(file.Path, cancellationToken, root)).Content;
+        }
+        var parsed = query.RequiresMetadata
+            ? NativeMetadata.Parse(file.Path, content)
+            : new NativeMetadata(file.Path, [], [], [], [], [], [], null);
         var match = query.Match(new NativeSearchDocument(file.Path, content, parsed));
-        if (!match.Success) { return null; }
+        if (!match.Success)
+        {
+            return null;
+        }
         var start = Math.Max(0, match.Offset - 35);
-        var snippet = content.Substring(start, Math.Min(120, content.Length - start)).Replace('\r', ' ').Replace('\n', ' ');
+        var snippet = content
+            .Substring(start, Math.Min(120, content.Length - start))
+            .Replace('\r', ' ')
+            .Replace('\n', ' ');
         return new NoteResult(file.Path, snippet, match.Offset);
     }
 
-    public string ResolveNoteLink(string link, bool markdown = false) => ResolveLinkTarget(Document?.File.Path ?? "", link, markdown)
-        ?? throw new InvalidOperationException("This note was not found or its name is ambiguous. Open it from the file tree or create the note.");
+    public string ResolveNoteLink(string link, bool markdown = false) =>
+        ResolveLinkTarget(Document?.File.Path ?? "", link, markdown)
+        ?? throw new InvalidOperationException(
+            "This note was not found or its name is ambiguous. Open it from the file tree or create the note."
+        );
 
     private string RequireRoot() => Snapshot.Root ?? throw new InvalidOperationException("Open a vault first.");
+
     private void RequireClean()
     {
         if (IsDirty)
@@ -290,5 +369,10 @@ public sealed partial class NativeWorkspace : IDisposable
             throw new InvalidOperationException("Save or discard the current changes first.");
         }
     }
-    public void Dispose() { Recovery.Dispose(); watch.Dispose(); }
+
+    public void Dispose()
+    {
+        Recovery.Dispose();
+        watch.Dispose();
+    }
 }

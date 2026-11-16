@@ -31,13 +31,20 @@ public sealed class TrashWindowTests
             Assert.Equal("Café\r\nSaved text\r\n", await File.ReadAllTextAsync(Path.Combine(directory, "Deleted.md")));
             Assert.Empty((await workspace.Vault.ListTrashAsync(directory)).Entries);
         }
-        finally { window?.Close(); Directory.Delete(directory, true); }
+        finally
+        {
+            window?.Close();
+            Directory.Delete(directory, true);
+        }
     }
 
     [AvaloniaFact]
     public async Task NativeTrashRefusesAFileThatAppearsAtTheReviewedDestination()
     {
-        var directory = Path.Combine(Path.GetTempPath(), "slopsidian-trash-conflict-window-" + Guid.NewGuid().ToString("N"));
+        var directory = Path.Combine(
+            Path.GetTempPath(),
+            "slopsidian-trash-conflict-window-" + Guid.NewGuid().ToString("N")
+        );
         Directory.CreateDirectory(directory);
         using var workspace = new NativeWorkspace();
         NativeTrashWindow? window = null;
@@ -56,15 +63,25 @@ public sealed class TrashWindowTests
             Click(window, "TrashConfirm");
             await WaitForAsync(() => Control<TextBlock>(window, "TrashStatus").Classes.Contains("error"));
             Assert.Equal("Appeared after review", await File.ReadAllTextAsync(Path.Combine(directory, "Deleted.md")));
-            Assert.Equal("Trash original", await File.ReadAllTextAsync(Path.Combine(directory, ".trash", "Deleted.md")));
+            Assert.Equal(
+                "Trash original",
+                await File.ReadAllTextAsync(Path.Combine(directory, ".trash", "Deleted.md"))
+            );
         }
-        finally { window?.Close(); Directory.Delete(directory, true); }
+        finally
+        {
+            window?.Close();
+            Directory.Delete(directory, true);
+        }
     }
 
     [AvaloniaFact]
     public async Task NativeTrashReportsPartialSuccessWhenALaterReviewedSourceIsReplaced()
     {
-        var directory = Path.Combine(Path.GetTempPath(), "slopsidian-trash-partial-window-" + Guid.NewGuid().ToString("N"));
+        var directory = Path.Combine(
+            Path.GetTempPath(),
+            "slopsidian-trash-partial-window-" + Guid.NewGuid().ToString("N")
+        );
         Directory.CreateDirectory(directory);
         using var workspace = new NativeWorkspace();
         NativeTrashWindow? window = null;
@@ -78,7 +95,9 @@ public sealed class TrashWindowTests
             window.UpdateLayout();
             await WaitForAsync(() => Control<TextBox>(window, "TrashPreview").Text == "First original");
             var entries = Control<ListBox>(window, "TrashEntries");
-            entries.SelectedItems!.Add(entries.Items.Cast<RonSijm.Slopsidian.Services.VaultTrashEntry>().Single(entry => entry.Name == "B.md"));
+            entries.SelectedItems!.Add(
+                entries.Items.Cast<RonSijm.Slopsidian.Services.VaultTrashEntry>().Single(entry => entry.Name == "B.md")
+            );
             await WaitForAsync(() => entries.IsEnabled && entries.SelectedItems.Count == 2);
             Click(window, "TrashPrepare");
             await WaitForAsync(() => HasButton(window, "TrashConfirm"));
@@ -92,15 +111,29 @@ public sealed class TrashWindowTests
             Assert.False(File.Exists(Path.Combine(directory, "B.md")));
             Assert.Equal("Second original", await File.ReadAllTextAsync(second));
         }
-        finally { window?.Close(); Directory.Delete(directory, true); }
+        finally
+        {
+            window?.Close();
+            Directory.Delete(directory, true);
+        }
     }
 
-    private static bool HasButton(Window window, string name) => window.GetVisualDescendants().OfType<Button>().Any(button => button.Name == name);
-    private static T Control<T>(Window window, string name) where T : Avalonia.Controls.Control => window.GetVisualDescendants().OfType<T>().Single(control => control.Name == name);
-    private static void Click(Window window, string name) => Control<Button>(window, name).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+    private static bool HasButton(Window window, string name) =>
+        window.GetVisualDescendants().OfType<Button>().Any(button => button.Name == name);
+
+    private static T Control<T>(Window window, string name)
+        where T : Avalonia.Controls.Control =>
+        window.GetVisualDescendants().OfType<T>().Single(control => control.Name == name);
+
+    private static void Click(Window window, string name) =>
+        Control<Button>(window, name).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
     private static async Task WaitForAsync(Func<bool> condition)
     {
-        for (var attempt = 0; !condition() && attempt < 500; attempt++) { await Task.Delay(10); }
+        for (var attempt = 0; !condition() && attempt < 500; attempt++)
+        {
+            await Task.Delay(10);
+        }
         Assert.True(condition());
     }
 }

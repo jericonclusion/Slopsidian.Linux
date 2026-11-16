@@ -6,17 +6,28 @@ namespace RonSijm.Slopsidian.Linux.Tests;
 
 public sealed class RecoveryHistoryTests
 {
-    private static VaultDocument Document(string content, bool bom = false) => new(new VaultFile("Folder/Note.md", "Note.md", "Note", "md", new VaultFileStat(0, 0, content.Length)), content, new string('a', 64), bom);
+    private static VaultDocument Document(string content, bool bom = false) =>
+        new(
+            new VaultFile("Folder/Note.md", "Note.md", "Note", "md", new VaultFileStat(0, 0, content.Length)),
+            content,
+            new string('a', 64),
+            bom
+        );
 
     [Fact]
     public void CaptureHonorsIntervalAndRetainsUnknownConfigurationAndExactText()
     {
-        var history = new NativeRecoveryHistory(JsonSerializer.SerializeToElement(new { unknown = new { keep = "value" } }));
+        var history = new NativeRecoveryHistory(
+            JsonSerializer.SerializeToElement(new { unknown = new { keep = "value" } })
+        );
         var time = DateTimeOffset.FromUnixTimeMilliseconds(1_000_000);
         Assert.Equal(NativeCaptureResult.Added, history.Capture(Document("Café\r\n", true), time, 5));
         Assert.Equal(NativeCaptureResult.Unchanged, history.Capture(Document("Café\r\n", true), time.AddMinutes(1), 5));
         Assert.Equal(NativeCaptureResult.Waiting, history.Capture(Document("Changed\n"), time.AddMinutes(1), 5));
-        Assert.Equal(NativeCaptureResult.Added, history.Capture(Document("Changed\n"), time.AddMinutes(1), 5, force: true, reason: "manual"));
+        Assert.Equal(
+            NativeCaptureResult.Added,
+            history.Capture(Document("Changed\n"), time.AddMinutes(1), 5, force: true, reason: "manual")
+        );
         var restarted = new NativeRecoveryHistory(history.Data);
         Assert.Equal("value", restarted.Data.GetProperty("unknown").GetProperty("keep").GetString());
         Assert.Equal("Changed\n", restarted.GetEntries()[0].Content);
@@ -52,7 +63,9 @@ public sealed class RecoveryHistoryTests
     [InlineData("{\"version\":2,\"snapshots\":[]}")]
     [InlineData("{\"version\":1,\"snapshots\":null}")]
     [InlineData("{\"version\":1}")]
-    [InlineData("{\"version\":1,\"snapshots\":[{\"id\":\"x\",\"path\":\"../outside.md\",\"ts\":0,\"content\":\"x\",\"hasBom\":false,\"sourceVersion\":null,\"reason\":\"auto\"}]}")]
+    [InlineData(
+        "{\"version\":1,\"snapshots\":[{\"id\":\"x\",\"path\":\"../outside.md\",\"ts\":0,\"content\":\"x\",\"hasBom\":false,\"sourceVersion\":null,\"reason\":\"auto\"}]}"
+    )]
     public void DamagedOrUnknownHistoryIsRefusedWithoutResettingItsData(string json)
     {
         using var document = JsonDocument.Parse(json);
@@ -63,9 +76,12 @@ public sealed class RecoveryHistoryTests
     [Fact]
     public void SnapshotFingerprintIncludesUnknownFieldsUsedDuringRestoreReview()
     {
-        const string original = "{\"version\":1,\"snapshots\":[{\"id\":\"x\",\"path\":\"Note.md\",\"ts\":0,\"content\":\"x\",\"hasBom\":false,\"sourceVersion\":null,\"reason\":\"auto\",\"unknown\":1}]}";
+        const string original =
+            "{\"version\":1,\"snapshots\":[{\"id\":\"x\",\"path\":\"Note.md\",\"ts\":0,\"content\":\"x\",\"hasBom\":false,\"sourceVersion\":null,\"reason\":\"auto\",\"unknown\":1}]}";
         using var first = JsonDocument.Parse(original);
-        using var changed = JsonDocument.Parse(original.Replace("\"unknown\":1", "\"unknown\":2", StringComparison.Ordinal));
+        using var changed = JsonDocument.Parse(
+            original.Replace("\"unknown\":1", "\"unknown\":2", StringComparison.Ordinal)
+        );
         var before = Assert.Single(new NativeRecoveryHistory(first.RootElement).GetEntries());
         var after = Assert.Single(new NativeRecoveryHistory(changed.RootElement).GetEntries());
         Assert.NotEqual(before.Fingerprint, after.Fingerprint);

@@ -5,7 +5,10 @@ namespace RonSijm.Slopsidian.Linux.Tests;
 
 public sealed class SessionTests : IDisposable
 {
-    private readonly string directory = Path.Combine(Path.GetTempPath(), "slopsidian-session-" + Guid.NewGuid().ToString("N"));
+    private readonly string directory = Path.Combine(
+        Path.GetTempPath(),
+        "slopsidian-session-" + Guid.NewGuid().ToString("N")
+    );
     private readonly NativeWorkspace workspace = new();
 
     public SessionTests() => Directory.CreateDirectory(directory);
@@ -24,8 +27,20 @@ public sealed class SessionTests : IDisposable
         await workspace.SaveAsync();
         Assert.False(first.IsDirty);
         Assert.True(second.IsDirty);
-        Assert.Equal("First draft", await File.ReadAllTextAsync(Path.Combine(directory, "first.md"), cancellationToken: TestContext.Current.CancellationToken));
-        Assert.Equal("Second saved", await File.ReadAllTextAsync(Path.Combine(directory, "second.md"), cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(
+            "First draft",
+            await File.ReadAllTextAsync(
+                Path.Combine(directory, "first.md"),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
+        Assert.Equal(
+            "Second saved",
+            await File.ReadAllTextAsync(
+                Path.Combine(directory, "second.md"),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
     }
 
     [Fact]
@@ -35,7 +50,11 @@ public sealed class SessionTests : IDisposable
         await workspace.CreateTabAsync("note.md", "Original");
         workspace.Text = "Recovered draft";
         var session = workspace.CaptureSession();
-        await File.WriteAllTextAsync(Path.Combine(directory, "note.md"), "Changed externally", cancellationToken: TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(
+            Path.Combine(directory, "note.md"),
+            "Changed externally",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         using var restarted = new NativeWorkspace();
         await restarted.OpenVaultAsync(directory);
         await restarted.RestoreSessionAsync(session);
@@ -43,7 +62,13 @@ public sealed class SessionTests : IDisposable
         Assert.True(restarted.ActiveTab!.ExternalChange);
         var error = await Assert.ThrowsAsync<VaultException>(restarted.SaveAsync);
         Assert.Equal(409, error.StatusCode);
-        Assert.Equal("Changed externally", await File.ReadAllTextAsync(Path.Combine(directory, "note.md"), cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(
+            "Changed externally",
+            await File.ReadAllTextAsync(
+                Path.Combine(directory, "note.md"),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
     }
 
     [Fact]
@@ -89,7 +114,15 @@ public sealed class SessionTests : IDisposable
     public async Task ProfileRoundTripsRecoveryWithoutWritingIntoVault()
     {
         var profileDirectory = Path.Combine(directory, "profile");
-        var note = new NativeTabState("Folder/Unicode café.md", 5, 40, false, false, "# Draft\r\nKeep exact text\r\n", "version");
+        var note = new NativeTabState(
+            "Folder/Unicode café.md",
+            5,
+            40,
+            false,
+            false,
+            "# Draft\r\nKeep exact text\r\n",
+            "version"
+        );
         using (var profile = new NativeProfile(profileDirectory))
         {
             profile.State = profile.State with { Session = new NativeSession("/a/vault", note.Path, [note]) };
@@ -101,13 +134,16 @@ public sealed class SessionTests : IDisposable
         Assert.Single(Directory.GetFiles(profileDirectory));
         if (OperatingSystem.IsLinux())
         {
-            Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(Path.Combine(profileDirectory, "state.json")));
+            Assert.Equal(
+                UnixFileMode.UserRead | UnixFileMode.UserWrite,
+                File.GetUnixFileMode(Path.Combine(profileDirectory, "state.json"))
+            );
         }
     }
 
     [Theory]
     [InlineData("{\"version\":1,\"preferences\":null}")]
-    [InlineData("{\"version\":1,\"workspaces\":{\"broken\":null}}") ]
+    [InlineData("{\"version\":1,\"workspaces\":{\"broken\":null}}")]
     [InlineData("{\"version\":1,\"session\":{\"root\":\"/vault\",\"tabs\":null}}")]
     public async Task InvalidProfileRemainsUntouched(string json)
     {
@@ -116,7 +152,9 @@ public sealed class SessionTests : IDisposable
         var file = Path.Combine(profileDirectory, "state.json");
         await File.WriteAllTextAsync(file, json, cancellationToken: TestContext.Current.CancellationToken);
         using var profile = new NativeProfile(profileDirectory);
-        await Assert.ThrowsAsync<InvalidDataException>(() => profile.LoadAsync(cancellationToken: TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<InvalidDataException>(() =>
+            profile.LoadAsync(cancellationToken: TestContext.Current.CancellationToken)
+        );
         Assert.Equal(json, await File.ReadAllTextAsync(file, cancellationToken: TestContext.Current.CancellationToken));
     }
 
@@ -143,7 +181,11 @@ public sealed class SessionTests : IDisposable
         await workspace.ReloadTabAsync(tab);
         Assert.False(tab.ExternalChange);
         Assert.Equal("Draft", tab.Text);
-        await File.WriteAllTextAsync(Path.Combine(directory, "Draft.md"), "External", cancellationToken: TestContext.Current.CancellationToken);
+        await File.WriteAllTextAsync(
+            Path.Combine(directory, "Draft.md"),
+            "External",
+            cancellationToken: TestContext.Current.CancellationToken
+        );
         await workspace.ReloadTabAsync(tab);
         Assert.True(tab.ExternalChange);
         Assert.Equal("Draft", tab.Text);

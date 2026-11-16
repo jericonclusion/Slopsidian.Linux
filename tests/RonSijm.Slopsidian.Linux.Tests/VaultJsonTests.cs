@@ -36,7 +36,9 @@ public sealed class VaultJsonTests
     {
         using var document = JsonDocument.Parse("{\"unknown\":1,\"unknown\":2}");
         VaultJson.ValidateRoundTrip(document.RootElement);
-        var error = Assert.Throws<VaultException>(() => VaultJson.ValidateRoundTrip(document.RootElement, "Canvas", rejectDuplicateKeys: true));
+        var error = Assert.Throws<VaultException>(() =>
+            VaultJson.ValidateRoundTrip(document.RootElement, "Canvas", rejectDuplicateKeys: true)
+        );
         Assert.Contains("duplicate JSON fields", error.Message);
     }
 }

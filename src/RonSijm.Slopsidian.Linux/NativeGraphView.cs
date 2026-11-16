@@ -7,23 +7,37 @@ using Avalonia.Media;
 namespace RonSijm.Slopsidian.Linux;
 
 public sealed record NativeGraphNode(string Path, string Label);
+
 public sealed record NativeGraphEdge(string Source, string Target);
 
 public sealed class NativeGraphView : UserControl
 {
     private readonly GraphSurface surface;
     private readonly TextBox filter = new() { PlaceholderText = "Filter notes", Width = 250 };
-    private readonly TextBlock status = new() { Classes = { "muted" }, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+    private readonly TextBlock status = new()
+    {
+        Classes = { "muted" },
+        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+    };
     private readonly NativeGraphNode[] nodes;
     private readonly NativeGraphEdge[] edges;
 
-    public NativeGraphView(IEnumerable<NativeGraphNode> graphNodes, IEnumerable<NativeGraphEdge> graphEdges, Action<string> open)
+    public NativeGraphView(
+        IEnumerable<NativeGraphNode> graphNodes,
+        IEnumerable<NativeGraphEdge> graphEdges,
+        Action<string> open
+    )
     {
         nodes = graphNodes.ToArray();
         edges = graphEdges.ToArray();
         surface = new GraphSurface(open);
         var layout = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
-        var controls = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 16, Margin = new Thickness(20, 14) };
+        var controls = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing = 16,
+            Margin = new Thickness(20, 14),
+        };
         controls.Children.Add(filter);
         var reset = new Button { Content = "Reset view" };
         reset.Click += (_, _) => surface.ResetView();
@@ -89,10 +103,19 @@ public sealed class NativeGraphView : UserControl
                 var selected = node.Path == hover;
                 var radius = selected ? 7 : 5;
                 context.DrawEllipse(selected ? accent : muted, null, point, radius, radius);
-                if (zoom < 0.45 && !selected) { continue; }
+                if (zoom < 0.45 && !selected)
+                {
+                    continue;
+                }
                 var label = node.Label.Length > 42 ? node.Label[..39] + "…" : node.Label;
-                var formatted = new FormattedText(label, CultureInfo.CurrentCulture, Avalonia.Media.FlowDirection.LeftToRight,
-                    new Typeface(FontFamily.Default), 12, selected ? accent : text);
+                var formatted = new FormattedText(
+                    label,
+                    CultureInfo.CurrentCulture,
+                    Avalonia.Media.FlowDirection.LeftToRight,
+                    new Typeface(FontFamily.Default),
+                    12,
+                    selected ? accent : text
+                );
                 context.DrawText(formatted, new Point(point.X + 9, point.Y - formatted.Height / 2));
             }
         }
@@ -101,7 +124,10 @@ public sealed class NativeGraphView : UserControl
         {
             foreach (var edge in graphEdges)
             {
-                if (positions.TryGetValue(edge.Source, out var source) && positions.TryGetValue(edge.Target, out var target))
+                if (
+                    positions.TryGetValue(edge.Source, out var source)
+                    && positions.TryGetValue(edge.Target, out var target)
+                )
                 {
                     context.DrawLine(pen, Screen(source), Screen(target));
                 }
@@ -110,13 +136,19 @@ public sealed class NativeGraphView : UserControl
 
         private static double Distance(Point delta) => Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
 
-        private Point Screen(Point point) => new(point.X * zoom + Bounds.Width / 2 + pan.X, point.Y * zoom + Bounds.Height / 2 + pan.Y);
-        private string? Hit(Point point) => graphNodes.FirstOrDefault(node => Distance(Screen(positions[node.Path]) - point) < 11)?.Path;
+        private Point Screen(Point point) =>
+            new(point.X * zoom + Bounds.Width / 2 + pan.X, point.Y * zoom + Bounds.Height / 2 + pan.Y);
+
+        private string? Hit(Point point) =>
+            graphNodes.FirstOrDefault(node => Distance(Screen(positions[node.Path]) - point) < 11)?.Path;
 
         protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
             base.OnPointerPressed(e);
-            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) { return; }
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                return;
+            }
             dragStart = e.GetPosition(this);
             previousPointer = dragStart;
             draggedNode = Hit(dragStart);
@@ -132,8 +164,14 @@ public sealed class NativeGraphView : UserControl
             if (dragging)
             {
                 var delta = point - previousPointer;
-                if (draggedNode is null) { pan += delta; }
-                else { positions[draggedNode] += delta / zoom; }
+                if (draggedNode is null)
+                {
+                    pan += delta;
+                }
+                else
+                {
+                    positions[draggedNode] += delta / zoom;
+                }
                 previousPointer = point;
             }
             hover = Hit(point);
@@ -144,7 +182,10 @@ public sealed class NativeGraphView : UserControl
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
         {
             base.OnPointerReleased(e);
-            if (dragging && draggedNode is not null && Distance(e.GetPosition(this) - dragStart) < 4) { open(draggedNode); }
+            if (dragging && draggedNode is not null && Distance(e.GetPosition(this) - dragStart) < 4)
+            {
+                open(draggedNode);
+            }
             dragging = false;
             draggedNode = null;
             e.Pointer.Capture(null);
@@ -172,7 +213,10 @@ public sealed class NativeGraphView : UserControl
                 positions[nodes[index].Path] = new Point(Math.Cos(angle) * radius, Math.Sin(angle) * radius);
             }
             // Bound interactive layout work; larger graphs retain a deterministic native layout.
-            if (nodes.Length > 300) { return positions; }
+            if (nodes.Length > 300)
+            {
+                return positions;
+            }
             for (var iteration = 0; iteration < 60; iteration++)
             {
                 var forces = nodes.ToDictionary(node => node.Path, _ => new Vector(), StringComparer.Ordinal);
@@ -193,7 +237,11 @@ public sealed class NativeGraphView : UserControl
             return positions;
         }
 
-        private static void Repel(NativeGraphNode[] nodes, Dictionary<string, Point> positions, Dictionary<string, Vector> forces)
+        private static void Repel(
+            NativeGraphNode[] nodes,
+            Dictionary<string, Point> positions,
+            Dictionary<string, Vector> forces
+        )
         {
             for (var left = 0; left < nodes.Length; left++)
             {
@@ -215,7 +263,14 @@ internal static class NativePalette
     public static IBrush Brush(string key)
     {
         var application = Application.Current;
-        if (application is not null && application.Resources.TryGetResource(key, application.ActualThemeVariant, out var value) && value is IBrush brush) { return brush; }
+        if (
+            application is not null
+            && application.Resources.TryGetResource(key, application.ActualThemeVariant, out var value)
+            && value is IBrush brush
+        )
+        {
+            return brush;
+        }
         return Brushes.Gray;
     }
 }

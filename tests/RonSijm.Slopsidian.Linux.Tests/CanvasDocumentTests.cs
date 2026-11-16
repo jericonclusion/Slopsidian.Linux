@@ -31,7 +31,10 @@ public sealed class CanvasDocumentTests
         Assert.DoesNotContain("\n", model.Source.Replace("\r\n", "", StringComparison.Ordinal));
         using var document = JsonDocument.Parse(model.Source);
         Assert.Equal("Café", document.RootElement.GetProperty("pluginData").GetProperty("retain")[1].GetString());
-        Assert.Equal(3, document.RootElement.GetProperty("nodes")[0].GetProperty("unknown").GetProperty("value").GetInt32());
+        Assert.Equal(
+            3,
+            document.RootElement.GetProperty("nodes")[0].GetProperty("unknown").GetProperty("value").GetInt32()
+        );
         Assert.True(document.RootElement.GetProperty("edges")[0].GetProperty("unknown").GetBoolean());
         Assert.Equal("# First\r\nKeep me", model.GetCards()[0].Text);
     }
@@ -79,7 +82,10 @@ public sealed class CanvasDocumentTests
         Assert.Contains(edge.To, pasted);
         Assert.Equal(40, model.GetCards().Single(card => card.Id == edge.From).X);
         using var document = JsonDocument.Parse(model.Source);
-        Assert.Equal(3, document.RootElement.GetProperty("nodes")[2].GetProperty("unknown").GetProperty("value").GetInt32());
+        Assert.Equal(
+            3,
+            document.RootElement.GetProperty("nodes")[2].GetProperty("unknown").GetProperty("value").GetInt32()
+        );
     }
 
     [Fact]
@@ -87,7 +93,20 @@ public sealed class CanvasDocumentTests
     {
         var root = JsonNode.Parse(Initial)!.AsObject();
         root["nodes"]![0]!["subpath"] = 42;
-        root["nodes"]!.AsArray().Add(new JsonObject { ["id"] = "future", ["type"] = "future-card", ["x"] = 0, ["y"] = 0, ["width"] = 10, ["height"] = 10, ["pluginState"] = new JsonObject { ["keep"] = true } });
+        root["nodes"]!
+            .AsArray()
+            .Add(
+                new JsonObject
+                {
+                    ["id"] = "future",
+                    ["type"] = "future-card",
+                    ["x"] = 0,
+                    ["y"] = 0,
+                    ["width"] = 10,
+                    ["height"] = 10,
+                    ["pluginState"] = new JsonObject { ["keep"] = true },
+                }
+            );
         var model = new NativeCanvasDocument(root.ToJsonString());
         Assert.Equal("future-card", model.GetCards()[2].Type);
         model.MoveCards(["future"], 5, 5);
@@ -102,7 +121,8 @@ public sealed class CanvasDocumentTests
     [InlineData("{\"nodes\":null,\"edges\":[]}")]
     [InlineData("{\"nodes\":[],\"nodes\":[],\"edges\":[]}")]
     [InlineData("{\"nodes\":[],\"edges\":[],\"unknown\":9007199254740992}")]
-    public void DamagedOrLossyCanvasDocumentsAreRefused(string source) => Assert.Throws<InvalidDataException>(() => new NativeCanvasDocument(source));
+    public void DamagedOrLossyCanvasDocumentsAreRefused(string source) =>
+        Assert.Throws<InvalidDataException>(() => new NativeCanvasDocument(source));
 
     [Theory]
     [InlineData("x", "0.5")]

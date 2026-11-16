@@ -15,12 +15,22 @@ public sealed class CanvasSurfaceTests
     {
         var model = Model();
         using var surface = new NativeCanvasSurface(card => new TextBlock { Text = card.Text }) { SnapToGrid = false };
-        var window = new Window { Content = surface, Width = 900, Height = 640 };
+        var window = new Window
+        {
+            Content = surface,
+            Width = 900,
+            Height = 640,
+        };
         try
         {
             surface.SetData(model.GetCards(), model.GetConnections());
             var commits = 0;
-            surface.CardsMoved += (ids, x, y) => { commits++; model.MoveCards(ids, x, y); surface.SetData(model.GetCards(), model.GetConnections()); };
+            surface.CardsMoved += (ids, x, y) =>
+            {
+                commits++;
+                model.MoveCards(ids, x, y);
+                surface.SetData(model.GetCards(), model.GetConnections());
+            };
             window.Show();
             window.UpdateLayout();
             var frame = surface.GetVisualDescendants().OfType<Border>().Single(border => border.Tag as string == "a");
@@ -36,7 +46,10 @@ public sealed class CanvasSurfaceTests
             Assert.Equal(43, model.GetCards()[0].X);
             Assert.Equal(31, model.GetCards()[0].Y);
         }
-        finally { window.Close(); }
+        finally
+        {
+            window.Close();
+        }
     }
 
     [AvaloniaFact]
@@ -44,12 +57,21 @@ public sealed class CanvasSurfaceTests
     {
         var model = Model();
         using var surface = new NativeCanvasSurface(card => new TextBlock { Text = card.Text }) { SnapToGrid = false };
-        var window = new Window { Content = surface, Width = 900, Height = 640 };
+        var window = new Window
+        {
+            Content = surface,
+            Width = 900,
+            Height = 640,
+        };
         try
         {
             surface.SetData(model.GetCards(), model.GetConnections());
             surface.Select(["a"]);
-            surface.CardResized += (id, width, height) => model.UpdateCard(id, node => { node["width"] = width; node["height"] = height; });
+            surface.CardResized += (id, width, height) => model.UpdateCard(id, node =>
+                {
+                    node["width"] = width;
+                    node["height"] = height;
+                });
             window.Show();
             window.UpdateLayout();
             var frame = surface.GetVisualDescendants().OfType<Border>().Single(border => border.Tag as string == "a");
@@ -64,7 +86,10 @@ public sealed class CanvasSurfaceTests
             Assert.Equal(10, card.X);
             Assert.Equal(20, card.Y);
         }
-        finally { window.Close(); }
+        finally
+        {
+            window.Close();
+        }
     }
 
     [AvaloniaFact]
@@ -72,7 +97,12 @@ public sealed class CanvasSurfaceTests
     {
         var model = Model();
         using var surface = new NativeCanvasSurface(card => new TextBlock { Text = card.Text });
-        var window = new Window { Content = surface, Width = 900, Height = 640 };
+        var window = new Window
+        {
+            Content = surface,
+            Width = 900,
+            Height = 640,
+        };
         try
         {
             surface.SetData(model.GetCards(), model.GetConnections());
@@ -88,56 +118,81 @@ public sealed class CanvasSurfaceTests
             Assert.Empty(model.GetCards());
             Assert.Empty(model.GetConnections());
         }
-        finally { window.Close(); }
+        finally
+        {
+            window.Close();
+        }
     }
 
     [AvaloniaFact]
     public void AutomaticVerticalConnectionCanBeSelectedInsideAGroupWithoutDraggingItsCards()
     {
-        var model = new NativeCanvasDocument("""
+        var model = new NativeCanvasDocument(
+            """
             {"nodes":[
               {"id":"group","type":"group","x":0,"y":0,"width":600,"height":900},
               {"id":"a","type":"text","x":100,"y":100,"width":300,"height":200,"text":"First"},
               {"id":"b","type":"text","x":100,"y":600,"width":300,"height":200,"text":"Second"}
             ],"edges":[{"id":"edge","fromNode":"a","toNode":"b","label":"Continue"}]}
-            """);
+            """
+        );
         using var surface = new NativeCanvasSurface(card => new TextBlock { Text = card.Text });
-        var window = new Window { Content = surface, Width = 900, Height = 640 };
+        var window = new Window
+        {
+            Content = surface,
+            Width = 900,
+            Height = 640,
+        };
         try
         {
             surface.SetData(model.GetCards(), model.GetConnections());
-            window.Show(); window.UpdateLayout();
+            window.Show();
+            window.UpdateLayout();
             var moves = 0;
             surface.CardsMoved += (_, _, _) => moves++;
             foreach (var factor in new[] { 1d, 0.5 })
             {
-                surface.ZoomBy(factor); window.UpdateLayout();
-                var frames = surface.GetVisualDescendants().OfType<Border>().Where(border => border.Tag is string).ToDictionary(border => (string)border.Tag!);
+                surface.ZoomBy(factor);
+                window.UpdateLayout();
+                var frames = surface
+                    .GetVisualDescendants()
+                    .OfType<Border>()
+                    .Where(border => border.Tag is string)
+                    .ToDictionary(border => (string)border.Tag!);
                 var start = frames["a"].TranslatePoint(new Point(150, 200), window)!.Value;
                 var end = frames["b"].TranslatePoint(new Point(150, 0), window)!.Value;
                 var point = new Point((start.X + end.X) / 2 + 6, (start.Y + end.Y) / 2);
-                window.MouseDown(point, MouseButton.Left); window.MouseUp(point, MouseButton.Left);
+                window.MouseDown(point, MouseButton.Left);
+                window.MouseUp(point, MouseButton.Left);
                 Assert.Equal("edge", surface.SelectedConnectionId);
                 Assert.Empty(surface.GetSelection());
             }
             Assert.Equal(0, moves);
             string? edited = null;
             surface.ConnectionEditRequested += id => edited = id;
-            window.KeyPressQwerty(PhysicalKey.Enter, RawInputModifiers.None); window.KeyReleaseQwerty(PhysicalKey.Enter, RawInputModifiers.None);
+            window.KeyPressQwerty(PhysicalKey.Enter, RawInputModifiers.None);
+            window.KeyReleaseQwerty(PhysicalKey.Enter, RawInputModifiers.None);
             Assert.Equal("edge", edited);
             surface.Select(["a"]);
             Assert.Null(surface.SelectedConnectionId);
             surface.SelectConnection("edge");
-            model.RemoveConnection("edge"); surface.SetData(model.GetCards(), model.GetConnections());
+            model.RemoveConnection("edge");
+            surface.SetData(model.GetCards(), model.GetConnections());
             Assert.Null(surface.SelectedConnectionId);
         }
-        finally { window.Close(); }
+        finally
+        {
+            window.Close();
+        }
     }
 
-    private static NativeCanvasDocument Model() => new("""
-        {"nodes":[
-          {"id":"a","type":"text","x":10,"y":20,"width":400,"height":240,"text":"First native card"},
-          {"id":"b","type":"text","x":500,"y":20,"width":400,"height":240,"text":"Second native card"}
-        ],"edges":[{"id":"edge","fromNode":"a","toNode":"b"}]}
-        """);
+    private static NativeCanvasDocument Model() =>
+        new(
+            """
+            {"nodes":[
+              {"id":"a","type":"text","x":10,"y":20,"width":400,"height":240,"text":"First native card"},
+              {"id":"b","type":"text","x":500,"y":20,"width":400,"height":240,"text":"Second native card"}
+            ],"edges":[{"id":"edge","fromNode":"a","toNode":"b"}]}
+            """
+        );
 }

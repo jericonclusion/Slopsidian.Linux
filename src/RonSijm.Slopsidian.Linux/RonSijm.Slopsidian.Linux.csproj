@@ -4,8 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Product>Slopsidian Native</Product>
-    <Version>0.2.0-preview.1</Version>
+    <Product>Slopsidian Linux</Product>
+    <Version>0.2.0-preview.2</Version>
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
@@ -19,14 +19,22 @@
     <ProjectReference Include="../RonSijm.Slopsidian.Core/RonSijm.Slopsidian.Core.csproj" />
     <AvaloniaResource Include="Assets/tux-notebook.png" />
     <AvaloniaResource Include="Assets/icons.svg" Link="Assets/icons.svg" />
-    <Content Include="Assets/icons-LICENSE.txt" Link="licenses/Slopsidian-Icons.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="Assets/icons-LICENSE.txt"
+      Link="licenses/Slopsidian-Icons.txt"
+      CopyToOutputDirectory="PreserveNewest"
+    />
   </ItemGroup>
   <Target Name="PrepareNativePublish" AfterTargets="Publish" Condition="'$(SelfContained)' == 'true'">
-    <Copy SourceFiles="%(ResolvedRuntimePack.PackageDirectory)/LICENSE.TXT"
-          DestinationFiles="$(PublishDir)licenses/%(ResolvedRuntimePack.NuGetPackageId)/LICENSE.txt"
-          Condition="Exists('%(ResolvedRuntimePack.PackageDirectory)/LICENSE.TXT')" />
-    <Copy SourceFiles="%(ResolvedRuntimePack.PackageDirectory)/THIRD-PARTY-NOTICES.TXT"
-          DestinationFiles="$(PublishDir)licenses/%(ResolvedRuntimePack.NuGetPackageId)/THIRD-PARTY-NOTICES.txt"
-          Condition="Exists('%(ResolvedRuntimePack.PackageDirectory)/THIRD-PARTY-NOTICES.TXT')" />
+    <Copy
+      SourceFiles="%(ResolvedRuntimePack.PackageDirectory)/LICENSE.TXT"
+      DestinationFiles="$(PublishDir)licenses/%(ResolvedRuntimePack.NuGetPackageId)/LICENSE.txt"
+      Condition="Exists('%(ResolvedRuntimePack.PackageDirectory)/LICENSE.TXT')"
+    />
+    <Copy
+      SourceFiles="%(ResolvedRuntimePack.PackageDirectory)/THIRD-PARTY-NOTICES.TXT"
+      DestinationFiles="$(PublishDir)licenses/%(ResolvedRuntimePack.NuGetPackageId)/THIRD-PARTY-NOTICES.txt"
+      Condition="Exists('%(ResolvedRuntimePack.PackageDirectory)/THIRD-PARTY-NOTICES.TXT')"
+    />
   </Target>
 </Project>

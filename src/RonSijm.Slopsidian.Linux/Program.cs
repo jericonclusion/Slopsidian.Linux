@@ -14,7 +14,9 @@ internal static class Program
         }
         if (args.Contains("--help"))
         {
-            Console.WriteLine($"Slopsidian Native {NativeVersion.Current} — native Linux workspace\nUsage: slopsidian-native [--vault=/absolute/path] [--profile=/absolute/path] [--version]");
+            Console.WriteLine(
+                $"Slopsidian Linux {NativeVersion.Current} — native Linux workspace\nUsage: slopsidian-linux [--vault=/absolute/path] [--profile=/absolute/path] [--version]"
+            );
             return 0;
         }
         return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);

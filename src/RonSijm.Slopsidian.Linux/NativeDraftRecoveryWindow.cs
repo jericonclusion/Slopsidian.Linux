@@ -12,9 +12,25 @@ public sealed class NativeDraftRecoveryWindow : Window
     private readonly NativeWorkspace workspace;
     private readonly Func<Task> persist;
     private readonly ListBox drafts = new() { Name = "DraftRecoveryList" };
-    private readonly TextBox preview = new() { Name = "DraftRecoveryPreview", IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, FontFamily = new FontFamily("DejaVu Sans Mono, monospace") };
-    private readonly TextBox destination = new() { Name = "DraftRecoveryDestination", PlaceholderText = "New file path inside the vault" };
-    private readonly TextBlock status = new() { Name = "DraftRecoveryStatus", TextWrapping = TextWrapping.Wrap, Classes = { "muted" } };
+    private readonly TextBox preview = new()
+    {
+        Name = "DraftRecoveryPreview",
+        IsReadOnly = true,
+        AcceptsReturn = true,
+        TextWrapping = TextWrapping.Wrap,
+        FontFamily = new FontFamily("DejaVu Sans Mono, monospace"),
+    };
+    private readonly TextBox destination = new()
+    {
+        Name = "DraftRecoveryDestination",
+        PlaceholderText = "New file path inside the vault",
+    };
+    private readonly TextBlock status = new()
+    {
+        Name = "DraftRecoveryStatus",
+        TextWrapping = TextWrapping.Wrap,
+        Classes = { "muted" },
+    };
     private readonly StackPanel confirmation = new() { Spacing = 10, IsVisible = false };
     private readonly Button save;
     private readonly Button discard;
@@ -30,32 +46,68 @@ public sealed class NativeDraftRecoveryWindow : Window
         MinWidth = 760;
         MinHeight = 560;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        var layout = new Grid { Margin = new Thickness(24), RowDefinitions = new RowDefinitions("Auto,*,Auto,Auto,Auto"), RowSpacing = 16 };
-        layout.Children.Add(new StackPanel
+        var layout = new Grid
         {
-            Spacing = 8,
-            Children =
+            Margin = new Thickness(24),
+            RowDefinitions = new RowDefinitions("Auto,*,Auto,Auto,Auto"),
+            RowSpacing = 16,
+        };
+        layout.Children.Add(
+            new StackPanel
             {
-                new TextBlock { Text = "Recover unsaved drafts", FontSize = 24, FontWeight = FontWeight.SemiBold },
-                new TextBlock { Text = "These drafts were retained because their original files are missing. Preview a draft and save it to a free path in this vault.", TextWrapping = TextWrapping.Wrap, Classes = { "muted" } }
+                Spacing = 8,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "Recover unsaved drafts",
+                        FontSize = 24,
+                        FontWeight = FontWeight.SemiBold,
+                    },
+                    new TextBlock
+                    {
+                        Text =
+                            "These drafts were retained because their original files are missing. Preview a draft and save it to a free path in this vault.",
+                        TextWrapping = TextWrapping.Wrap,
+                        Classes = { "muted" },
+                    },
+                },
             }
-        });
+        );
         var content = new Grid { ColumnDefinitions = new ColumnDefinitions("240,*"), ColumnSpacing = 16 };
         content.Children.Add(drafts);
         Grid.SetColumn(preview, 1);
         content.Children.Add(preview);
         Grid.SetRow(content, 1);
         layout.Children.Add(content);
-        var path = new StackPanel { Spacing = 8, Children = { new TextBlock { Text = "Save as" }, destination } };
+        var path = new StackPanel
+        {
+            Spacing = 8,
+            Children =
+            {
+                new TextBlock { Text = "Save as" },
+                destination,
+            },
+        };
         Grid.SetRow(path, 2);
         layout.Children.Add(path);
         var feedback = new StackPanel { Spacing = 12, Children = { status, confirmation } };
         Grid.SetRow(feedback, 3);
         layout.Children.Add(feedback);
-        var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Spacing = 8 };
+        var actions = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Spacing = 8,
+        };
         discard = new Button { Content = "Discard draft…", Name = "DraftRecoveryDiscard" };
         discard.Click += (_, _) => ConfirmDiscard();
-        save = new Button { Content = "Save recovered copy", Name = "DraftRecoverySave", IsDefault = true };
+        save = new Button
+        {
+            Content = "Save recovered copy",
+            Name = "DraftRecoverySave",
+            IsDefault = true,
+        };
         save.Click += async (_, _) => await SaveAsync();
         var close = new Button { Content = "Close", IsCancel = true };
         close.Click += (_, _) => Close();
@@ -68,7 +120,15 @@ public sealed class NativeDraftRecoveryWindow : Window
         AutomationProperties.SetName(drafts, "Retained unsaved drafts");
         AutomationProperties.SetName(preview, "Retained draft text");
         AutomationProperties.SetName(destination, "Recovered file path inside the vault");
-        drafts.ItemTemplate = new FuncDataTemplate<NativeTabState>((draft, _) => new TextBlock { Text = draft?.Path, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6) });
+        drafts.ItemTemplate = new FuncDataTemplate<NativeTabState>(
+            (draft, _) =>
+                new TextBlock
+                {
+                    Text = draft?.Path,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(0, 6),
+                }
+        );
         drafts.SelectionChanged += (_, _) => SelectDraft();
         Closing += (_, args) => args.Cancel = busy;
         Reload();
@@ -80,7 +140,10 @@ public sealed class NativeDraftRecoveryWindow : Window
         drafts.SelectedIndex = drafts.ItemCount > 0 ? 0 : -1;
         SelectDraft();
         var countLabel = drafts.ItemCount == 1 ? "1 retained draft" : drafts.ItemCount + " retained drafts";
-        status.Text = drafts.ItemCount == 0 ? "All retained drafts have been handled." : countLabel + ". Existing files will never be overwritten.";
+        status.Text =
+            drafts.ItemCount == 0
+                ? "All retained drafts have been handled."
+                : countLabel + ". Existing files will never be overwritten.";
     }
 
     private void SelectDraft()
@@ -94,34 +157,57 @@ public sealed class NativeDraftRecoveryWindow : Window
         confirmation.IsVisible = false;
     }
 
-    private Task SaveAsync() => RunAsync(async () =>
-    {
-        if (drafts.SelectedItem is not NativeTabState selected) { return; }
-        var recovered = await workspace.RecoverDraftAsync(selected, destination.Text ?? "");
-        await persist();
-        Reload();
-        status.Text = "Saved " + recovered.Path + ".";
-    });
+    private Task SaveAsync() =>
+        RunAsync(async () =>
+        {
+            if (drafts.SelectedItem is not NativeTabState selected)
+            {
+                return;
+            }
+            var recovered = await workspace.RecoverDraftAsync(selected, destination.Text ?? "");
+            await persist();
+            Reload();
+            status.Text = "Saved " + recovered.Path + ".";
+        });
 
     private void ConfirmDiscard()
     {
-        if (drafts.SelectedItem is not NativeTabState selected || busy) { return; }
-        confirmation.Children.Clear();
-        confirmation.Children.Add(new TextBlock { Text = "Discard the retained draft for " + selected.Path + "?", FontWeight = FontWeight.SemiBold, TextWrapping = TextWrapping.Wrap });
-        var accept = new Button { Content = "Discard this draft", Name = "DraftRecoveryConfirmDiscard", HorizontalAlignment = HorizontalAlignment.Left };
-        accept.Click += async (_, _) => await RunAsync(async () =>
+        if (drafts.SelectedItem is not NativeTabState selected || busy)
         {
-            workspace.DiscardOrphanedDraft(selected);
-            await persist();
-            Reload();
-        });
+            return;
+        }
+        confirmation.Children.Clear();
+        confirmation.Children.Add(
+            new TextBlock
+            {
+                Text = "Discard the retained draft for " + selected.Path + "?",
+                FontWeight = FontWeight.SemiBold,
+                TextWrapping = TextWrapping.Wrap,
+            }
+        );
+        var accept = new Button
+        {
+            Content = "Discard this draft",
+            Name = "DraftRecoveryConfirmDiscard",
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        accept.Click += async (_, _) =>
+            await RunAsync(async () =>
+            {
+                workspace.DiscardOrphanedDraft(selected);
+                await persist();
+                Reload();
+            });
         confirmation.Children.Add(accept);
         confirmation.IsVisible = true;
     }
 
     private async Task RunAsync(Func<Task> operation)
     {
-        if (busy) { return; }
+        if (busy)
+        {
+            return;
+        }
         busy = true;
         drafts.IsEnabled = false;
         destination.IsEnabled = false;
@@ -129,8 +215,15 @@ public sealed class NativeDraftRecoveryWindow : Window
         discard.IsEnabled = false;
         confirmation.IsEnabled = false;
         status.Classes.Remove("error");
-        try { await operation(); }
-        catch (Exception exception) { status.Text = exception.Message; status.Classes.Add("error"); }
+        try
+        {
+            await operation();
+        }
+        catch (Exception exception)
+        {
+            status.Text = exception.Message;
+            status.Classes.Add("error");
+        }
         finally
         {
             busy = false;

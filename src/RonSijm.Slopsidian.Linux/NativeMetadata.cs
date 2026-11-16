@@ -15,55 +15,134 @@ public sealed record NativeHeading(string Title, int Level, int Offset)
 {
     public Thickness Indent => new((Level - 1) * 12, 4, 0, 4);
 }
-public sealed record NativeLink(string Target, int Offset, bool Embedded, int TargetOffset = -1, int TargetLength = 0, bool Markdown = false);
+
+public sealed record NativeLink(
+    string Target,
+    int Offset,
+    bool Embedded,
+    int TargetOffset = -1,
+    int TargetLength = 0,
+    bool Markdown = false
+);
+
 public sealed record NativeFootnote(string Id, string Text, int Offset);
+
 public sealed record NativePropertyValue(string Text, bool Plain);
+
 public sealed record NativeProperty(string Key, string Value, string Kind, string Raw)
 {
     public IReadOnlyList<NativePropertyValue> Values { get; init; } = [];
 }
+
 public sealed record NativeLocation(string Name, string Path, int Offset, string Context = "");
 
 public sealed record NativeMetadata(
-    string Path, IReadOnlyList<NativeHeading> Headings, IReadOnlyList<NativeLink> Links,
-    IReadOnlyList<string> Tags, IReadOnlyList<string> Aliases,
-    IReadOnlyList<NativeFootnote> Footnotes, IReadOnlyList<NativeProperty> Properties, string? PropertyError)
+    string Path,
+    IReadOnlyList<NativeHeading> Headings,
+    IReadOnlyList<NativeLink> Links,
+    IReadOnlyList<string> Tags,
+    IReadOnlyList<string> Aliases,
+    IReadOnlyList<NativeFootnote> Footnotes,
+    IReadOnlyList<NativeProperty> Properties,
+    string? PropertyError
+)
 {
-    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UsePreciseSourceLocation().EnableTrackTrivia().UseYamlFrontMatter().UseAdvancedExtensions().Build();
-    private static readonly Regex WikiLinks = new(@"!?\[\[(?<target>[^\]\r\n|]+)(?:\|[^\]\r\n]*)?\]\]", RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(200));
-    private static readonly Regex TagsPattern = new(@"(?<![\p{L}\p{N}_/#])#(?<tag>[\p{L}\p{N}_/-]+)", RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(200));
-    private static readonly Regex FootnotesPattern = new(@"(?m)^\[\^(?<id>[^\]\r\n]+)\]:[ \t]*(?<text>[^\r\n]*)", RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(200));
+    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
+        .UsePreciseSourceLocation()
+        .EnableTrackTrivia()
+        .UseYamlFrontMatter()
+        .UseAdvancedExtensions()
+        .Build();
+    private static readonly Regex WikiLinks = new(
+        @"!?\[\[(?<target>[^\]\r\n|]+)(?:\|[^\]\r\n]*)?\]\]",
+        RegexOptions.CultureInvariant,
+        TimeSpan.FromMilliseconds(200)
+    );
+    private static readonly Regex TagsPattern = new(
+        @"(?<![\p{L}\p{N}_/#])#(?<tag>[\p{L}\p{N}_/-]+)",
+        RegexOptions.CultureInvariant,
+        TimeSpan.FromMilliseconds(200)
+    );
+    private static readonly Regex FootnotesPattern = new(
+        @"(?m)^\[\^(?<id>[^\]\r\n]+)\]:[ \t]*(?<text>[^\r\n]*)",
+        RegexOptions.CultureInvariant,
+        TimeSpan.FromMilliseconds(200)
+    );
 
     public static NativeMetadata Parse(string path, string content)
     {
         var document = Markdown.Parse(content, Pipeline);
-        var ignored = document.Descendants<CodeBlock>().Where(block => block is not Markdig.Extensions.Yaml.YamlFrontMatterBlock).Select(block => block.Span)
+        var ignored = document
+            .Descendants<CodeBlock>()
+            .Where(block => block is not Markdig.Extensions.Yaml.YamlFrontMatterBlock)
+            .Select(block => block.Span)
             .Concat(document.Descendants<CodeInline>().Select(inline => inline.Span))
-            .Concat(document.Descendants<HtmlBlock>().Select(block => block.Span)).ToArray();
+            .Concat(document.Descendants<HtmlBlock>().Select(block => block.Span))
+            .ToArray();
         var frontmatter = NativeFrontmatter.Read(content);
-        bool OutsideCode(int offset) => !ignored.Any(span => offset >= span.Start && offset <= span.End) && !Escaped(content, offset);
+        bool OutsideCode(int offset) =>
+            !ignored.Any(span => offset >= span.Start && offset <= span.End) && !Escaped(content, offset);
         bool Visible(int offset) => OutsideCode(offset) && (frontmatter is null || offset >= frontmatter.End);
-        var headings = document.Descendants<HeadingBlock>().Select(heading => new NativeHeading(InlineText(heading.Inline), heading.Level, heading.Span.Start)).ToArray();
-        var links = WikiLinks.Matches(content).Where(match => OutsideCode(match.Index))
-            .Select(match => new NativeLink(match.Groups["target"].Value, match.Index, match.Value.StartsWith('!'), match.Groups["target"].Index, match.Groups["target"].Length)).ToList();
-        links.AddRange(document.Descendants<LinkInline>().Where(link => link.Url is not null && (link.Url.StartsWith('/') || !Uri.TryCreate(link.Url, UriKind.Absolute, out _)))
-            .Select(link =>
-            {
-                var span = link.Reference?.UrlSpan ?? link.UrlSpan;
-                return new NativeLink(link.Url!, link.Span.Start, link.IsImage, span.Start, span.Length, true);
-            }));
-        var tags = TagsPattern.Matches(content).Where(match => Visible(match.Index)).Select(match => match.Groups["tag"].Value)
-            .Concat(frontmatter?.Values("tags") ?? []).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToArray();
-        var footnotes = FootnotesPattern.Matches(content).Where(match => Visible(match.Index))
-            .Select(match => new NativeFootnote(match.Groups["id"].Value, match.Groups["text"].Value, match.Index)).ToArray();
-        return new NativeMetadata(path, headings, links, tags, frontmatter?.Values("aliases") ?? [], footnotes,
-            frontmatter?.Properties ?? [], frontmatter?.Error);
+        var headings = document
+            .Descendants<HeadingBlock>()
+            .Select(heading => new NativeHeading(InlineText(heading.Inline), heading.Level, heading.Span.Start))
+            .ToArray();
+        var links = WikiLinks
+            .Matches(content)
+            .Where(match => OutsideCode(match.Index))
+            .Select(match => new NativeLink(
+                match.Groups["target"].Value,
+                match.Index,
+                match.Value.StartsWith('!'),
+                match.Groups["target"].Index,
+                match.Groups["target"].Length
+            ))
+            .ToList();
+        links.AddRange(
+            document
+                .Descendants<LinkInline>()
+                .Where(link =>
+                    link.Url is not null
+                    && (link.Url.StartsWith('/') || !Uri.TryCreate(link.Url, UriKind.Absolute, out _))
+                )
+                .Select(link =>
+                {
+                    var span = link.Reference?.UrlSpan ?? link.UrlSpan;
+                    return new NativeLink(link.Url!, link.Span.Start, link.IsImage, span.Start, span.Length, true);
+                })
+        );
+        var tags = TagsPattern
+            .Matches(content)
+            .Where(match => Visible(match.Index))
+            .Select(match => match.Groups["tag"].Value)
+            .Concat(frontmatter?.Values("tags") ?? [])
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        var footnotes = FootnotesPattern
+            .Matches(content)
+            .Where(match => Visible(match.Index))
+            .Select(match => new NativeFootnote(match.Groups["id"].Value, match.Groups["text"].Value, match.Index))
+            .ToArray();
+        return new NativeMetadata(
+            path,
+            headings,
+            links,
+            tags,
+            frontmatter?.Values("aliases") ?? [],
+            footnotes,
+            frontmatter?.Properties ?? [],
+            frontmatter?.Error
+        );
     }
 
     private static bool Escaped(string content, int offset)
     {
         var count = 0;
-        while (offset > 0 && content[--offset] == '\\') { count++; }
+        while (offset > 0 && content[--offset] == '\\')
+        {
+            count++;
+        }
         return count % 2 != 0;
     }
 
@@ -78,9 +157,15 @@ public sealed record NativeMetadata(
         {
             switch (inline)
             {
-                case LiteralInline literal: result.Append(literal.Content.ToString()); break;
-                case CodeInline code: result.Append(code.Content); break;
-                case ContainerInline child: result.Append(InlineText(child)); break;
+                case LiteralInline literal:
+                    result.Append(literal.Content.ToString());
+                    break;
+                case CodeInline code:
+                    result.Append(code.Content);
+                    break;
+                case ContainerInline child:
+                    result.Append(InlineText(child));
+                    break;
             }
         }
         return result.ToString();
@@ -89,7 +174,11 @@ public sealed record NativeMetadata(
 
 public sealed class NativeFrontmatter
 {
-    private static readonly Regex Pattern = new(@"\A---\r?\n(?<yaml>[\s\S]*?)\r?\n---[ \t]*(?:\r?\n|\z)", RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(200));
+    private static readonly Regex Pattern = new(
+        @"\A---\r?\n(?<yaml>[\s\S]*?)\r?\n---[ \t]*(?:\r?\n|\z)",
+        RegexOptions.CultureInvariant,
+        TimeSpan.FromMilliseconds(200)
+    );
     private readonly Match match;
     private readonly YamlMappingNode? mapping;
     private readonly Dictionary<string, (int Start, int End)> spans = new(StringComparer.Ordinal);
@@ -106,12 +195,19 @@ public sealed class NativeFrontmatter
             var stream = new YamlStream();
             stream.Load(new StringReader(source.Groups["yaml"].Value));
             mapping = stream.Documents.FirstOrDefault()?.RootNode as YamlMappingNode;
-            if (mapping is not null) { (spans, flowClosingOffset) = PropertySpans(source.Groups["yaml"].Value); }
+            if (mapping is not null)
+            {
+                (spans, flowClosingOffset) = PropertySpans(source.Groups["yaml"].Value);
+            }
             if (mapping is null && source.Groups["yaml"].Value.Trim().Length > 0)
             {
                 Error = "Properties must be a YAML mapping. Edit the frontmatter in Source to correct it.";
             }
-            Properties = mapping?.Children.Where(entry => entry.Key is YamlScalarNode).Select(entry => Property((YamlScalarNode)entry.Key, entry.Value)).ToArray() ?? [];
+            Properties = mapping
+                ?.Children.Where(entry => entry.Key is YamlScalarNode)
+                .Select(entry => Property((YamlScalarNode)entry.Key, entry.Value))
+                .ToArray()
+                ?? [];
         }
         catch (Exception exception) when (exception is YamlException or InvalidDataException)
         {
@@ -128,12 +224,18 @@ public sealed class NativeFrontmatter
 
     public IReadOnlyList<string> Values(string key)
     {
-        var entry = mapping?.Children.FirstOrDefault(item => item.Key is YamlScalarNode scalar && scalar.Value == key).Value;
+        var entry = mapping
+            ?.Children.FirstOrDefault(item => item.Key is YamlScalarNode scalar && scalar.Value == key)
+            .Value;
         return entry switch
         {
-            YamlSequenceNode sequence => sequence.Children.OfType<YamlScalarNode>().Select(node => node.Value ?? "").Where(value => value.Length > 0).ToArray(),
+            YamlSequenceNode sequence => sequence
+                .Children.OfType<YamlScalarNode>()
+                .Select(node => node.Value ?? "")
+                .Where(value => value.Length > 0)
+                .ToArray(),
             YamlScalarNode scalar when !string.IsNullOrWhiteSpace(scalar.Value) => [scalar.Value],
-            _ => []
+            _ => [],
         };
     }
 
@@ -147,7 +249,9 @@ public sealed class NativeFrontmatter
         parsed.Load(new StringReader(rawValue));
         if (parsed.Documents.Count != 1 || parsed.Documents[0].RootNode is not (YamlScalarNode or YamlSequenceNode))
         {
-            throw new InvalidOperationException("Use a YAML scalar or a list value. Structured YAML remains editable in Source.");
+            throw new InvalidOperationException(
+                "Use a YAML scalar or a list value. Structured YAML remains editable in Source."
+            );
         }
         var newline = content.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
         var frontmatter = Read(content);
@@ -183,36 +287,56 @@ public sealed class NativeFrontmatter
         var text = value switch
         {
             YamlScalarNode scalar => scalar.Value ?? "",
-            YamlSequenceNode sequence => string.Join(", ", sequence.Children.OfType<YamlScalarNode>().Select(node => node.Value)),
-            _ => "Structured value"
+            YamlSequenceNode sequence => string.Join(
+                ", ",
+                sequence.Children.OfType<YamlScalarNode>().Select(node => node.Value)
+            ),
+            _ => "Structured value",
         };
         var kind = value switch
         {
             YamlSequenceNode => "List",
             YamlMappingNode => "Mapping",
-            YamlScalarNode scalar when scalar.Style == ScalarStyle.Plain && bool.TryParse(scalar.Value, out _) => "Checkbox",
-            YamlScalarNode scalar when scalar.Style == ScalarStyle.Plain && double.TryParse(scalar.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out _) => "Number",
-            _ => "Text"
+            YamlScalarNode scalar when scalar.Style == ScalarStyle.Plain && bool.TryParse(scalar.Value, out _) =>
+                "Checkbox",
+            YamlScalarNode scalar
+                when scalar.Style == ScalarStyle.Plain
+                    && double.TryParse(scalar.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out _) =>
+                "Number",
+            _ => "Text",
         };
         return new NativeProperty(key.Value ?? "", text, kind, raw)
         {
-            Values = PropertyValues(value, new HashSet<YamlNode>(ReferenceEqualityComparer.Instance)).ToArray()
+            Values = PropertyValues(value, new HashSet<YamlNode>(ReferenceEqualityComparer.Instance)).ToArray(),
         };
     }
 
     private static IEnumerable<NativePropertyValue> PropertyValues(YamlNode node, HashSet<YamlNode> seen)
     {
-        if (!seen.Add(node)) { yield break; }
+        if (!seen.Add(node))
+        {
+            yield break;
+        }
         if (node is YamlScalarNode scalar)
         {
-            var plain = scalar.Style == ScalarStyle.Plain && (scalar.Tag.IsEmpty || scalar.Tag.Value != "tag:yaml.org,2002:str");
+            var plain =
+                scalar.Style == ScalarStyle.Plain
+                && (scalar.Tag.IsEmpty || scalar.Tag.Value != "tag:yaml.org,2002:str");
             yield return new NativePropertyValue(scalar.Value ?? "", plain);
             yield break;
         }
-        IEnumerable<YamlNode> children = node switch { YamlSequenceNode sequence => sequence.Children, YamlMappingNode mapping => mapping.Children.Values, _ => [] };
+        IEnumerable<YamlNode> children = node switch
+        {
+            YamlSequenceNode sequence => sequence.Children,
+            YamlMappingNode mapping => mapping.Children.Values,
+            _ => [],
+        };
         foreach (var child in children)
         {
-            foreach (var value in PropertyValues(child, seen)) { yield return value; }
+            foreach (var value in PropertyValues(child, seen))
+            {
+                yield return value;
+            }
         }
     }
 
@@ -228,20 +352,31 @@ public sealed class NativeFrontmatter
             var key = parser.Consume<Scalar>();
             result[key.Value] = ConsumeValue(parser, yaml, 0);
         }
-        int? closing = root.Style == MappingStyle.Flow && parser.Current is not null ? checked((int)parser.Current.Start.Index) : null;
+        int? closing =
+            root.Style == MappingStyle.Flow && parser.Current is not null
+                ? checked((int)parser.Current.Start.Index)
+                : null;
         return (result, closing);
     }
 
     private static (int Start, int End) ConsumeValue(IParser parser, string yaml, int depth)
     {
-        if (depth > 32) { throw new InvalidDataException("Frontmatter nesting exceeds the native property editor limit. Edit it in Source."); }
+        if (depth > 32)
+        {
+            throw new InvalidDataException(
+                "Frontmatter nesting exceeds the native property editor limit. Edit it in Source."
+            );
+        }
         var current = parser.Current ?? throw new InvalidDataException("Unexpected end of frontmatter.");
         var start = checked((int)current.Start.Index);
         var end = checked((int)current.End.Index);
         var sequence = current as SequenceStart;
         var mapping = current as MappingStart;
         parser.MoveNext();
-        if (sequence is null && mapping is null) { return (start, end); }
+        if (sequence is null && mapping is null)
+        {
+            return (start, end);
+        }
         while (parser.Current is not (SequenceEnd or MappingEnd) && parser.Current is not null)
         {
             var child = ConsumeValue(parser, yaml, depth + 1);
@@ -252,7 +387,10 @@ public sealed class NativeFrontmatter
         {
             end = checked((int)parser.Current.End.Index);
             var delimiter = sequence is not null ? ']' : '}';
-            if (end < yaml.Length && yaml[end] == delimiter) { end++; }
+            if (end < yaml.Length && yaml[end] == delimiter)
+            {
+                end++;
+            }
         }
         parser.MoveNext();
         return (start, end);

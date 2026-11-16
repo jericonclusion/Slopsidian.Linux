@@ -7,7 +7,8 @@ public sealed class MetadataTests
     [Fact]
     public void MetadataSeparatesActualLinksTagsAndHeadingsFromCodeAndFrontmatter()
     {
-        var content = "---\naliases: [Alias]\ntags: [project]\n---\n# Heading\n\n[[Other]] and #active `[[Code]] #code`\n\n```md\n# Not a heading\n[[Hidden]] #hidden\n```\n\n[^note]: A footnote.\n";
+        var content =
+            "---\naliases: [Alias]\ntags: [project]\n---\n# Heading\n\n[[Other]] and #active `[[Code]] #code`\n\n```md\n# Not a heading\n[[Hidden]] #hidden\n```\n\n[^note]: A footnote.\n";
         var metadata = NativeMetadata.Parse("note.md", content);
         Assert.Equal("Heading", Assert.Single(metadata.Headings).Title);
         Assert.Equal("Other", Assert.Single(metadata.Links).Target);
@@ -22,7 +23,19 @@ public sealed class MetadataTests
     [InlineData("\r\n")]
     public void PropertyEditPreservesOtherSourceBytesAndComments(string newline)
     {
-        var original = "---" + newline + "title: \"Café 📝\" # retain this comment" + newline + "count: 1e2" + newline + "unknown: { nested: [one, two] }" + newline + "---" + newline + "# Body" + newline;
+        var original =
+            "---"
+            + newline
+            + "title: \"Café 📝\" # retain this comment"
+            + newline
+            + "count: 1e2"
+            + newline
+            + "unknown: { nested: [one, two] }"
+            + newline
+            + "---"
+            + newline
+            + "# Body"
+            + newline;
         var updated = NativeFrontmatter.Set(original, "count", "2.50");
         Assert.Equal(original.Replace("count: 1e2", "count: 2.50", StringComparison.Ordinal), updated);
         var metadata = NativeMetadata.Parse("note.md", updated);
@@ -67,6 +80,7 @@ public sealed class MetadataTests
         Assert.Contains(metadata.Properties, property => property.Key == "#status" && property.Value == "done");
         Assert.EndsWith("---\nBody\n", updated);
     }
+
     [Theory]
     [InlineData("#status")]
     [InlineData("true")]
@@ -89,5 +103,4 @@ public sealed class MetadataTests
         Assert.Equal("/Folder/Target.md#Heading", link.Target);
         Assert.True(link.Markdown);
     }
-
 }

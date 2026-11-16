@@ -4,8 +4,12 @@ namespace RonSijm.Slopsidian.Linux.Tests;
 
 public sealed class RenameTests : IDisposable
 {
-    private readonly string directory = Path.Combine(Path.GetTempPath(), "slopsidian-rename-" + Guid.NewGuid().ToString("N"));
+    private readonly string directory = Path.Combine(
+        Path.GetTempPath(),
+        "slopsidian-rename-" + Guid.NewGuid().ToString("N")
+    );
     private readonly NativeWorkspace workspace = new();
+
     public RenameTests() => Directory.CreateDirectory(directory);
 
     [Fact]
@@ -13,7 +17,10 @@ public sealed class RenameTests : IDisposable
     {
         await workspace.OpenVaultAsync(directory);
         var source = await workspace.CreateTabAsync("Original.md", "# Original\r\n");
-        var link = await workspace.CreateTabAsync("Links.md", "---\nalias: '[[Original]]'\n---\n[[Original#Heading|label]]\n[text](Original.md#Heading)\n`[[Original]]`\n\\[[Original]]\n");
+        var link = await workspace.CreateTabAsync(
+            "Links.md",
+            "---\nalias: '[[Original]]'\n---\n[[Original#Heading|label]]\n[text](Original.md#Heading)\n`[[Original]]`\n\\[[Original]]\n"
+        );
         await workspace.RenameAsync(source, "Folder/Renamed.md", true);
         Assert.Equal("Folder/Renamed.md", source.Path);
         Assert.False(source.IsDirty);
@@ -22,7 +29,13 @@ public sealed class RenameTests : IDisposable
         Assert.Contains("[text](Folder/Renamed.md#Heading)", link.Text);
         Assert.Contains("`[[Original]]`", link.Text);
         Assert.Contains("\\[[Original]]", link.Text);
-        Assert.Equal(link.Text, await File.ReadAllTextAsync(Path.Combine(directory, "Links.md"), cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(
+            link.Text,
+            await File.ReadAllTextAsync(
+                Path.Combine(directory, "Links.md"),
+                cancellationToken: TestContext.Current.CancellationToken
+            )
+        );
         link.Text = "Keep draft";
         await Assert.ThrowsAsync<InvalidOperationException>(() => workspace.RenameAsync(source, "Again.md", true));
         Assert.Equal("Keep draft", link.Text);

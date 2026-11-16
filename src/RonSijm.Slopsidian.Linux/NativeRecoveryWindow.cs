@@ -17,8 +17,18 @@ public sealed class NativeRecoveryWindow : Window
     private readonly ListBox files = new() { Name = "RecoveryFiles" };
     private readonly ListBox versions = new() { Name = "RecoveryVersions" };
     private readonly TextBox preview = Preview("Snapshot preview", "RecoveryPreview");
-    private readonly TextBlock status = new() { Name = "RecoveryStatus", TextWrapping = TextWrapping.Wrap, Classes = { "muted" } };
-    private readonly StackPanel review = new() { Name = "RecoveryReview", Spacing = 10, IsVisible = false };
+    private readonly TextBlock status = new()
+    {
+        Name = "RecoveryStatus",
+        TextWrapping = TextWrapping.Wrap,
+        Classes = { "muted" },
+    };
+    private readonly StackPanel review = new()
+    {
+        Name = "RecoveryReview",
+        Spacing = 10,
+        IsVisible = false,
+    };
     private readonly StackPanel toolbar = new() { Orientation = Orientation.Horizontal, Spacing = 8 };
     private readonly Button restore;
     private NativeRecoveryIndex? index;
@@ -36,16 +46,34 @@ public sealed class NativeRecoveryWindow : Window
         MinWidth = 860;
         MinHeight = 620;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        var layout = new Grid { Margin = new Thickness(24), RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*,Auto,Auto"), RowSpacing = 14 };
-        layout.Children.Add(new StackPanel
+        var layout = new Grid
         {
-            Spacing = 8,
-            Children =
+            Margin = new Thickness(24),
+            RowDefinitions = new RowDefinitions("Auto,Auto,Auto,*,Auto,Auto"),
+            RowSpacing = 14,
+        };
+        layout.Children.Add(
+            new StackPanel
             {
-                new TextBlock { Text = "File recovery", FontSize = 24, FontWeight = FontWeight.SemiBold },
-                new TextBlock { Text = "Saved Markdown, Canvas and Bases versions from this vault. Unsaved drafts remain in the native app profile.", TextWrapping = TextWrapping.Wrap, Classes = { "muted" } }
+                Spacing = 8,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "File recovery",
+                        FontSize = 24,
+                        FontWeight = FontWeight.SemiBold,
+                    },
+                    new TextBlock
+                    {
+                        Text =
+                            "Saved Markdown, Canvas and Bases versions from this vault. Unsaved drafts remain in the native app profile.",
+                        TextWrapping = TextWrapping.Wrap,
+                        Classes = { "muted" },
+                    },
+                },
             }
-        });
+        );
         toolbar.Children.Add(Action("Snapshot current file", "RecoveryCapture", CaptureCurrentAsync));
         toolbar.Children.Add(Action("Reload history", "RecoveryReload", ReloadAsync));
         toolbar.Children.Add(Action("Clear history…", "RecoveryClear", ConfirmClearAsync));
@@ -65,7 +93,12 @@ public sealed class NativeRecoveryWindow : Window
         columns.Children.Add(snapshot);
         Add(layout, columns, 3);
         Add(layout, review, 4);
-        var footer = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, HorizontalAlignment = HorizontalAlignment.Right };
+        var footer = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 8,
+            HorizontalAlignment = HorizontalAlignment.Right,
+        };
         footer.Children.Add(Action("Copy snapshot", "RecoveryCopy", CopyAsync));
         restore = Action("Review restore…", "RecoveryPrepare", ReviewAsync);
         footer.Children.Add(restore);
@@ -77,13 +110,24 @@ public sealed class NativeRecoveryWindow : Window
         AutomationProperties.SetName(search, "Search file history");
         AutomationProperties.SetName(files, "Files with saved versions");
         AutomationProperties.SetName(versions, "Saved versions");
-        files.ItemTemplate = new FuncDataTemplate<string>((path, _) => new TextBlock { Text = path, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6) });
-        versions.ItemTemplate = new FuncDataTemplate<NativeRecoverySnapshot>((entry, _) => new TextBlock
-        {
-            Text = SnapshotLabel(entry),
-            TextWrapping = TextWrapping.Wrap,
-            Margin = new Thickness(0, 6)
-        });
+        files.ItemTemplate = new FuncDataTemplate<string>(
+            (path, _) =>
+                new TextBlock
+                {
+                    Text = path,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(0, 6),
+                }
+        );
+        versions.ItemTemplate = new FuncDataTemplate<NativeRecoverySnapshot>(
+            (entry, _) =>
+                new TextBlock
+                {
+                    Text = SnapshotLabel(entry),
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(0, 6),
+                }
+        );
         files.SelectionChanged += (_, _) => ShowVersions();
         versions.SelectionChanged += (_, _) => ShowSnapshot();
         search.TextChanged += (_, _) => FilterFiles();
@@ -91,7 +135,11 @@ public sealed class NativeRecoveryWindow : Window
         Closing += (_, args) => args.Cancel = busy;
     }
 
-    private static void Add(Grid layout, Control child, int row) { Grid.SetRow(child, row); layout.Children.Add(child); }
+    private static void Add(Grid layout, Control child, int row)
+    {
+        Grid.SetRow(child, row);
+        layout.Children.Add(child);
+    }
 
     private Button Action(string title, string name, Func<Task> operation)
     {
@@ -102,13 +150,27 @@ public sealed class NativeRecoveryWindow : Window
 
     private async Task RunAsync(Func<Task> operation)
     {
-        if (busy) { return; }
+        if (busy)
+        {
+            return;
+        }
         busy = true;
         SetEnabled(false);
         status.Classes.Remove("error");
-        try { await operation(); }
-        catch (Exception exception) { status.Text = exception.Message; status.Classes.Add("error"); }
-        finally { busy = false; SetEnabled(true); }
+        try
+        {
+            await operation();
+        }
+        catch (Exception exception)
+        {
+            status.Text = exception.Message;
+            status.Classes.Add("error");
+        }
+        finally
+        {
+            busy = false;
+            SetEnabled(true);
+        }
     }
 
     private void SetEnabled(bool enabled)
@@ -126,13 +188,22 @@ public sealed class NativeRecoveryWindow : Window
         index = await workspace.Recovery.ListAsync();
         FilterFiles();
         var countLabel = index.Snapshots.Count == 1 ? "1 saved version" : index.Snapshots.Count + " saved versions";
-        status.Text = index.Snapshots.Count == 0 ? "No snapshots yet. Open or save a file, or save a snapshot manually." : countLabel + ". Select a file and version to preview.";
+        status.Text =
+            index.Snapshots.Count == 0
+                ? "No snapshots yet. Open or save a file, or save a snapshot manually."
+                : countLabel + ". Select a file and version to preview.";
     }
 
     private void FilterFiles()
     {
         var previous = files.SelectedItem as string ?? preferredPath;
-        var paths = index?.Snapshots.Select(entry => entry.Path).Distinct(StringComparer.Ordinal).Where(path => path.Contains(search.Text ?? "", StringComparison.OrdinalIgnoreCase)).Order(StringComparer.Ordinal).ToArray() ?? [];
+        var paths = index
+            ?.Snapshots.Select(entry => entry.Path)
+            .Distinct(StringComparer.Ordinal)
+            .Where(path => path.Contains(search.Text ?? "", StringComparison.OrdinalIgnoreCase))
+            .Order(StringComparer.Ordinal)
+            .ToArray()
+            ?? [];
         files.ItemsSource = paths;
         files.SelectedItem = paths.Contains(previous, StringComparer.Ordinal) ? previous : paths.FirstOrDefault();
         ShowVersions();
@@ -159,25 +230,57 @@ public sealed class NativeRecoveryWindow : Window
 
     private async Task CaptureCurrentAsync()
     {
-        var path = workspace.Document?.File.Path ?? throw new InvalidOperationException("Open a file before saving a snapshot.");
+        var path = workspace.Document?.File.Path
+            ?? throw new InvalidOperationException("Open a file before saving a snapshot.");
         var result = await workspace.Recovery.CaptureAsync(path, force: true);
         await ReloadAsync();
-        status.Text = result switch { NativeCaptureResult.Added => "Snapshot saved.", null => "The current file no longer exists.", _ => "The saved file matches its latest snapshot." };
+        status.Text = result switch
+        {
+            NativeCaptureResult.Added => "Snapshot saved.",
+            null => "The current file no longer exists.",
+            _ => "The saved file matches its latest snapshot.",
+        };
     }
 
     private async Task CopyAsync()
     {
-        if (selected is not null && Clipboard is not null) { await Clipboard.SetTextAsync(selected.Content); status.Text = "Snapshot copied."; }
+        if (selected is not null && Clipboard is not null)
+        {
+            await Clipboard.SetTextAsync(selected.Content);
+            status.Text = "Snapshot copied.";
+        }
     }
 
     private async Task ReviewAsync()
     {
-        if (selected is null) { return; }
+        if (selected is null)
+        {
+            return;
+        }
         var plan = await workspace.Recovery.ReviewAsync(selected.Id);
         preview.Text = plan.Snapshot.Content;
         review.Children.Clear();
-        review.Children.Add(new TextBlock { Text = plan.Before is null ? "Recreate " + plan.Snapshot.Path + "?" : "Replace " + plan.Snapshot.Path + "?", FontSize = 18, FontWeight = FontWeight.SemiBold, TextWrapping = TextWrapping.Wrap });
-        review.Children.Add(new TextBlock { Text = plan.Before is null ? "The original path will be recreated. A file appearing there invalidates this review." : "Current saved text is shown below. A recovery copy will be saved before replacement. External changes invalidate this review.", TextWrapping = TextWrapping.Wrap, Classes = { "muted" } });
+        review.Children.Add(
+            new TextBlock
+            {
+                Text = plan.Before is null
+                    ? "Recreate " + plan.Snapshot.Path + "?"
+                    : "Replace " + plan.Snapshot.Path + "?",
+                FontSize = 18,
+                FontWeight = FontWeight.SemiBold,
+                TextWrapping = TextWrapping.Wrap,
+            }
+        );
+        review.Children.Add(
+            new TextBlock
+            {
+                Text = plan.Before is null
+                    ? "The original path will be recreated. A file appearing there invalidates this review."
+                    : "Current saved text is shown below. A recovery copy will be saved before replacement. External changes invalidate this review.",
+                TextWrapping = TextWrapping.Wrap,
+                Classes = { "muted" },
+            }
+        );
         if (plan.Before is not null)
         {
             var before = Preview("Current saved text before restore", "RecoveryBefore");
@@ -185,12 +288,16 @@ public sealed class NativeRecoveryWindow : Window
             before.Height = 130;
             review.Children.Add(before);
         }
-        var confirm = Action(plan.Before is null ? "Recreate file" : "Restore this version", "RecoveryConfirm", async () =>
-        {
-            await workspace.Recovery.RestoreAsync(plan);
-            await ReloadAsync();
-            status.Text = "Restored " + plan.Snapshot.Path + ".";
-        });
+        var confirm = Action(
+            plan.Before is null ? "Recreate file" : "Restore this version",
+            "RecoveryConfirm",
+            async () =>
+            {
+                await workspace.Recovery.RestoreAsync(plan);
+                await ReloadAsync();
+                status.Text = "Restored " + plan.Snapshot.Path + ".";
+            }
+        );
         review.Children.Add(confirm);
         review.IsVisible = true;
         status.Text = "Review the snapshot and current saved text before restoring.";
@@ -198,36 +305,68 @@ public sealed class NativeRecoveryWindow : Window
 
     private Task ConfirmClearAsync()
     {
-        if (index is null) { return Task.CompletedTask; }
+        if (index is null)
+        {
+            return Task.CompletedTask;
+        }
         var confirmation = index;
         review.Children.Clear();
-        review.Children.Add(new TextBlock { Text = "Clear all " + confirmation.Snapshots.Count + " saved versions?", FontSize = 18, FontWeight = FontWeight.SemiBold });
-        review.Children.Add(new TextBlock { Text = "This removes saved-file history from this vault. Your notes and unsaved drafts are retained.", TextWrapping = TextWrapping.Wrap });
+        review.Children.Add(
+            new TextBlock
+            {
+                Text = "Clear all " + confirmation.Snapshots.Count + " saved versions?",
+                FontSize = 18,
+                FontWeight = FontWeight.SemiBold,
+            }
+        );
+        review.Children.Add(
+            new TextBlock
+            {
+                Text = "This removes saved-file history from this vault. Your notes and unsaved drafts are retained.",
+                TextWrapping = TextWrapping.Wrap,
+            }
+        );
         review.Children.Add(Action("Clear saved history", "RecoveryConfirmClear", async () =>
-        {
-            await workspace.Recovery.ClearAsync(confirmation);
-            await ReloadAsync();
-            status.Text = "Saved-file history cleared.";
-        }));
+            {
+                await workspace.Recovery.ClearAsync(confirmation);
+                await ReloadAsync();
+                status.Text = "Saved-file history cleared.";
+            }));
         review.IsVisible = true;
         return Task.CompletedTask;
     }
 
     private static TextBox Preview(string label, string name)
     {
-        var input = new TextBox { Name = name, IsReadOnly = true, AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, FontFamily = new FontFamily("Cascadia Mono, DejaVu Sans Mono, monospace") };
+        var input = new TextBox
+        {
+            Name = name,
+            IsReadOnly = true,
+            AcceptsReturn = true,
+            TextWrapping = TextWrapping.Wrap,
+            FontFamily = new FontFamily("Cascadia Mono, DejaVu Sans Mono, monospace"),
+        };
         AutomationProperties.SetName(input, label);
         return input;
     }
 
     private static string SnapshotLabel(NativeRecoverySnapshot? entry)
     {
-        if (entry is null) { return ""; }
+        if (entry is null)
+        {
+            return "";
+        }
         var encoding = entry.HasBom ? " · BOM" : "";
-        return Timestamp(entry.Timestamp) + "\n" + Encoding.UTF8.GetByteCount(entry.Content) + " bytes · " + entry.Reason + encoding;
+        return Timestamp(entry.Timestamp)
+            + "\n"
+            + Encoding.UTF8.GetByteCount(entry.Content)
+            + " bytes · "
+            + entry.Reason
+            + encoding;
     }
 
-    private static string Timestamp(long value) => value <= DateTimeOffset.MaxValue.ToUnixTimeMilliseconds()
-        ? DateTimeOffset.FromUnixTimeMilliseconds(value).ToLocalTime().ToString("g", CultureInfo.CurrentCulture)
-        : value.ToString(CultureInfo.CurrentCulture);
+    private static string Timestamp(long value) =>
+        value <= DateTimeOffset.MaxValue.ToUnixTimeMilliseconds()
+            ? DateTimeOffset.FromUnixTimeMilliseconds(value).ToLocalTime().ToString("g", CultureInfo.CurrentCulture)
+            : value.ToString(CultureInfo.CurrentCulture);
 }

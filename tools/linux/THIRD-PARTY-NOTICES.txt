@@ -1,4 +1,4 @@
-Slopsidian Native uses the existing Slopsidian vault services and these dependencies:
+Slopsidian Linux uses the existing Slopsidian vault services and these dependencies:
 
 Avalonia 12.1.6 — MIT, Copyright AvaloniaUI OÜ and contributors
 https://github.com/AvaloniaUI/Avalonia/blob/12.1.6/licence.md
@@ -19,7 +19,7 @@ https://github.com/xoofx/markdig/blob/0.41.3/license.txt
 
 .NET 10 — MIT and third-party notices
 Bundled runtime notices are in app/licenses/Microsoft.*.App.Runtime.*/
-(or the installation's /usr/lib/slopsidian-native/licenses directory).
+(or the installation's /usr/lib/slopsidian-linux/licenses directory).
 
 SkiaSharp 3.119.4 and HarfBuzzSharp 8.3.1.3 — MIT and upstream third-party licenses
 https://github.com/mono/SkiaSharp/blob/v3.119.4/LICENSE.txt

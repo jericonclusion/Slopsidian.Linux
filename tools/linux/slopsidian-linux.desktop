@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Slopsidian Native
+Name=Slopsidian Linux
 Comment=Edit local Markdown vaults
-Exec=slopsidian-native
-Icon=slopsidian-native
+Exec=slopsidian-linux
+Icon=slopsidian-linux
 Terminal=false
 Categories=Utility;TextEditor;
 Keywords=Markdown;Notes;Obsidian;Vault;

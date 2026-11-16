@@ -6,6 +6,7 @@ namespace RonSijm.Slopsidian.Linux;
 public sealed class NativeTab : INotifyPropertyChanged
 {
     private string text;
+
     public NativeTab(VaultDocument document)
     {
         Document = document;
@@ -34,8 +35,15 @@ public sealed class NativeTab : INotifyPropertyChanged
     public int Caret { get; set; }
     public double ScrollOffset { get; set; }
     public string ViewMode { get; set; }
-    public bool Reading { get => ViewMode == "reading"; set => ViewMode = value ? "reading" : "source"; }
-    public static string InitialMode(string extension) => extension.Equals("canvas", StringComparison.OrdinalIgnoreCase) ? "canvas" : "source";
+    public bool Reading
+    {
+        get => ViewMode == "reading";
+        set => ViewMode = value ? "reading" : "source";
+    }
+
+    public static string InitialMode(string extension) =>
+        extension.Equals("canvas", StringComparison.OrdinalIgnoreCase) ? "canvas" : "source";
+
     public bool Pinned { get; set; }
     public bool ExternalChange { get; set; }
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -13,7 +13,8 @@ namespace RonSijm.Slopsidian.Linux.Tests;
 
 public static class TestAppBuilder
 {
-    public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions());
+    public static AppBuilder BuildAvaloniaApp() =>
+        AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions());
 }
 
 public sealed class WindowTests
@@ -50,7 +51,12 @@ public sealed class WindowTests
             window.UpdateLayout();
             Assert.True(window.FindControl<Button>("NewNoteButton")!.Bounds.Width > 0);
         }
-        finally { window.Workspace.DiscardEdits(); window.Close(); Directory.Delete(directory, true); }
+        finally
+        {
+            window.Workspace.DiscardEdits();
+            window.Close();
+            Directory.Delete(directory, true);
+        }
     }
 
     [AvaloniaFact]
@@ -86,13 +92,19 @@ public sealed class WindowTests
             Assert.Equal(3, editor.CaretOffset);
             editor.Undo();
             Assert.Equal("First saved", editor.Text);
-            Assert.Equal("Second saved second draft", window.Workspace.Tabs.Single(tab => tab.Path == "Second.md").Text);
+            Assert.Equal(
+                "Second saved second draft",
+                window.Workspace.Tabs.Single(tab => tab.Path == "Second.md").Text
+            );
             Assert.Equal("First saved", await File.ReadAllTextAsync(Path.Combine(directory, "First.md")));
             Assert.Equal("Second saved", await File.ReadAllTextAsync(Path.Combine(directory, "Second.md")));
         }
         finally
         {
-            foreach (var tab in window.Workspace.Tabs) { tab.Reload(tab.Document); }
+            foreach (var tab in window.Workspace.Tabs)
+            {
+                tab.Reload(tab.Document);
+            }
             window.Close();
             Directory.Delete(directory, true);
         }
@@ -121,14 +133,20 @@ public sealed class WindowTests
             tree.SelectedItem = files.Single(file => file.Path == "Second.md");
             await WaitForAsync(() => window.Workspace.ActiveTab?.Path == "Second.md");
             firstBuffer.Insert(firstBuffer.TextLength, " changed by its native view");
-            Assert.Equal("First saved changed by its native view", window.Workspace.Tabs.Single(tab => tab.Path == "First.md").Text);
+            Assert.Equal(
+                "First saved changed by its native view",
+                window.Workspace.Tabs.Single(tab => tab.Path == "First.md").Text
+            );
             Assert.Equal("Second saved", window.Workspace.Text);
             Assert.Equal("Second saved", editor.Text);
             Assert.Equal("First saved", await File.ReadAllTextAsync(Path.Combine(directory, "First.md")));
         }
         finally
         {
-            foreach (var tab in window.Workspace.Tabs) { tab.Reload(tab.Document); }
+            foreach (var tab in window.Workspace.Tabs)
+            {
+                tab.Reload(tab.Document);
+            }
             window.Close();
             Directory.Delete(directory, true);
         }
@@ -142,16 +160,28 @@ public sealed class WindowTests
         {
             window.Show();
             window.UpdateLayout();
-            var buttons = window.GetVisualDescendants().OfType<Button>().Where(button => button.Content is NativeIcon).ToArray();
+            var buttons = window
+                .GetVisualDescendants()
+                .OfType<Button>()
+                .Where(button => button.Content is NativeIcon)
+                .ToArray();
             Assert.True(buttons.Length > 5);
-            Assert.All(buttons, button => Assert.False(string.IsNullOrWhiteSpace(Avalonia.Automation.AutomationProperties.GetName(button))));
+            Assert.All(buttons, button =>
+                Assert.False(string.IsNullOrWhiteSpace(Avalonia.Automation.AutomationProperties.GetName(button)))
+            );
         }
-        finally { window.Close(); }
+        finally
+        {
+            window.Close();
+        }
     }
 
     private static async Task WaitForAsync(Func<bool> condition)
     {
-        for (var attempt = 0; !condition() && attempt < 500; attempt++) { await Task.Delay(10); }
+        for (var attempt = 0; !condition() && attempt < 500; attempt++)
+        {
+            await Task.Delay(10);
+        }
         Assert.True(condition());
     }
 
@@ -159,9 +189,15 @@ public sealed class WindowTests
     public void ReadingViewUsesNativeControlsAndDoesNotExecuteHtml()
     {
         var content = new StackPanel();
-        NativeMarkdown.Render(content, "# Heading\n\nA **bold** paragraph.\n\n<script>alert('no')</script>\n\n- Item\n", _ => throw new Exception("Links must require a click."));
+        NativeMarkdown.Render(
+            content,
+            "# Heading\n\nA **bold** paragraph.\n\n<script>alert('no')</script>\n\n- Item\n",
+            _ => throw new Exception("Links must require a click.")
+        );
         Assert.Contains(content.Children, control => control is SelectableTextBlock text && text.FontSize == 30);
-        Assert.Contains(content.Children, control => control is SelectableTextBlock text && text.Text?.Contains("<script>") == true);
+        Assert.Contains(content.Children, control =>
+            control is SelectableTextBlock text && text.Text?.Contains("<script>") == true
+        );
         Assert.DoesNotContain(content.GetVisualDescendants(), control => control.GetType().Name.Contains("WebView"));
     }
 
@@ -179,12 +215,25 @@ public sealed class WindowTests
     [InlineData("[Note](Folder/Note%2520name.md)", "Folder/Note%2520name.md", true)]
     [InlineData("[[Folder/Note%20name]]", "Folder/Note%20name", false)]
     [InlineData("[Web](https://example.test/?q=a%26b)", "https://example.test/?q=a%26b", true)]
-    public void ReadingKeepsLinkKindsAndEncodedTargetsForTheNavigator(string markdown, string expected, bool markdownLink)
+    public void ReadingKeepsLinkKindsAndEncodedTargetsForTheNavigator(
+        string markdown,
+        string expected,
+        bool markdownLink
+    )
     {
         string? target = null;
         var fromMarkdown = false;
         var content = new StackPanel();
-        NativeMarkdown.Render(content, markdown, link => target = link, link => { target = link; fromMarkdown = true; });
+        NativeMarkdown.Render(
+            content,
+            markdown,
+            link => target = link,
+            link =>
+            {
+                target = link;
+                fromMarkdown = true;
+            }
+        );
         var paragraph = Assert.IsType<SelectableTextBlock>(Assert.Single(content.Children));
         var link = Assert.Single(paragraph.Inlines!.OfType<InlineUIContainer>());
         Assert.IsType<Button>(link.Child).RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));

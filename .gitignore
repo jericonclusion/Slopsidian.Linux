@@ -1,18 +1,20 @@
-node_modules/
+# Local builds, profiles and verification fixtures
 .runtime/
-/.local/
+.local/
+**/bin/
+**/obj/
+
+# Editor state
 .vs/
+.idea/
 *.suo
 *.user
 *.sln.DotSettings.user
-**/bin/
-**/obj/
-src/RonSijm.Slopsidian/wwwroot/js/
-src/RonSijm.Slopsidian/wwwroot/core-verification.json
 
-# Local reference material; documentation links may point here on this machine.
-/Docs/Private/
-/Reference/
+# Local reference material
+Docs/Private/
+Reference/
+.csharpier_cache
 
-# Generated local verification archives; keep written engineering summaries tracked.
-/Docs/Engineering/RoadmapIntegration/
+# Local native screenshot review inputs
+.impeccable/review/

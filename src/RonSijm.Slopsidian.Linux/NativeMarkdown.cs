@@ -24,24 +24,41 @@ public static class NativeMarkdown
         return builder.Build();
     }
 
-    public static void Render(Panel target, string markdown, Action<string> navigate, Action<string>? navigateMarkdown = null)
+    public static void Render(
+        Panel target,
+        string markdown,
+        Action<string> navigate,
+        Action<string>? navigateMarkdown = null
+    )
     {
         target.Children.Clear();
         // Work on a bounded reading view; editing and saving always retain the entire document.
         if (markdown.Length > 1_000_000)
         {
-            target.Children.Add(new TextBlock { Text = "This note is too large for the reading view. Use Source to edit it.", TextWrapping = TextWrapping.Wrap });
+            target.Children.Add(
+                new TextBlock
+                {
+                    Text = "This note is too large for the reading view. Use Source to edit it.",
+                    TextWrapping = TextWrapping.Wrap,
+                }
+            );
             return;
         }
         var navigation = new LinkNavigation(navigate, navigateMarkdown ?? navigate);
-        foreach (var block in Markdown.Parse(markdown, Pipeline).Where(block => block is not Markdig.Extensions.Yaml.YamlFrontMatterBlock))
+        foreach (
+            var block in Markdown
+                .Parse(markdown, Pipeline)
+                .Where(block => block is not Markdig.Extensions.Yaml.YamlFrontMatterBlock)
+        )
         {
             target.Children.Add(RenderBlock(block, navigation));
         }
 
         if (target.Children.Count == 0)
         {
-            target.Children.Add(new TextBlock { Text = "This note is empty. Start writing in the Source tab.", Foreground = Muted });
+            target.Children.Add(
+                new TextBlock { Text = "This note is empty. Start writing in the Source tab.", Foreground = Muted }
+            );
         }
     }
 
@@ -51,7 +68,13 @@ public static class NativeMarkdown
         {
             case HeadingBlock heading:
                 var title = Text(heading.Inline, navigate);
-                title.FontSize = heading.Level switch { 1 => 30, 2 => 24, 3 => 20, _ => 17 };
+                title.FontSize = heading.Level switch
+                {
+                    1 => 30,
+                    2 => 24,
+                    3 => 20,
+                    _ => 17,
+                };
                 title.LineHeight = title.FontSize * 1.4;
                 title.FontWeight = FontWeight.SemiBold;
                 title.Margin = new Thickness(0, 16, 0, 2);
@@ -64,7 +87,13 @@ public static class NativeMarkdown
                     Background = NativePalette.Brush("SidebarBrush"),
                     CornerRadius = new CornerRadius(4),
                     Padding = new Thickness(16),
-                    Child = new SelectableTextBlock { Text = code.Lines.ToString(), FontFamily = new FontFamily("DejaVu Sans Mono, monospace"), FontSize = 14, TextWrapping = TextWrapping.Wrap }
+                    Child = new SelectableTextBlock
+                    {
+                        Text = code.Lines.ToString(),
+                        FontFamily = new FontFamily("DejaVu Sans Mono, monospace"),
+                        FontSize = 14,
+                        TextWrapping = TextWrapping.Wrap,
+                    },
                 };
             case QuoteBlock quote:
                 var quoted = new StackPanel { Spacing = 10, Margin = new Thickness(16, 0, 0, 0) };
@@ -77,10 +106,20 @@ public static class NativeMarkdown
             case ListBlock list:
                 return RenderList(list, navigate);
             case ThematicBreakBlock:
-                return new Border { Height = 1, Background = NativePalette.Brush("DividerBrush"), Margin = new Thickness(0, 12) };
+                return new Border
+                {
+                    Height = 1,
+                    Background = NativePalette.Brush("DividerBrush"),
+                    Margin = new Thickness(0, 12),
+                };
             case HtmlBlock html:
                 // Raw HTML is visible text; never execute or fetch it.
-                return new SelectableTextBlock { Text = html.Lines.ToString(), Foreground = Muted, TextWrapping = TextWrapping.Wrap };
+                return new SelectableTextBlock
+                {
+                    Text = html.Lines.ToString(),
+                    Foreground = Muted,
+                    TextWrapping = TextWrapping.Wrap,
+                };
             default:
                 return new SelectableTextBlock { Text = block.ToString(), TextWrapping = TextWrapping.Wrap };
         }
@@ -93,7 +132,14 @@ public static class NativeMarkdown
         foreach (var item in list.OfType<ListItemBlock>())
         {
             var row = new Grid { ColumnDefinitions = new ColumnDefinitions("28,*") };
-            row.Children.Add(new TextBlock { Text = list.IsOrdered ? $"{number++}." : "•", Foreground = Muted, FontSize = 16 });
+            row.Children.Add(
+                new TextBlock
+                {
+                    Text = list.IsOrdered ? $"{number++}." : "•",
+                    Foreground = Muted,
+                    FontSize = 16,
+                }
+            );
             var contents = new StackPanel { Spacing = 8 };
             Grid.SetColumn(contents, 1);
             foreach (var child in item)
@@ -109,7 +155,12 @@ public static class NativeMarkdown
 
     private static SelectableTextBlock Text(ContainerInline? source, LinkNavigation navigate)
     {
-        var text = new SelectableTextBlock { FontSize = 16, LineHeight = 26, TextWrapping = TextWrapping.Wrap };
+        var text = new SelectableTextBlock
+        {
+            FontSize = 16,
+            LineHeight = 26,
+            TextWrapping = TextWrapping.Wrap,
+        };
         if (source is not null)
         {
             AddInlines(text.Inlines!, source, navigate);
@@ -134,7 +185,7 @@ public static class NativeMarkdown
                         Foreground = Accent,
                         Padding = new Thickness(0),
                         Background = Brushes.Transparent,
-                        BorderThickness = new Thickness(0)
+                        BorderThickness = new Thickness(0),
                     };
                     ToolTip.SetTip(wikiButton, wiki.Target);
                     wikiButton.Click += (_, _) => navigate.Wiki(wiki.Target);
@@ -144,7 +195,13 @@ public static class NativeMarkdown
                     destination.Add(new Run("\n"));
                     break;
                 case CodeInline code:
-                    destination.Add(new Run(code.Content) { FontFamily = new FontFamily("DejaVu Sans Mono, monospace"), Background = NativePalette.Brush("SidebarBrush") });
+                    destination.Add(
+                        new Run(code.Content)
+                        {
+                            FontFamily = new FontFamily("DejaVu Sans Mono, monospace"),
+                            Background = NativePalette.Brush("SidebarBrush"),
+                        }
+                    );
                     break;
                 case EmphasisInline emphasis:
                     var span = new Span();
@@ -161,9 +218,21 @@ public static class NativeMarkdown
                     destination.Add(span);
                     break;
                 case LinkInline link when !link.IsImage:
-                    var label = new TextBlock { Foreground = Accent, TextDecorations = TextDecorations.Underline, TextWrapping = TextWrapping.Wrap };
+                    var label = new TextBlock
+                    {
+                        Foreground = Accent,
+                        TextDecorations = TextDecorations.Underline,
+                        TextWrapping = TextWrapping.Wrap,
+                    };
                     AddInlines(label.Inlines!, link, navigate);
-                    var button = new Button { Content = label, Padding = new Thickness(0), Background = Brushes.Transparent, BorderThickness = new Thickness(0), Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand) };
+                    var button = new Button
+                    {
+                        Content = label,
+                        Padding = new Thickness(0),
+                        Background = Brushes.Transparent,
+                        BorderThickness = new Thickness(0),
+                        Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    };
                     ToolTip.SetTip(button, link.Url);
                     button.Click += (_, _) => navigate.Markdown(link.Url ?? "");
                     destination.Add(new InlineUIContainer(button));

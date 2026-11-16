@@ -28,29 +28,44 @@ public sealed class CanvasWindowTests
         {
             window.Show();
             await window.OpenVaultAsync(directory);
-            window.FindControl<TreeView>("FileTree")!.SelectedItem = window.FindControl<TreeView>("FileTree")!.ItemsSource!.Cast<NativeFileNode>().Single();
+            window.FindControl<TreeView>("FileTree")!.SelectedItem = window
+                .FindControl<TreeView>("FileTree")!
+                .ItemsSource!.Cast<NativeFileNode>()
+                .Single();
             await WaitForAsync(() => window.Workspace.ActiveTab?.Path == "Board.canvas");
             window.UpdateLayout();
             Assert.Equal(2, window.FindControl<TabControl>("EditorTabs")!.SelectedIndex);
             var surface = window.GetVisualDescendants().OfType<NativeCanvasSurface>().Single();
             surface.SnapToGrid = false;
-            var frame = surface.GetVisualDescendants().OfType<Border>().Single(border => border.Tag as string == "card");
+            var frame = surface
+                .GetVisualDescendants()
+                .OfType<Border>()
+                .Single(border => border.Tag as string == "card");
             var start = frame.TranslatePoint(new Point(120, 80), window)!.Value;
             var end = new Point(start.X + 40 * surface.Zoom, start.Y + 20 * surface.Zoom);
-            window.MouseDown(start, MouseButton.Left); window.MouseMove(end); window.MouseUp(end, MouseButton.Left);
+            window.MouseDown(start, MouseButton.Left);
+            window.MouseMove(end);
+            window.MouseUp(end, MouseButton.Left);
             Assert.True(window.Workspace.IsDirty);
             Assert.Equal(50, new NativeCanvasDocument(window.Workspace.Text).GetCards()[0].X);
             Assert.True(surface.Focus());
-            window.KeyPressQwerty(PhysicalKey.Z, RawInputModifiers.Control); window.KeyReleaseQwerty(PhysicalKey.Z, RawInputModifiers.Control);
+            window.KeyPressQwerty(PhysicalKey.Z, RawInputModifiers.Control);
+            window.KeyReleaseQwerty(PhysicalKey.Z, RawInputModifiers.Control);
             Assert.Equal(Scene, window.Workspace.Text);
             Assert.False(window.Workspace.IsDirty);
-            window.KeyPressQwerty(PhysicalKey.Y, RawInputModifiers.Control); window.KeyReleaseQwerty(PhysicalKey.Y, RawInputModifiers.Control);
+            window.KeyPressQwerty(PhysicalKey.Y, RawInputModifiers.Control);
+            window.KeyReleaseQwerty(PhysicalKey.Y, RawInputModifiers.Control);
             await window.RunAsync(window.Workspace.SaveAsync);
             Assert.Equal(window.Workspace.Text, await File.ReadAllTextAsync(Path.Combine(directory, "Board.canvas")));
             Assert.False(window.Workspace.IsDirty);
             Assert.Equal("canvas", Assert.Single(window.Workspace.CaptureSession().Tabs).ViewMode);
         }
-        finally { window.Workspace.DiscardEdits(); window.Close(); Directory.Delete(directory, true); }
+        finally
+        {
+            window.Workspace.DiscardEdits();
+            window.Close();
+            Directory.Delete(directory, true);
+        }
     }
 
     [AvaloniaFact]
@@ -83,12 +98,20 @@ public sealed class CanvasWindowTests
             Assert.Equal("source", reopened.ActiveTab!.ViewMode);
             Assert.Equal("{ broken source", reopened.Text);
         }
-        finally { window.Workspace.DiscardEdits(); window.Close(); Directory.Delete(directory, true); }
+        finally
+        {
+            window.Workspace.DiscardEdits();
+            window.Close();
+            Directory.Delete(directory, true);
+        }
     }
 
     private static async Task WaitForAsync(Func<bool> condition)
     {
-        for (var attempt = 0; !condition() && attempt < 500; attempt++) { await Task.Delay(10); }
+        for (var attempt = 0; !condition() && attempt < 500; attempt++)
+        {
+            await Task.Delay(10);
+        }
         Assert.True(condition());
     }
 }

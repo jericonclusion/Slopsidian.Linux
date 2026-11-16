@@ -26,7 +26,8 @@ public partial class MainWindow : Window
     private bool suppressHistory;
     private long revision;
 
-    public MainWindow() : this(new NativeProfile()) { }
+    public MainWindow()
+        : this(new NativeProfile()) { }
 
     public MainWindow(NativeProfile appProfile)
     {
@@ -37,11 +38,24 @@ public partial class MainWindow : Window
         {
             previewTimer.Stop();
             UpdateInspector();
-            if (EditorTabs.SelectedIndex == 1) { RenderReading(); }
-            if (SplitPane.IsVisible) { RenderSplit(); }
-            if (!string.IsNullOrWhiteSpace(SearchBox.Text)) { await UpdateSearchAsync(); }
+            if (EditorTabs.SelectedIndex == 1)
+            {
+                RenderReading();
+            }
+            if (SplitPane.IsVisible)
+            {
+                RenderSplit();
+            }
+            if (!string.IsNullOrWhiteSpace(SearchBox.Text))
+            {
+                await UpdateSearchAsync();
+            }
         };
-        profileTimer.Tick += async (_, _) => { profileTimer.Stop(); await PersistProfileSafelyAsync(); };
+        profileTimer.Tick += async (_, _) =>
+        {
+            profileTimer.Stop();
+            await PersistProfileSafelyAsync();
+        };
         Workspace.FileObserved += QueueRecovery;
         recoveryTimer.Tick += async (_, _) => await CaptureRecoveryAsync();
         recoveryTimer.Start();
@@ -64,8 +78,12 @@ public partial class MainWindow : Window
 
     public async Task InitializeAsync(string? directory)
     {
-        try { await profile.LoadAsync(CancellationToken.None); }
-        catch (Exception exception) when (exception is IOException or System.Text.Json.JsonException or InvalidDataException)
+        try
+        {
+            await profile.LoadAsync(CancellationToken.None);
+        }
+        catch (Exception exception)
+            when (exception is IOException or System.Text.Json.JsonException or InvalidDataException)
         {
             profileWritable = false;
             ShowError(exception);
@@ -82,13 +100,17 @@ public partial class MainWindow : Window
         }
     }
 
-    public Task OpenVaultAsync(string directory) => RunAsync(async () =>
-    {
-        if (!await ConfirmAllEditsAsync()) { return; }
-        await PersistProfileAsync();
-        await Workspace.OpenVaultAsync(directory);
-        await FinishVaultOpenAsync();
-    });
+    public Task OpenVaultAsync(string directory) =>
+        RunAsync(async () =>
+        {
+            if (!await ConfirmAllEditsAsync())
+            {
+                return;
+            }
+            await PersistProfileAsync();
+            await Workspace.OpenVaultAsync(directory);
+            await FinishVaultOpenAsync();
+        });
 
     private async Task FinishVaultOpenAsync()
     {
@@ -100,8 +122,15 @@ public partial class MainWindow : Window
         navigationIndex = -1;
         var root = Workspace.Snapshot.Root;
         var previous = profile.State.VaultSessions.GetValueOrDefault(root!) ?? profile.State.Session;
-        if (previous is not null && previous.Root == root) { await Workspace.RestoreSessionAsync(previous); }
-        var recent = new[] { root! }.Concat(profile.State.RecentVaults).Distinct(StringComparer.Ordinal).Take(20).ToArray();
+        if (previous is not null && previous.Root == root)
+        {
+            await Workspace.RestoreSessionAsync(previous);
+        }
+        var recent = new[] { root! }
+            .Concat(profile.State.RecentVaults)
+            .Distinct(StringComparer.Ordinal)
+            .Take(20)
+            .ToArray();
         profile.State = profile.State with { RecentVaults = recent };
         VaultName.Text = Workspace.Snapshot.Name;
         ToolTip.SetTip(VaultName, root);
@@ -109,7 +138,10 @@ public partial class MainWindow : Window
         ToolTip.SetTip(VaultPath, root);
         revision = Workspace.Revision;
         FileTree.ItemsSource = NativeFileNode.FromSnapshot(Workspace.Snapshot);
-        if (!string.IsNullOrEmpty(SearchBox.Text)) { SearchBox.Text = ""; }
+        if (!string.IsNullOrEmpty(SearchBox.Text))
+        {
+            SearchBox.Text = "";
+        }
         await Workspace.IndexAsync(CancellationToken.None);
         LoadEditor();
         UpdateBookmarks();
@@ -119,12 +151,18 @@ public partial class MainWindow : Window
 
     private void EditorChanged(NativeTab tab, TextDocument buffer)
     {
-        if (loadingDocument) { return; }
+        if (loadingDocument)
+        {
+            return;
+        }
         tab.Text = buffer.Text;
         UpdateStatus();
         RestartTimer(previewTimer);
         RestartTimer(profileTimer);
-        if (profile.State.Preferences.Autosave) { RestartTimer(autosaveTimer); }
+        if (profile.State.Preferences.Autosave)
+        {
+            RestartTimer(autosaveTimer);
+        }
     }
 
     private static void RestartTimer(DispatcherTimer timer)
@@ -136,30 +174,44 @@ public partial class MainWindow : Window
     private async Task AutosaveAsync()
     {
         autosaveTimer.Stop();
-        if (!profile.State.Preferences.Autosave || !Workspace.HasDirtyTabs) { return; }
-        if (busy) { autosaveTimer.Start(); return; }
-        await RunAsync(async () =>
+        if (!profile.State.Preferences.Autosave || !Workspace.HasDirtyTabs)
         {
-            foreach (var tab in Workspace.Tabs.Where(item => item.IsDirty && !item.ExternalChange).ToArray())
+            return;
+        }
+        if (busy)
+        {
+            autosaveTimer.Start();
+            return;
+        }
+        await RunAsync(
+            async () =>
             {
-                try { await Workspace.SaveTabAsync(tab); }
-                catch (VaultException exception) when (exception.StatusCode == 409)
+                foreach (var tab in Workspace.Tabs.Where(item => item.IsDirty && !item.ExternalChange).ToArray())
                 {
-                    tab.ExternalChange = true;
-                    ShowError(exception);
+                    try
+                    {
+                        await Workspace.SaveTabAsync(tab);
+                    }
+                    catch (VaultException exception) when (exception.StatusCode == 409)
+                    {
+                        tab.ExternalChange = true;
+                        ShowError(exception);
+                    }
                 }
-            }
-            await PersistProfileAsync();
-        }, clearError: false);
+                await PersistProfileAsync();
+            },
+            clearError: false
+        );
     }
 
     private async void Save(object? sender, RoutedEventArgs args) => await SaveAsync();
 
-    private Task SaveAsync() => RunAsync(async () =>
-    {
-        await Workspace.SaveAsync();
-        await PersistProfileAsync();
-    });
+    private Task SaveAsync() =>
+        RunAsync(async () =>
+        {
+            await Workspace.SaveAsync();
+            await PersistProfileAsync();
+        });
 
     private async void Refresh(object? sender, RoutedEventArgs args) => await RunAsync(RefreshWorkspaceAsync);
 
@@ -183,7 +235,10 @@ public partial class MainWindow : Window
 
     private void SaveEditorView()
     {
-        if (displayedTab is null) { return; }
+        if (displayedTab is null)
+        {
+            return;
+        }
         displayedTab.Caret = Editor.CaretOffset;
         displayedTab.ScrollOffset = Editor.VerticalOffset;
         displayedTab.ViewMode = CurrentViewMode();
@@ -230,10 +285,18 @@ public partial class MainWindow : Window
             selecting = false;
             EmptyPanel.IsVisible = tab is null;
             EditorTabs.IsVisible = tab is not null;
-            EmptyDescription.Text = Workspace.Snapshot.Root is null ? "Open a vault to start working with your notes." : "Create a new note with Ctrl+N, or open a note with Ctrl+O.";
+            EmptyDescription.Text = Workspace.Snapshot.Root is null
+                ? "Open a vault to start working with your notes."
+                : "Create a new note with Ctrl+N, or open a note with Ctrl+O.";
         }
-        finally { loadingDocument = false; }
-        if (EditorTabs.SelectedIndex == 1) { RenderReading(); }
+        finally
+        {
+            loadingDocument = false;
+        }
+        if (EditorTabs.SelectedIndex == 1)
+        {
+            RenderReading();
+        }
         RestoreSelection();
         UpdateInspector();
         UpdateStatus();
@@ -242,7 +305,10 @@ public partial class MainWindow : Window
 
     private void UpdateStatus()
     {
-        Title = (Workspace.IsDirty ? "* " : "") + (Workspace.Document?.File.Basename ?? "Slopsidian") + " — Slopsidian Native";
+        Title =
+            (Workspace.IsDirty ? "* " : "")
+            + (Workspace.Document?.File.Basename ?? "Slopsidian")
+            + " — Slopsidian Linux";
         CanvasHost.IsEnabled = !busy;
         SaveButton.IsEnabled = !busy && Workspace.IsDirty;
         NewNoteButton.IsEnabled = !busy && Workspace.Snapshot.Root is not null;
@@ -250,8 +316,13 @@ public partial class MainWindow : Window
         SearchBox.IsEnabled = Workspace.Snapshot.Root is not null;
         DraftRecoveryButton.IsVisible = Workspace.OrphanedDrafts.Count > 0;
         var state = Workspace.IsDirty ? "Unsaved changes" : "Saved";
-        if (Workspace.ActiveTab?.ExternalChange == true) { state = "Changed on disk · draft retained"; }
-        EditorStatus.Text = Workspace.Document is null ? "No note open" : state + "  ·  " + CountWords(Workspace.Text) + " words";
+        if (Workspace.ActiveTab?.ExternalChange == true)
+        {
+            state = "Changed on disk · draft retained";
+        }
+        EditorStatus.Text = Workspace.Document is null
+            ? "No note open"
+            : state + "  ·  " + CountWords(Workspace.Text) + " words";
     }
 
     private static int CountWords(string text)
@@ -260,21 +331,43 @@ public partial class MainWindow : Window
         var inside = false;
         foreach (var character in text)
         {
-            if (char.IsWhiteSpace(character)) { inside = false; }
-            else if (!inside) { count++; inside = true; }
+            if (char.IsWhiteSpace(character))
+            {
+                inside = false;
+            }
+            else if (!inside)
+            {
+                count++;
+                inside = true;
+            }
         }
         return count;
     }
 
     private void ModeChanged(object? sender, SelectionChangedEventArgs args)
     {
-        if (!ReferenceEquals(args.Source, EditorTabs) || loadingDocument || EditorTabs is null || ReadingContent is null) { return; }
-        if (Workspace.ActiveTab is not null) { Workspace.ActiveTab.ViewMode = CurrentViewMode(); }
+        if (
+            !ReferenceEquals(args.Source, EditorTabs)
+            || loadingDocument
+            || EditorTabs is null
+            || ReadingContent is null
+        )
+        {
+            return;
+        }
+        if (Workspace.ActiveTab is not null)
+        {
+            Workspace.ActiveTab.ViewMode = CurrentViewMode();
+        }
         UpdateModeMargin();
-        if (EditorTabs.SelectedIndex == 1) { RenderReading(); }
+        if (EditorTabs.SelectedIndex == 1)
+        {
+            RenderReading();
+        }
     }
 
     private void RenderReading() => NativeMarkdown.Render(ReadingContent, Workspace.Text, Navigate, NavigateMarkdown);
+
     private void RenderSplit()
     {
         SplitTitle.Text = Workspace.Document?.File.Basename;
@@ -283,30 +376,56 @@ public partial class MainWindow : Window
 
     private async Task PersistProfileAsync()
     {
-        if (!profileWritable || Workspace.Snapshot.Root is null) { return; }
+        if (!profileWritable || Workspace.Snapshot.Root is null)
+        {
+            return;
+        }
         SaveEditorView();
         var session = Workspace.CaptureSession();
-        var sessions = new Dictionary<string, NativeSession>(profile.State.VaultSessions, StringComparer.Ordinal) { [session.Root] = session };
+        var sessions = new Dictionary<string, NativeSession>(profile.State.VaultSessions, StringComparer.Ordinal)
+        {
+            [session.Root] = session,
+        };
         profile.State = profile.State with { Session = session, VaultSessions = sessions };
         await profile.SaveAsync(CancellationToken.None);
     }
 
     private async Task PersistProfileSafelyAsync()
     {
-        try { await PersistProfileAsync(); }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException) { ShowError(exception); }
+        try
+        {
+            await PersistProfileAsync();
+        }
+        catch (Exception exception)
+            when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            ShowError(exception);
+        }
     }
 
     public async Task RunAsync(Func<Task> operation, bool clearError = true)
     {
-        if (busy) { return; }
+        if (busy)
+        {
+            return;
+        }
         busy = true;
         Editor.IsReadOnly = true;
-        if (clearError) { ErrorPanel.IsVisible = false; }
+        if (clearError)
+        {
+            ErrorPanel.IsVisible = false;
+        }
         OpenVaultButton.IsEnabled = false;
         UpdateStatus();
-        try { await recoveryTask; await operation(); }
-        catch (Exception exception) { ShowError(exception); }
+        try
+        {
+            await recoveryTask;
+            await operation();
+        }
+        catch (Exception exception)
+        {
+            ShowError(exception);
+        }
         finally
         {
             busy = false;
@@ -321,14 +440,30 @@ public partial class MainWindow : Window
         ErrorText.Text = exception.Message;
         ErrorPanel.IsVisible = true;
     }
+
     private void DismissError(object? sender, RoutedEventArgs args) => ErrorPanel.IsVisible = false;
 
     private async Task<bool> ConfirmTabEditsAsync(NativeTab tab)
     {
-        if (!tab.IsDirty) { return true; }
-        var choice = await ConfirmAsync("Save your changes?", tab.Path + " has unsaved changes.", "Save", "Discard changes");
-        if (choice == "Save") { await Workspace.SaveTabAsync(tab); return true; }
-        if (choice != "Discard changes") { return false; }
+        if (!tab.IsDirty)
+        {
+            return true;
+        }
+        var choice = await ConfirmAsync(
+            "Save your changes?",
+            tab.Path + " has unsaved changes.",
+            "Save",
+            "Discard changes"
+        );
+        if (choice == "Save")
+        {
+            await Workspace.SaveTabAsync(tab);
+            return true;
+        }
+        if (choice != "Discard changes")
+        {
+            return false;
+        }
         tab.Reload(tab.Document);
         return true;
     }
@@ -337,16 +472,25 @@ public partial class MainWindow : Window
     {
         foreach (var tab in Workspace.Tabs.Where(item => item.IsDirty).ToArray())
         {
-            if (!await ConfirmTabEditsAsync(tab)) { return false; }
+            if (!await ConfirmTabEditsAsync(tab))
+            {
+                return false;
+            }
         }
         return true;
     }
 
     private async void OnClosing(object? sender, WindowClosingEventArgs args)
     {
-        if (closeApproved) { return; }
+        if (closeApproved)
+        {
+            return;
+        }
         args.Cancel = true;
-        if (busy) { return; }
+        if (busy)
+        {
+            return;
+        }
         await RunAsync(async () =>
         {
             StopTimers();
@@ -357,12 +501,18 @@ public partial class MainWindow : Window
             await PersistProfileAsync();
             closeApproved = true;
         });
-        if (closeApproved) { Close(); }
+        if (closeApproved)
+        {
+            Close();
+        }
         else
         {
             refreshTimer.Start();
             recoveryTimer.Start();
-            if (profile.State.Preferences.Autosave) { RestartTimer(autosaveTimer); }
+            if (profile.State.Preferences.Autosave)
+            {
+                RestartTimer(autosaveTimer);
+            }
             RestartTimer(profileTimer);
         }
     }

@@ -9,7 +9,10 @@ public sealed record NativeBaseDate(long Milliseconds)
     public DateTimeOffset Local => DateTimeOffset.FromUnixTimeMilliseconds(Milliseconds).ToLocalTime();
 }
 
-public sealed record NativeBaseLink(string Path, string Display);
+public sealed record NativeBaseLink(string Path, string Display)
+{
+    public bool ExactPath { get; init; }
+}
 
 public sealed record NativeBaseFile(
     VaultFile File,
@@ -21,15 +24,17 @@ public sealed record NativeBaseFile(
     public IReadOnlyDictionary<string, string> PropertyTypes { get; init; } =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     public string? MetadataError { get; init; }
+    public IReadOnlySet<string> ResolvedLinks { get; init; } = new HashSet<string>(StringComparer.Ordinal);
     public string Path => File.Path;
 }
 
-public sealed class NativeBaseBudget(int remaining = 1_000_000)
+public sealed class NativeBaseBudget(int remaining = 1_000_000, CancellationToken cancellationToken = default)
 {
     public int Remaining { get; private set; } = remaining;
 
     public void Spend(int amount = 1)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         if (amount < 0 || amount > Remaining)
         {
             Remaining = -1;

@@ -106,7 +106,10 @@ public sealed partial class NativeBaseEvaluator
                 arguments.Length == 0 || arguments[0] is null
                     ? source.File.Basename
                     : NativeBaseValues.ScalarText(arguments[0])
-            );
+            )
+            {
+                ExactPath = true,
+            };
         }
         if (arguments.Length != 1)
         {
@@ -363,7 +366,7 @@ public sealed partial class NativeBaseEvaluator
         {
             display = NativeBaseValues.ScalarText(arguments[1]);
         }
-        return new NativeBaseLink(parts[0], display);
+        return new NativeBaseLink(parts[0], display) { ExactPath = arguments[0] is NativeBaseFile };
     }
 
     private static double ConvertNumber(object? value)

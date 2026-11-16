@@ -47,6 +47,7 @@ public sealed partial class NativeBaseEvaluator
 
     public object? Property(string property)
     {
+        budget.Spend(3);
         var separator = property.IndexOf('.');
         var owner = separator < 0 ? "note" : property[..separator];
         if (owner is not ("note" or "file" or "formula"))
@@ -235,7 +236,13 @@ public sealed partial class NativeBaseEvaluator
             "mtime" => source.File.Stat.Mtime > 0 ? NativeBaseDates.Create(source.File.Stat.Mtime) : null,
             "tags" => source.Tags.Select(tag => (object?)tag.TrimStart('#')).ToArray(),
             "links" => source
-                .Links.Select(path => (object?)new NativeBaseLink(path, WithoutMarkdownExtension(path)))
+                .Links.Select(path =>
+                    (object?)
+                        new NativeBaseLink(path, WithoutMarkdownExtension(path))
+                        {
+                            ExactPath = source.ResolvedLinks.Contains(path),
+                        }
+                )
                 .ToArray(),
             _ => throw new InvalidDataException("Unsupported file field: " + name),
         };

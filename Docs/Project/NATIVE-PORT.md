@@ -1,14 +1,12 @@
 # Native Linux port
 
-The target is Ron's existing application structure and workflows, implemented
-with native .NET/Avalonia widgets. The Linux application must not render its
-interface with Blazor, Electron or a WebView. A separate basic Markdown editor
-is not the requested end state.
+Slopsidian Linux develops a complete local Markdown workspace with native
+.NET/Avalonia widgets. Notes, links, Canvas, assistants and portable vault
+formats belong in the native application. Its interface uses no Blazor,
+Electron or WebView.
 
-Development continues independently in Slopsidian Linux. The original upstream
-PR is closed without merging. Existing Windows/browser acceptance records do
-not establish native Linux support. See CONTRIBUTING.md for selective upstream
-synchronization.
+Native Linux support requires its own acceptance evidence. Shared format and
+storage fixes can be incorporated selectively; see CONTRIBUTING.md.
 
 ## Implementation and verification order
 
@@ -32,7 +30,7 @@ synchronization.
 
 Tests must cover observable workflows, failures and retained drafts. Screenshots
 must compare the native structure with the existing app, rather than accepting
-an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 176 cases, including independent tabs,
+an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 335 cases, including independent tabs,
 recovery sessions, metadata edits, Linux path identity, file transactions,
 Canvas editing and native media previews. Native acceptance remains separate
 from this focused regression suite.
@@ -61,6 +59,8 @@ absence of a row is not evidence of support.
 | Saved-file recovery | Compatible vault history, automatic/manual saved-text snapshots, retention/disablement and native preview/review/restore; restart, backup and conflict tests pass |
 | File operations | Shared create-folder, rename/reference transaction and vault-trash paths run on Linux; native trash preview, multi-selection and reviewed restore reuse identity-bound tickets |
 | Canvas | Validated source-preserving model, native card widgets, pan/zoom, selection, move/resize, connection drawing, shared source Undo/Redo, responsive card/connection inspector, keyboard connection selection and edge editing; bounded native note sections, raster file cards, group backgrounds and read-only Canvas thumbnails; full parity acceptance remains in progress |
+| Assistants | Native Codex CLI, Claude Code and GitHub Copilot CLI read-and-suggest chat; frozen drafts/selections, link/backlink context, review, cancellation, follow-ups, citations and reply export; live provider-account acceptance remains separate |
+| Bases | Bounded formulas, source-preserving YAML view edits and filtered/grouped/paginated queries with summaries are tested; native table UI and live vault binding are pending |
 | Framework | .NET 10 with Avalonia 12.1.6, AvaloniaEdit 12.0.0 and DataGrid 12.1.2; their selected assemblies target net10.0 |
 | Tux icon | Generated transparent notebook mascot; embedded window asset and Linux menu PNG |
 | Lint/code smells | Recommended .NET analyzers and SonarAnalyzer configured; strict local gate passed with zero warnings and errors |

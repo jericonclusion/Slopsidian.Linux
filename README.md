@@ -4,16 +4,17 @@
 
 # Slopsidian Linux
 
-An independent, native Linux client for Slopsidian, built with **.NET 10 and
-Avalonia 12**. Local Markdown vaults, native widgets and a slightly unhinged Tux.
+A native Linux notebook for local Markdown vaults, built with **.NET 10 and
+Avalonia 12**. Keep your notes, links and writing tools in one desktop workspace.
 
-**Preview: 0.2.0-preview.3.** The full feature port is in progress. This is a
-separately maintained Linux fork of Ron Sijm’s Slopsidian; it is not an official
-Obsidian client.
+**Preview: 0.3.0-preview.1.** Independently developed for Linux. The feature set
+is growing; the current capabilities and remaining work are listed below.
+
+Ready-to-run downloads: https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.1
 
 ![Native Linux build](https://github.com/jericonclusion/Slopsidian.Linux/actions/workflows/native_linux.yml/badge.svg)
 
-![Native Canvas with note and image previews](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/canvas-previews-dark.png)
+![Native assistant with explicit note context and a clearly labelled demonstration reply](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/assistant-dark.png)
 
 ## What works today
 
@@ -22,30 +23,32 @@ Obsidian client.
 - Guarded saves, reference-aware renames, saved-file history and reviewed trash recovery.
 - Native Canvas cards, connections, an inspector, note sections and image previews.
 - An interactive graph, bookmarks, daily notes, templates and named workspaces.
+- A native assistant for Codex CLI, Claude Code and GitHub Copilot CLI, with note
+  snapshots, selections, linked notes, backlinks, source navigation and saved replies.
 - Dark/light appearance, native settings and an independent Linux version number.
 
 The desktop process uses Avalonia widgets throughout. It requires no Electron,
 Chromium, WebView, Blazor, browser server, Node.js or npm.
 
 Bases, advanced Markdown/Live Preview, full attachment workflows, slides, audio,
-complete upstream parity and community JavaScript plugin compatibility remain
+complete module workflows and community JavaScript plugin compatibility remain
 unfinished. See [the native roadmap](Docs/Project/NATIVE-PORT.md).
 
 ## Download a ready-to-run build
 
-**Preview 0.2.0-preview.3:**
-https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.2.0-preview.3
+**Preview 0.3.0-preview.1:**
+https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.1
 
 | Linux system | Debian / Ubuntu package | Portable archive |
 | --- | --- | --- |
-| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/slopsidian-linux_0.2.0-preview.3_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/Slopsidian-Linux-0.2.0-preview.3-linux-x64.tar.gz) |
-| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/slopsidian-linux_0.2.0-preview.3_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/Slopsidian-Linux-0.2.0-preview.3-linux-arm64.tar.gz) |
+| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.1/slopsidian-linux_0.3.0-preview.1_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.1/Slopsidian-Linux-0.3.0-preview.1-linux-x64.tar.gz) |
+| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.1/slopsidian-linux_0.3.0-preview.1_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.1/Slopsidian-Linux-0.3.0-preview.1-linux-arm64.tar.gz) |
 
 These builds include .NET; **you do not need to compile the app or install the
 .NET SDK**. For Debian/Ubuntu, download the matching `.deb` and install it:
 
 ```sh
-sudo apt install ./slopsidian-linux_0.2.0-preview.3_amd64.deb
+sudo apt install ./slopsidian-linux_0.3.0-preview.1_amd64.deb
 slopsidian-linux
 ```
 
@@ -53,6 +56,20 @@ Use the `arm64` package on ARM. With an archive, extract it and run the included
 `slopsidian-linux` launcher. Linux desktop libraries are still required. SHA-256
 checksum files are attached to the release. This is an unsigned preview; the
 unfinished workflows listed above still apply.
+
+## Use your CLI assistant
+
+Install and sign in to **Codex CLI**, **Claude Code** or **GitHub Copilot CLI**
+in a terminal, then open **Assistant** from the ribbon or command palette.
+Choose your CLI and attach the notes or selected text you want it to use.
+Linked notes and backlinks can be added explicitly; **Review message** shows
+exactly what will be sent, including any unsaved snapshot.
+
+Press **Ctrl+Enter** to send. Follow citations back to your notes, copy a reply
+or save it as a new note. This preview supports reading and suggestions;
+conversations last while their window is open. Provider login, availability and
+usage charges belong to the selected CLI. See the [assistant guide](Docs/Features/NATIVE-ASSISTANT.md)
+for setup, context limits and supported CLI versions.
 
 ## Run from source
 
@@ -82,7 +99,7 @@ dotnet csharpier format src/RonSijm.Slopsidian.Linux tests/RonSijm.Slopsidian.Li
 CSharpier keeps our code consistently formatted. The lint gate also runs
 `dotnet format style`, recommended .NET analyzers and SonarAnalyzer C#, with build
 warnings treated as errors. The xUnit v3 suite exercises real headless Avalonia
-controls and temporary vaults. See [contributing](CONTRIBUTING.md).
+controls and temporary vaults. See [development and contributions](CONTRIBUTING.md).
 
 ## Packages and versions
 
@@ -110,21 +127,13 @@ Actual Linux application captures with synthetic demonstration notes:
 
 ![Light Canvas preview](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/canvas-previews-light.png)
 
+## Credits
 
-## Upstream and credits
+Slopsidian Linux began as a fork of [Slopsidian](https://github.com/RonSijm/RonSijm.Slopsidian)
+by **Ron Sijm**. Its history and attribution are retained; Linux development
+and releases are maintained in this repository. This is an independent project,
+unaffiliated with Obsidian or the AI providers.
 
-Original Slopsidian by **Ron Sijm**:
-https://github.com/RonSijm/RonSijm.Slopsidian
-
-Linux fork:
-https://github.com/jericonclusion/Slopsidian.Linux
-
-We retain the upstream history and attribution. Useful changes to shared vault
-logic and formats can be incorporated selectively; the native interface is
-maintained here. The workflow is documented in CONTRIBUTING.md.
-
-The Tux notebook artwork and its generation/edit provenance are in
-`src/RonSijm.Slopsidian.Linux/Assets/`. Dependency notices are in `tools/linux/`;
-the source icons retain their license in `Assets/icons-LICENSE.txt`.
-The inherited source tree does not declare a repository-wide license. This fork
-does not invent one or change the original authors’ rights.
+Asset provenance and icon notices are in `src/RonSijm.Slopsidian.Linux/Assets/`;
+packaged dependency notices are in `tools/linux/`. The inherited source does not
+declare a repository-wide license, and this fork does not change the authors’ rights.

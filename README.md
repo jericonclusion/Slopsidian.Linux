@@ -7,7 +7,7 @@
 An independent, native Linux client for Slopsidian, built with **.NET 10 and
 Avalonia 12**. Local Markdown vaults, native widgets and a slightly unhinged Tux.
 
-**Preview: 0.2.0-preview.2.** The full feature port is in progress. This is a
+**Preview: 0.2.0-preview.3.** The full feature port is in progress. This is a
 separately maintained Linux fork of Ron Sijm’s Slopsidian; it is not an official
 Obsidian client.
 
@@ -33,19 +33,19 @@ unfinished. See [the native roadmap](Docs/Project/NATIVE-PORT.md).
 
 ## Download a ready-to-run build
 
-**Preview 0.2.0-preview.2:**
-https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.2.0-preview.2
+**Preview 0.2.0-preview.3:**
+https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.2.0-preview.3
 
 | Linux system | Debian / Ubuntu package | Portable archive |
 | --- | --- | --- |
-| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.2/slopsidian-linux_0.2.0~preview.2_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.2/Slopsidian-Linux-0.2.0-preview.2-linux-x64.tar.gz) |
-| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.2/slopsidian-linux_0.2.0~preview.2_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.2/Slopsidian-Linux-0.2.0-preview.2-linux-arm64.tar.gz) |
+| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/slopsidian-linux_0.2.0-preview.3_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/Slopsidian-Linux-0.2.0-preview.3-linux-x64.tar.gz) |
+| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/slopsidian-linux_0.2.0-preview.3_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.2.0-preview.3/Slopsidian-Linux-0.2.0-preview.3-linux-arm64.tar.gz) |
 
 These builds include .NET; **you do not need to compile the app or install the
 .NET SDK**. For Debian/Ubuntu, download the matching `.deb` and install it:
 
 ```sh
-sudo apt install ./slopsidian-linux_0.2.0~preview.2_amd64.deb
+sudo apt install ./slopsidian-linux_0.2.0-preview.3_amd64.deb
 slopsidian-linux
 ```
 

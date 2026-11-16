@@ -18,8 +18,9 @@ if [[ ! "$native_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Z
   echo "The native project must declare a SemVer version: $native_version" >&2
   exit 1
 fi
+artifact_version="${native_version%%+*}"
 # Debian sorts '~preview' before the corresponding stable version.
-deb_version="${native_version%%+*}"
+deb_version="$artifact_version"
 deb_version="${deb_version/-/\~}"
 if [[ "${GITHUB_REF:-}" == refs/tags/linux-v* && "${GITHUB_REF#refs/tags/linux-v}" != "$native_version" ]]; then
   echo "The Linux release tag must match the native project version: linux-v$native_version" >&2
@@ -27,7 +28,7 @@ if [[ "${GITHUB_REF:-}" == refs/tags/linux-v* && "${GITHUB_REF#refs/tags/linux-v
 fi
 work_dir="$repo_dir/.runtime/native-linux/$rid"
 publish_dir="$work_dir/publish"
-bundle="Slopsidian-Linux-$native_version-$rid"
+bundle="Slopsidian-Linux-$artifact_version-$rid"
 stage_dir="$work_dir/$bundle"
 out_dir="$work_dir/out"
 # These paths are fixed below this script's repository, never supplied by the caller.
@@ -76,11 +77,11 @@ Description: Native Slopsidian workspace for Linux
  Standalone .NET/Avalonia editor with local vaults, search and native Markdown
  reading. Includes its .NET runtime; does not use Electron or a WebView.
 CONTROL
-  dpkg-deb --root-owner-group --build "$deb_dir" "$out_dir/slopsidian-linux_${deb_version}_${deb_arch}.deb"
+  dpkg-deb --root-owner-group --build "$deb_dir" "$out_dir/slopsidian-linux_${artifact_version}_${deb_arch}.deb"
 fi
 (
   cd "$out_dir"
   sha256sum "$bundle.tar.gz" > SHA256SUMS-$rid.txt
-  if [[ -f "slopsidian-linux_${deb_version}_${deb_arch}.deb" ]]; then sha256sum "slopsidian-linux_${deb_version}_${deb_arch}.deb" >> SHA256SUMS-$rid.txt; fi
+  if [[ -f "slopsidian-linux_${artifact_version}_${deb_arch}.deb" ]]; then sha256sum "slopsidian-linux_${artifact_version}_${deb_arch}.deb" >> SHA256SUMS-$rid.txt; fi
 )
 echo "Packages ready: $out_dir"

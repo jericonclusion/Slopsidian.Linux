@@ -13,20 +13,48 @@ public sealed class NativeSettingsWindow : Window
     private static readonly string[] NoteLocationKeys = ["root", "current", "folder"];
     private static readonly string[] LinkFormatKeys = ["shortest", "relative", "absolute"];
     private readonly VaultService? vault;
+    private readonly Func<NativeModule, bool, Task>? setModuleEnabled;
     private NativePreferences preferences;
     private CorePluginSnapshot? core;
     private readonly StackPanel page = new() { Spacing = 20, Margin = new Thickness(28) };
     private readonly ListBox navigation = new()
     {
-        ItemsSource = new[] { "Editor", "Appearance", "Files and links", "Core plugins", "Hotkeys", "About" },
+        Name = "SettingsSections",
+        ItemsSource = new[]
+        {
+            "Editor",
+            "Appearance",
+            "Files and links",
+            "Core plugins",
+            "Native modules",
+            "Hotkeys",
+            "About",
+        },
         Margin = new Thickness(12, 16),
     };
-    private readonly TextBlock error = new() { Classes = { "error" }, TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock error = new()
+    {
+        Name = "SettingsError",
+        Classes = { "error" },
+        TextWrapping = TextWrapping.Wrap,
+    };
+    private readonly Button done = new()
+    {
+        Content = "Done",
+        IsDefault = true,
+        HorizontalAlignment = HorizontalAlignment.Right,
+        Margin = new Thickness(20),
+    };
 
-    public NativeSettingsWindow(NativePreferences current, VaultService? selectedVault)
+    public NativeSettingsWindow(
+        NativePreferences current,
+        VaultService? selectedVault,
+        Func<NativeModule, bool, Task>? setModuleEnabled = null
+    )
     {
         preferences = current;
         vault = selectedVault;
+        this.setModuleEnabled = setModuleEnabled;
         Title = "Settings — Slopsidian";
         Width = 900;
         Height = 700;
@@ -42,13 +70,6 @@ public sealed class NativeSettingsWindow : Window
         var scroll = new ScrollViewer { Content = page };
         Grid.SetColumn(scroll, 1);
         layout.Children.Add(scroll);
-        var done = new Button
-        {
-            Content = "Done",
-            IsDefault = true,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Margin = new Thickness(20),
-        };
         done.Click += (_, _) => Close(preferences);
         Grid.SetRow(done, 1);
         Grid.SetColumn(done, 1);
@@ -84,6 +105,9 @@ public sealed class NativeSettingsWindow : Window
                 break;
             case "Core plugins":
                 await CorePageAsync();
+                break;
+            case "Native modules":
+                NativeModulesPage();
                 break;
             case "Hotkeys":
                 HotkeysPage();
@@ -126,6 +150,74 @@ public sealed class NativeSettingsWindow : Window
                 TextWrapping = TextWrapping.Wrap,
             }
         );
+    }
+
+    private void NativeModulesPage()
+    {
+        page.Children.Add(
+            new TextBlock
+            {
+                Text = "Built-in Linux features. Changes apply immediately to this app profile.",
+                Classes = { "muted" },
+                TextWrapping = TextWrapping.Wrap,
+            }
+        );
+        AddModuleToggle(
+            NativeModule.CliAssistant,
+            "CLI assistant",
+            "Use Codex CLI, Claude Code or GitHub Copilot CLI with selected note context. Disabling closes the assistant and stops running requests. Your provider settings are kept."
+        );
+        AddModuleToggle(
+            NativeModule.Terminal,
+            "Terminal",
+            "Open an interactive Linux shell inside Slopsidian. Disabling closes the terminal and ends its shell session."
+        );
+    }
+
+    private void AddModuleToggle(NativeModule module, string name, string description)
+    {
+        var toggle = new CheckBox
+        {
+            Name = module + "Enabled",
+            Content = name,
+            IsChecked = preferences.IsModuleEnabled(module),
+        };
+        var changing = false;
+        toggle.IsCheckedChanged += async (_, _) =>
+        {
+            if (changing)
+            {
+                return;
+            }
+            changing = true;
+            toggle.IsEnabled = false;
+            navigation.IsEnabled = false;
+            done.IsEnabled = false;
+            try
+            {
+                var enabled = toggle.IsChecked == true;
+                if (setModuleEnabled is not null)
+                {
+                    await setModuleEnabled(module, enabled);
+                }
+                preferences = preferences.WithModule(module, enabled);
+                error.Text = "";
+            }
+            catch (Exception exception)
+            {
+                toggle.IsChecked = preferences.IsModuleEnabled(module);
+                error.Text = exception.Message;
+            }
+            finally
+            {
+                changing = false;
+                toggle.IsEnabled = true;
+                navigation.IsEnabled = true;
+                done.IsEnabled = true;
+            }
+        };
+        page.Children.Add(toggle);
+        page.Children.Add(new TextBlock { Text = description, TextWrapping = TextWrapping.Wrap });
     }
 
     private void AppearancePage()

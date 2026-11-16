@@ -11,6 +11,10 @@ public partial class MainWindow
     public Task OpenAssistantAsync() =>
         RunAsync(async () =>
         {
+            if (!profile.State.Preferences.CliAssistantEnabled)
+            {
+                throw new InvalidOperationException("Enable CLI assistant in Settings → Native modules first.");
+            }
             if (assistantWindow is not null)
             {
                 assistantWindow.Activate();

@@ -25,9 +25,27 @@ public sealed record NativePreferences
     public bool LineNumbers { get; init; } = true;
     public bool WordWrap { get; init; } = true;
     public bool Autosave { get; init; } = true;
+    public bool CliAssistantEnabled { get; init; } = true;
+    public bool TerminalEnabled { get; init; } = true;
     public string DefaultMode { get; init; } = "source";
     public double LeftWidth { get; init; } = 260;
     public double RightWidth { get; init; } = 260;
+
+    public bool IsModuleEnabled(NativeModule module) =>
+        module switch
+        {
+            NativeModule.CliAssistant => CliAssistantEnabled,
+            NativeModule.Terminal => TerminalEnabled,
+            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+        };
+
+    public NativePreferences WithModule(NativeModule module, bool enabled) =>
+        module switch
+        {
+            NativeModule.CliAssistant => this with { CliAssistantEnabled = enabled },
+            NativeModule.Terminal => this with { TerminalEnabled = enabled },
+            _ => throw new ArgumentOutOfRangeException(nameof(module)),
+        };
 }
 
 public sealed record NativeProfileState

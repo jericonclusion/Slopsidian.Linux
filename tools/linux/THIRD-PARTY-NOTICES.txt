@@ -29,5 +29,25 @@ licenses/SkiaSharp-THIRD-PARTY-NOTICES.txt (verified against the native packages
 The native client does not bundle Electron, Chromium, the JavaScript editor,
 community plugins, vaults or application profiles.
 
+Iciclecreek.Avalonia.Terminal 4.1.4 — MIT, Copyright Tom Laird-McConnell
+https://github.com/tomlm/Iciclecreek.Avalonia.Terminal
+See licenses/Iciclecreek-Terminal-MIT.txt.
+
+Porta.Pty 2.2.4 — MIT, Copyright Tom Laird-McConnell
+https://github.com/tomlm/Porta.Pty
+See licenses/Porta-Pty-MIT.txt. Includes native Linux PTY libraries.
+
+XTerm.NET 3.0.3 — MIT and upstream notices
+https://github.com/tomlm/XTerm.NET
+See licenses/XTerm-NET-MIT.txt and licenses/XTerm-NET-THIRD-PARTY-NOTICES.txt.
+
+Unicode.net 2.0.0 — MIT
+https://github.com/neosmart/unicode.net
+See licenses/Unicode-NET-License.txt.
+
+Wcwidth 4.0.1 — MIT
+https://github.com/spectreconsole/wcwidth
+See licenses/Wcwidth-MIT.txt.
+
 Full dependency license texts are in the accompanying licenses directory.
 Tmds.DBus.Protocol 0.94.1 uses the MIT license (see licenses/Tmds-DBus-MIT.txt).

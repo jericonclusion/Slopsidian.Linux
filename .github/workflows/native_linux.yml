@@ -50,7 +50,8 @@ jobs:
           test "$("$executable" --version)" = "$expected_version"
           "$executable" --help
           dpkg-deb --info .runtime/native-linux/"$CLIENT_RUNTIME"/out/*.deb
-          test -z "$(find .runtime/native-linux/"$CLIENT_RUNTIME"/publish -iname '*electron*' -o -iname '*chromium*' -o -iname '*JSInterop*')"
+          test -z "$(find .runtime/native-linux/"$CLIENT_RUNTIME"/publish -iname '*electron*' -o -iname '*chromium*' -o -iname '*JSInterop*' -o -iname '*webview*' -o -iname '*cefsharp*' -o -iname '*libcef*')"
+          test -f ".runtime/native-linux/$CLIENT_RUNTIME/publish/libporta_pty.so"
           cd ".runtime/native-linux/$CLIENT_RUNTIME/out"
           sha256sum --check "SHA256SUMS-$CLIENT_RUNTIME.txt"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

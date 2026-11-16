@@ -72,10 +72,20 @@
           </StackPanel>
           <StackPanel Spacing="8">
             <Button
+              Name="AssistantButton"
               Classes="icon ribbon"
               Click="OpenAssistant"
               AutomationProperties.Name="Open AI assistant"
               ToolTip.Tip="AI assistant: Codex, Claude Code or Copilot CLI"
+            >
+              <local:NativeIcon Kind="assistant" />
+            </Button>
+            <Button
+              Name="TerminalButton"
+              Classes="icon ribbon"
+              Click="OpenTerminal"
+              AutomationProperties.Name="Open terminal"
+              ToolTip.Tip="Open terminal"
             >
               <local:NativeIcon Kind="command" />
             </Button>

@@ -1,0 +1,31 @@
+<UserControl
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  x:Class="RonSijm.Slopsidian.Linux.NativeTerminalLayout"
+>
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Background="{DynamicResource SidebarBrush}" Padding="16,12">
+      <StackPanel Spacing="10">
+        <TextBlock Text="Terminal" FontSize="20" FontWeight="SemiBold" />
+        <TextBlock Name="StartDirectory" Classes="muted" TextTrimming="CharacterEllipsis" />
+        <WrapPanel>
+          <Button Name="CopyButton" Content="Copy" Margin="0,0,8,4" ToolTip.Tip="Copy selected text (Ctrl+Shift+C)" />
+          <Button
+            Name="PasteButton"
+            Content="Paste"
+            Margin="0,0,8,4"
+            ToolTip.Tip="Paste into terminal (Ctrl+Shift+V)"
+          />
+          <Button Name="NewSessionButton" Content="New session" Margin="0,0,8,4" />
+          <Button Name="EndSessionButton" Content="End session" Margin="0,0,8,4" />
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+    <ContentControl Grid.Row="1" Name="TerminalHost" Margin="12,8" />
+    <Border Grid.Row="2" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,1,0,0" Padding="16,8">
+      <ScrollViewer MaxHeight="56" HorizontalScrollBarVisibility="Disabled">
+        <TextBlock Name="TerminalStatus" Text="Starting shell…" Classes="muted" TextWrapping="Wrap" />
+      </ScrollViewer>
+    </Border>
+  </Grid>
+</UserControl>

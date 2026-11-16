@@ -118,6 +118,7 @@ public partial class MainWindow
 
     private IReadOnlyList<NativeCommand> Commands() =>
         [
+            new("assistant:open", "Assistant: Open Codex, Claude Code or Copilot CLI", "", OpenAssistantAsync),
             new("canvas:new-file", "Canvas: Create new Canvas", "", NewCanvasAsync),
             new("file:new", "Create a new note", "Ctrl+N", NewNoteAsync),
             new("vault:open", "Open or create a vault", "Ctrl+Shift+O", ChooseVaultAsync),

@@ -114,6 +114,7 @@ public partial class MainWindow : Window
 
     private async Task FinishVaultOpenAsync()
     {
+        assistantWindow?.Close();
         pendingRecovery.Clear();
         DisposeCanvasViews();
         buffers.Clear();
@@ -528,6 +529,7 @@ public partial class MainWindow : Window
 
     private void OnClosed(object? sender, EventArgs args)
     {
+        assistantWindow?.Close();
         StopTimers();
         search?.Cancel();
         search?.Dispose();

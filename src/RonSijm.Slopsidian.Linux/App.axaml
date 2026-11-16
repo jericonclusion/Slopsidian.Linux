@@ -18,6 +18,7 @@
           <SolidColorBrush x:Key="ErrorBrush">#f28b82</SolidColorBrush>
           <SolidColorBrush x:Key="ErrorSurfaceBrush">#3c2929</SolidColorBrush>
           <SolidColorBrush x:Key="CreateBrush">#a3d9b1</SolidColorBrush>
+          <SolidColorBrush x:Key="AssistantActionBrush">#a3d9b1</SolidColorBrush>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
           <SolidColorBrush x:Key="SurfaceBrush">#ffffff</SolidColorBrush>
@@ -30,6 +31,7 @@
           <SolidColorBrush x:Key="ErrorBrush">#a32e25</SolidColorBrush>
           <SolidColorBrush x:Key="ErrorSurfaceBrush">#ffebe9</SolidColorBrush>
           <SolidColorBrush x:Key="CreateBrush">#216b36</SolidColorBrush>
+          <SolidColorBrush x:Key="AssistantActionBrush">#185625</SolidColorBrush>
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
     </ResourceDictionary>

@@ -34,6 +34,7 @@ public sealed record NativeProfileState
 {
     public int Version { get; init; } = 1;
     public NativePreferences Preferences { get; init; } = new();
+    public NativeAssistantSettings Assistant { get; init; } = new();
     public IReadOnlyList<string> RecentVaults { get; init; } = [];
     public IReadOnlyList<string> Bookmarks { get; init; } = [];
     public IReadOnlyDictionary<string, NativeSession> Workspaces { get; init; } =
@@ -145,6 +146,7 @@ public sealed class NativeProfile(string? directory = null) : IDisposable
     {
         if (
             state.Preferences is null
+            || state.Assistant is null
             || state.RecentVaults is null
             || state.Bookmarks is null
             || state.Workspaces is null
@@ -156,6 +158,7 @@ public sealed class NativeProfile(string? directory = null) : IDisposable
             );
         }
         var preferences = state.Preferences;
+        NativeAssistantSettings.Validate(state.Assistant);
         if (
             !double.IsFinite(preferences.FontSize)
             || !double.IsFinite(preferences.LeftWidth)

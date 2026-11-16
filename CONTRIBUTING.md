@@ -5,12 +5,12 @@ host is required. The solution contains three projects:
 
 | Project | Responsibility |
 | --- | --- |
-| `RonSijm.Slopsidian.Core` | Shared vault services, guarded I/O and formats inherited from upstream |
+| `RonSijm.Slopsidian.Core` | Vault services, guarded I/O and portable data formats |
 | `RonSijm.Slopsidian.Linux` | Native Avalonia application and Linux workflows |
 | `RonSijm.Slopsidian.Linux.Tests` | xUnit v3 and headless Avalonia regression tests |
 
-Internal namespaces retain upstream names to keep future source comparisons
-useful. Linux branding, CLI names and packages use Slopsidian Linux.
+The product, packages and release line are Slopsidian Linux. Internal namespaces
+retain their historical names to keep source history and comparisons useful.
 
 ## Make a change
 
@@ -20,7 +20,7 @@ useful. Linux branding, CLI names and packages use Slopsidian Linux.
 4. Capture real native screens for UI changes, using synthetic vaults and a
    private X server rather than interfering with someone’s desktop.
 5. Commit in reviewable pieces and merge when the checks pass. Remove the branch.
-   After this checkpoint, `main` requires a pull request and both architecture
+   `main` requires a pull request and both architecture
    build checks; force-pushes and branch deletion are blocked.
 
 Use semantic commit messages: `<type>(<scope>): <concise English subject>`.
@@ -39,38 +39,18 @@ the formatter. Recommended .NET analyzers and SonarAnalyzer C# inspect the nativ
 app; the solution build treats warnings as errors. The tests use xUnit v3 with
 the VSTest adapter and Avalonia Headless. Do not pass MTP-specific switches.
 
-## Follow Ron’s upstream
+## Work on the assistant
 
-Keep these remotes:
+Use an executable fixture for repeatable CLI tests. Exercise stdin, cancellation,
+failed login, oversized output, provider switching and stale-vault guards without
+calling a paid model or using real notes. Use an isolated profile and private
+Xvfb display for UI captures, and label synthetic replies as demonstrations.
 
-```sh
-git remote -v
-# origin:   https://github.com/jericonclusion/Slopsidian.Linux.git
-# upstream: https://github.com/RonSijm/RonSijm.Slopsidian.git
-```
-
-Fetch upstream periodically, before a release or when a relevant fix lands:
-
-```sh
-git fetch upstream
-git log --oneline upstream/main --not main
-git diff main...upstream/main -- src/RonSijm.Slopsidian/Services shared/core-plugins.json
-```
-
-Review vault storage, security fixes, data formats and useful core logic first.
-Take compatible, self-contained commits with `git cherry-pick -x <commit>` on a
-new branch. For mixed commits, port the relevant change manually and record its
-upstream commit in the commit message. Map old `Services/*.cs` paths to
-`src/RonSijm.Slopsidian.Core/Services/`; keep the native API boundary intact.
-Re-run lint, regression tests and the affected native workflow before merging.
-
-Do not routinely merge the whole upstream branch: its browser/Windows hosts and
-UI have intentionally been removed here. Translate UI improvements into native
-widgets. A shared file or module setting alone is not evidence of native feature
-support. Record remaining parity work in `Docs/Project/NATIVE-PORT.md`.
-
-The original port PR is closed in favor of this independent fork. Upstream
-contributions, if useful later, should be small shared fixes prepared separately.
+The assistant guide documents the CLI contract and context limits. Keep requests
+in stdin, preserve exact attachment snapshots and keep provider credentials out
+of application state. Do not silently enable writes, shell tools or external MCP
+tools when a provider changes its CLI. Record actual account-backed verification
+separately from fixture tests.
 
 ## Prepare a version
 
@@ -79,3 +59,9 @@ focused commit. Run lint, tests and `tools/package-linux.sh` and smoke-test the
 result. A `linux-v<version>` tag must match the project version. CI builds both
 architectures and creates a **draft** release for tags; a maintainer reviews its
 notes and artifacts before publishing. Never replace published release contents.
+
+## Shared storage and formats
+
+Compatible fixes to shared vault services and file formats can be incorporated
+selectively. See [the shared-fix workflow](Docs/Engineering/UPSTREAM-SYNC.md).
+Linux interface development and releases stay in this repository.

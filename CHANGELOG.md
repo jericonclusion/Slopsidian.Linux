@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.0-preview.4
+
+- Refine the native assistant with a compact provider toolbar, explicit CLI
+  settings, snapshot attachment rows, a clearer composer and quieter reply actions.
+- Keep request review, cancellation and errors reachable in smaller windows;
+  preserve attached context and composer/provider drafts when toggling settings.
+- Follow streaming output while the reader stays at the bottom and update
+  completed replies when appearance changes.
+- Dock the native terminal below the editor or move it into a separate window
+  without restarting its shell, replacing its buffer or changing its directory.
+- Resize the bottom panel and remember its height and presentation in the app
+  profile; opening the application never starts a shell automatically.
+- Keep docked terminal input separate from editor shortcuts and end the shell on
+  terminal close, module disable or application exit.
+
 ## 0.3.0-preview.3
 
 - Add configurable accent colors with a native color picker, live preview and

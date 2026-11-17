@@ -30,7 +30,7 @@ storage fixes can be incorporated selectively; see CONTRIBUTING.md.
 
 Tests must cover observable workflows, failures and retained drafts. Screenshots
 must compare the native structure with the existing app, rather than accepting
-an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 353 cases, including independent tabs,
+an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 371 cases, including independent tabs,
 recovery sessions, metadata edits, Linux path identity, file transactions,
 Canvas editing and native media previews. Native acceptance remains separate
 from this focused regression suite.
@@ -63,6 +63,7 @@ absence of a row is not evidence of support.
 | Native modules/terminal | Independent persisted assistant/terminal switches; real Linux PTY terminal with Unicode, resizing, interrupt, restart and session cleanup; tested on temporary vaults |
 | Bases | Bounded formulas, source-preserving YAML view edits and filtered/grouped/paginated queries with summaries are tested; native table UI and live vault binding are pending |
 | Framework | .NET 10 with Avalonia 12.1.6, AvaloniaEdit 12.0.0 and DataGrid 12.1.2; their selected assemblies target net10.0 |
+| Appearance | Dark/light/system, subtle grayscale gradients, black/green Matrix and a native RGB accent picker with preview, reset, cancellation and persisted choices; tested |
 | Tux icon | Generated transparent notebook mascot; embedded window asset and Linux menu PNG |
 | Lint/code smells | Recommended .NET analyzers and SonarAnalyzer configured; strict local gate passed with zero warnings and errors |
 | Remaining core/plugin workflows | Port and acceptance still required |

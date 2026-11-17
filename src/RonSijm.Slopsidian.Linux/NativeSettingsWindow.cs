@@ -8,12 +8,13 @@ using RonSijm.Slopsidian.Services;
 
 namespace RonSijm.Slopsidian.Linux;
 
-public sealed class NativeSettingsWindow : Window
+public sealed partial class NativeSettingsWindow : Window
 {
     private static readonly string[] NoteLocationKeys = ["root", "current", "folder"];
     private static readonly string[] LinkFormatKeys = ["shortest", "relative", "absolute"];
     private readonly VaultService? vault;
     private readonly Func<NativeModule, bool, Task>? setModuleEnabled;
+    private readonly Action<NativePreferences>? previewAppearance;
     private NativePreferences preferences;
     private CorePluginSnapshot? core;
     private readonly StackPanel page = new() { Spacing = 20, Margin = new Thickness(28) };
@@ -49,12 +50,14 @@ public sealed class NativeSettingsWindow : Window
     public NativeSettingsWindow(
         NativePreferences current,
         VaultService? selectedVault,
-        Func<NativeModule, bool, Task>? setModuleEnabled = null
+        Func<NativeModule, bool, Task>? setModuleEnabled = null,
+        Action<NativePreferences>? previewAppearance = null
     )
     {
         preferences = current;
         vault = selectedVault;
         this.setModuleEnabled = setModuleEnabled;
+        this.previewAppearance = previewAppearance;
         Title = "Settings — Slopsidian";
         Width = 900;
         Height = 700;
@@ -220,28 +223,6 @@ public sealed class NativeSettingsWindow : Window
         };
         page.Children.Add(toggle);
         page.Children.Add(new TextBlock { Text = description, TextWrapping = TextWrapping.Wrap });
-    }
-
-    private void AppearancePage()
-    {
-        var theme = new ComboBox
-        {
-            ItemsSource = new[] { "dark", "light", "system" },
-            SelectedItem = preferences.Theme,
-            Width = 200,
-        };
-        theme.SelectionChanged += (_, _) =>
-            preferences = preferences with { Theme = theme.SelectedItem as string ?? "dark" };
-        AddField("Base color scheme", theme);
-        page.Children.Add(
-            new TextBlock
-            {
-                Text =
-                    "The native interface uses the same neutral surfaces, violet accent and icon source as Slopsidian. Browser CSS themes do not style native widgets.",
-                Classes = { "muted" },
-                TextWrapping = TextWrapping.Wrap,
-            }
-        );
     }
 
     private async Task FilesPageAsync()

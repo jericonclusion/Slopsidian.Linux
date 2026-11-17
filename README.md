@@ -27,7 +27,8 @@ Ready-to-run downloads: https://github.com/jericonclusion/Slopsidian.Linux/relea
   snapshots, selections, linked notes, backlinks, source navigation and saved replies.
 - A native interactive terminal with copy/paste, resizing and explicit session restart.
 - Independent assistant/terminal switches under **Settings → Native modules**.
-- Dark/light appearance, native settings and an independent Linux version number.
+- Dark, light, system, neutral gradient and Matrix appearances, with a configurable
+  accent color, native settings and an independent Linux version number.
 
 The desktop process uses Avalonia widgets throughout. It requires no Electron,
 Chromium, WebView, Blazor, browser server, Node.js or npm.
@@ -144,6 +145,8 @@ and [the client guide](Docs/Features/NATIVE-LINUX.md).
 ## Screenshots
 
 Actual Linux application captures with synthetic demonstration notes:
+
+![Matrix appearance with native green-on-black editing](Docs/Engineering/NativeLinux/2026-11-17/Screenshots/matrix-workspace.png)
 
 ![Light Canvas preview](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/canvas-previews-light.png)
 

@@ -70,7 +70,7 @@ public sealed class NativeTerminalWindow : Window
             FontSize = 14,
             BufferSize = 2000,
         };
-        control.Bind(TemplatedControl.BackgroundProperty, new DynamicResourceExtension("SurfaceBrush"));
+        control.Bind(TemplatedControl.BackgroundProperty, new DynamicResourceExtension("TerminalSurfaceBrush"));
         control.Bind(TemplatedControl.ForegroundProperty, new DynamicResourceExtension("TextBrush"));
         control.Bind(TerminalControl.CursorColorProperty, new Binding("Foreground.Color") { Source = control });
         control.ProcessExited += (_, args) =>

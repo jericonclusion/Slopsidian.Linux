@@ -122,7 +122,9 @@ public partial class MainWindow
 
     private async void OpenSettings(object? sender, RoutedEventArgs args) => await OpenSettingsAsync();
 
-    private async Task OpenSettingsAsync()
+    private Task OpenSettingsAsync() => OpenSettingsAsync(false);
+
+    private async Task OpenSettingsAsync(bool nativeModules)
     {
         if (busy)
         {
@@ -133,6 +135,10 @@ public partial class MainWindow
             Workspace.Snapshot.Root is null ? null : Workspace.Vault,
             SetNativeModuleEnabledAsync
         );
+        if (nativeModules)
+        {
+            window.ShowNativeModules();
+        }
         var preferences = await window.ShowDialog<NativePreferences?>(this);
         if (preferences is null)
         {

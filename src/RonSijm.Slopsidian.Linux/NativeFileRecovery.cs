@@ -201,7 +201,8 @@ public sealed class NativeFileRecovery(NativeWorkspace workspace, TimeProvider? 
     private async Task<T> RunAsync<T>(Func<Context, Task<T>> operation, CancellationToken cancellationToken)
     {
         var context = new Context(
-            workspace.Snapshot.Root ?? throw new InvalidOperationException("Open a vault first."),
+            workspace.Snapshot.Root
+                ?? throw new NativeActionRequiredException("Open a vault first.", NativeErrorAction.OpenVault),
             workspace.VaultEpoch
         );
         await gate.WaitAsync(cancellationToken);

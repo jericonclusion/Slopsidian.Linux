@@ -30,7 +30,7 @@ storage fixes can be incorporated selectively; see CONTRIBUTING.md.
 
 Tests must cover observable workflows, failures and retained drafts. Screenshots
 must compare the native structure with the existing app, rather than accepting
-an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 344 cases, including independent tabs,
+an unrelated design. The initial 14 tests covered the standalone editor. The native xUnit v3 suite now contains 353 cases, including independent tabs,
 recovery sessions, metadata edits, Linux path identity, file transactions,
 Canvas editing and native media previews. Native acceptance remains separate
 from this focused regression suite.

@@ -37,7 +37,8 @@ public sealed class NativeTrashWindow : Window
     public NativeTrashWindow(NativeWorkspace selectedWorkspace)
     {
         workspace = selectedWorkspace;
-        root = workspace.Snapshot.Root ?? throw new InvalidOperationException("Open a vault first.");
+        root = workspace.Snapshot.Root
+            ?? throw new NativeActionRequiredException("Open a vault first.", NativeErrorAction.OpenVault);
         epoch = workspace.VaultEpoch;
         Title = "Vault trash — Slopsidian";
         Width = 1040;

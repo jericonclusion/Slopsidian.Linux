@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0-preview.3
+
+- Add contextual recovery buttons to native error messages: open/create a vault
+  directly, or jump to Native modules settings for a disabled assistant/terminal.
+- Keep errors when recovery is cancelled, prevent duplicate dialogs and retain
+  newer failures when a previous recovery completes.
+- Bound long error messages so recovery and dismiss controls remain reachable.
+- Add native keyboard, vault creation/opening and recovery-state regression tests.
+
 ## 0.3.0-preview.2
 
 - Add independent CLI assistant and Terminal switches under Settings → Native modules.

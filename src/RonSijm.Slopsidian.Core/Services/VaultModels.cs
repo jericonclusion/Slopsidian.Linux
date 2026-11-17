@@ -36,4 +36,5 @@ public sealed record WorkspaceLayout(int Version, WorkspaceNode Main, string Act
 public sealed class VaultException(string message, int statusCode = 400) : Exception(message)
 {
     public int StatusCode { get; } = statusCode;
+    public bool VaultRequired { get; init; }
 }

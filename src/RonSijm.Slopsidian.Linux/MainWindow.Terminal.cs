@@ -15,7 +15,10 @@ public partial class MainWindow
         {
             if (!profile.State.Preferences.TerminalEnabled)
             {
-                throw new InvalidOperationException("Enable Terminal in Settings → Native modules first.");
+                throw new NativeActionRequiredException(
+                    "Enable Terminal in Settings → Native modules first.",
+                    NativeErrorAction.EnableTerminal
+                );
             }
             if (terminalWindow is not null)
             {

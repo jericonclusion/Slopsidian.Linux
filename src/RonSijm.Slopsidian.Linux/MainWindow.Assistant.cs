@@ -13,14 +13,18 @@ public partial class MainWindow
         {
             if (!profile.State.Preferences.CliAssistantEnabled)
             {
-                throw new InvalidOperationException("Enable CLI assistant in Settings → Native modules first.");
+                throw new NativeActionRequiredException(
+                    "Enable CLI assistant in Settings → Native modules first.",
+                    NativeErrorAction.EnableAssistant
+                );
             }
             if (assistantWindow is not null)
             {
                 assistantWindow.Activate();
                 return;
             }
-            var root = Workspace.Snapshot.Root ?? throw new InvalidOperationException("Open a vault first.");
+            var root = Workspace.Snapshot.Root
+                ?? throw new NativeActionRequiredException("Open a vault first.", NativeErrorAction.OpenVault);
             var epoch = Workspace.VaultEpoch;
             var assistant = new NativeAssistantWindow(
                 Workspace,

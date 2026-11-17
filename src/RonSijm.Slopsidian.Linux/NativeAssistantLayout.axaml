@@ -1,123 +1,231 @@
 <UserControl
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:RonSijm.Slopsidian.Linux"
   x:Class="RonSijm.Slopsidian.Linux.NativeAssistantLayout"
 >
   <UserControl.Resources>
     <x:Double x:Key="TextControlPlaceholderOpacity">1</x:Double>
   </UserControl.Resources>
-  <Grid Name="AssistantRoot" Margin="24" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="16">
-    <StackPanel Spacing="12">
-      <Grid ColumnDefinitions="*,Auto">
-        <TextBlock Text="Assistant" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" />
-        <Button Grid.Column="1" Name="NewConversationButton" Content="New conversation" />
-      </Grid>
-      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-        <TextBlock Text="CLI" VerticalAlignment="Center" />
+  <UserControl.Styles>
+    <Style Selector="Button.assistant-tool">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="8,5" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="ToggleButton.assistant-tool">
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.assistant-tool:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.icon:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+  </UserControl.Styles>
+  <Grid Name="AssistantRoot" RowDefinitions="Auto,Auto,*,Auto">
+    <Border BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,0,0,1" Padding="24,16">
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
         <ComboBox
-          Grid.Column="1"
           Name="ProviderBox"
-          HorizontalAlignment="Stretch"
+          Width="260"
+          HorizontalAlignment="Left"
           AutomationProperties.Name="Assistant CLI provider"
         >
           <ComboBoxItem Content="Codex CLI" />
           <ComboBoxItem Content="Claude Code" />
           <ComboBoxItem Content="GitHub Copilot CLI" />
         </ComboBox>
-        <TextBlock Grid.Column="2" Text="Read &amp; suggest" Classes="muted" VerticalAlignment="Center" />
-      </Grid>
-      <Expander Name="CliSettings" Header="CLI settings" HorizontalAlignment="Stretch">
-        <ScrollViewer Name="CliSettingsScroll" MaxHeight="200" HorizontalScrollBarVisibility="Disabled">
-          <StackPanel Spacing="8">
-            <TextBlock
-              Text="Install and sign in to the CLI in a terminal first. Your existing login is used."
-              TextWrapping="Wrap"
-              Classes="muted"
-            />
-            <TextBlock Text="Executable" />
-            <TextBox Name="ExecutableBox" AutomationProperties.Name="CLI executable" />
-            <TextBlock Text="Model (optional)" />
-            <TextBox
-              Name="ModelBox"
-              PlaceholderText="CLI default"
-              PlaceholderForeground="{DynamicResource MutedBrush}"
-              AutomationProperties.Name="CLI model"
-            />
-            <Button Content="Save CLI settings" Name="SaveCliSettingsButton" HorizontalAlignment="Left" />
+        <Button
+          Grid.Column="1"
+          Name="NewConversationButton"
+          AutomationProperties.Name="New conversation"
+          Classes="assistant-tool create"
+          ToolTip.Tip="Start a new conversation; keep attached snapshots"
+        >
+          <StackPanel Orientation="Horizontal" Spacing="7">
+            <local:NativeIcon Kind="plus" Width="16" Height="16" /><TextBlock Text="New conversation" />
           </StackPanel>
-        </ScrollViewer>
-      </Expander>
-    </StackPanel>
-    <ScrollViewer Grid.Row="1" Name="ConversationScroll" HorizontalScrollBarVisibility="Disabled">
-      <StackPanel Name="ConversationContent" Spacing="24">
-        <StackPanel Name="ConversationEmpty" Spacing="12" Margin="0,20,0,0">
+        </Button>
+        <ToggleButton
+          Grid.Column="2"
+          Name="CliSettingsButton"
+          Classes="assistant-tool"
+          AutomationProperties.Name="CLI settings"
+          ToolTip.Tip="CLI settings: executable and model"
+        >
+          <local:NativeIcon Kind="settings" Width="16" Height="16" />
+        </ToggleButton>
+      </Grid>
+    </Border>
+    <Border
+      Grid.Row="1"
+      Name="CliSettings"
+      IsVisible="{Binding IsChecked, ElementName=CliSettingsButton}"
+      Background="{DynamicResource SidebarBrush}"
+      BorderBrush="{DynamicResource DividerBrush}"
+      BorderThickness="0,0,0,1"
+    >
+      <ScrollViewer Name="CliSettingsScroll" MaxHeight="180" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="12" Margin="24,16">
+          <Grid ColumnDefinitions="2*,*" ColumnSpacing="16">
+            <StackPanel Spacing="8">
+              <TextBlock Text="Executable" />
+              <TextBox Name="ExecutableBox" AutomationProperties.Name="CLI executable" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="8">
+              <TextBlock Text="Model (optional)" />
+              <TextBox
+                Name="ModelBox"
+                PlaceholderText="CLI default"
+                PlaceholderForeground="{DynamicResource MutedBrush}"
+                AutomationProperties.Name="CLI model"
+              />
+            </StackPanel>
+          </Grid>
+          <TextBlock
+            Text="Install and sign in to the CLI in a terminal first. Your existing login is used; requests can read and suggest changes."
+            TextWrapping="Wrap"
+            Classes="muted"
+            FontSize="12"
+          />
+          <Button Content="Save CLI settings" Name="SaveCliSettingsButton" HorizontalAlignment="Left" />
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+    <ScrollViewer Grid.Row="2" Name="ConversationScroll" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel
+        Name="ConversationContent"
+        Spacing="28"
+        Margin="24,24,24,28"
+        MaxWidth="760"
+        HorizontalAlignment="Stretch"
+      >
+        <StackPanel Name="ConversationEmpty" Spacing="12" Margin="8,32" MaxWidth="440" HorizontalAlignment="Left">
+          <local:NativeIcon
+            Kind="assistant"
+            Width="28"
+            Height="28"
+            Foreground="{DynamicResource MutedBrush}"
+            HorizontalAlignment="Left"
+            Margin="0,0,0,8"
+          />
           <TextBlock Text="Work with the notes you choose" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock
-            Text="Attach a note or a selection, add its linked notes, then ask a question. You can review the exact message before sending it."
+            Text="Attach a note or selection, add its references, then ask a question."
             TextWrapping="Wrap"
             LineHeight="24"
           />
           <TextBlock
-            Text="Context is sent to the selected provider when you press Send. Replies stay in this window until you copy or save them."
+            Text="Review the exact message before sending. The CLI can read and suggest; you decide what to save."
             Classes="muted"
             TextWrapping="Wrap"
-            LineHeight="24"
+            LineHeight="22"
           />
         </StackPanel>
       </StackPanel>
     </ScrollViewer>
-    <Expander
-      Grid.Row="2"
-      Name="ContextExpander"
-      Header="Attached context"
-      IsExpanded="True"
-      HorizontalAlignment="Stretch"
+    <Border
+      Grid.Row="3"
+      Background="{DynamicResource SidebarBrush}"
+      BorderBrush="{DynamicResource DividerBrush}"
+      BorderThickness="0,1,0,0"
+      Padding="24,14,24,18"
     >
-      <ScrollViewer Name="ContextScroll" MaxHeight="200" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Spacing="8">
-          <WrapPanel Name="AttachmentActions">
-            <Button Content="Active note" Name="AttachActiveButton" Margin="0,0,6,6" />
-            <Button Content="Selection" Name="AttachSelectionButton" Margin="0,0,6,6" />
-            <Button Content="Note…" Name="AttachOtherButton" Margin="0,0,6,6" />
-            <Button Content="Linked notes" Name="AttachLinkedButton" Margin="0,0,6,6" />
-            <Button Content="Backlinks" Name="AttachBacklinksButton" Margin="0,0,6,6" />
-          </WrapPanel>
-          <StackPanel Name="AttachmentList" Spacing="6" />
-          <TextBlock Name="ContextStatus" Text="No notes attached." Classes="muted" TextWrapping="Wrap" FontSize="12" />
-        </StackPanel>
-      </ScrollViewer>
-    </Expander>
-    <StackPanel Grid.Row="3" Spacing="10">
-      <TextBox
-        Name="PromptBox"
-        AcceptsReturn="True"
-        TextWrapping="Wrap"
-        MinHeight="84"
-        MaxHeight="150"
-        MaxLength="8000"
-        PlaceholderText="Ask about your notes…"
-        PlaceholderForeground="{DynamicResource MutedBrush}"
-        AutomationProperties.Name="Assistant request"
-      />
-      <ScrollViewer MaxHeight="56" HorizontalScrollBarVisibility="Disabled">
-        <TextBlock
-          Name="AssistantStatus"
-          Text="Conversation is kept for this window only."
-          Classes="muted"
+      <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+          <TextBlock Text="Context" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" />
+          <TextBlock
+            Grid.Column="1"
+            Name="ContextStatus"
+            Text="No notes attached"
+            Classes="muted"
+            FontSize="12"
+            TextTrimming="CharacterEllipsis"
+            VerticalAlignment="Center"
+            ToolTip.Tip="Attachments are snapshots. Reattach a note to refresh edited text."
+          />
+        </Grid>
+        <ScrollViewer Name="ContextScroll" MaxHeight="88" HorizontalScrollBarVisibility="Disabled" IsVisible="False">
+          <StackPanel Name="AttachmentList" Spacing="4" />
+        </ScrollViewer>
+        <WrapPanel Name="AttachmentActions">
+          <Button
+            Name="AttachActiveButton"
+            Classes="assistant-tool create"
+            Margin="0,0,4,0"
+            ToolTip.Tip="Attach or refresh the active note"
+          >
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <local:NativeIcon Kind="plus" Width="14" Height="14" /><TextBlock Text="Active note" />
+            </StackPanel>
+          </Button>
+          <Button
+            Content="Selection"
+            Name="AttachSelectionButton"
+            Classes="assistant-tool"
+            Margin="0,0,4,0"
+            ToolTip.Tip="Attach the selected source text"
+          />
+          <Button
+            Content="Note…"
+            Name="AttachOtherButton"
+            Classes="assistant-tool"
+            Margin="0,0,4,0"
+            ToolTip.Tip="Choose another note to attach"
+          />
+          <Button Content="Linked notes" Name="AttachLinkedButton" Classes="assistant-tool" Margin="0,0,4,0" />
+          <Button Content="Backlinks" Name="AttachBacklinksButton" Classes="assistant-tool" />
+        </WrapPanel>
+        <TextBox
+          Name="PromptBox"
+          AcceptsReturn="True"
           TextWrapping="Wrap"
+          MinHeight="84"
+          MaxHeight="132"
+          MaxLength="8000"
+          Padding="12,10"
+          Background="{DynamicResource SurfaceBrush}"
+          PlaceholderText="Ask about your notes…"
+          PlaceholderForeground="{DynamicResource MutedBrush}"
+          AutomationProperties.Name="Assistant request"
         />
-      </ScrollViewer>
-      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-        <Button Name="PreviewMessageButton" Content="Review message" HorizontalAlignment="Left" />
-        <Button Grid.Column="1" Name="StopButton" Content="Stop" IsVisible="False" />
-        <Button
-          Grid.Column="2"
-          Name="SendButton"
-          Content="Send"
-          Foreground="{DynamicResource AssistantActionBrush}"
-          ToolTip.Tip="Send (Ctrl+Enter)"
-        />
-      </Grid>
-    </StackPanel>
+        <ScrollViewer MaxHeight="42" HorizontalScrollBarVisibility="Disabled">
+          <TextBlock
+            Name="AssistantStatus"
+            Text="Replies stay here until you copy or save them."
+            Classes="muted"
+            TextWrapping="Wrap"
+            FontSize="12"
+          />
+        </ScrollViewer>
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+          <Button
+            Name="PreviewMessageButton"
+            Content="Review message"
+            Classes="assistant-tool"
+            HorizontalAlignment="Left"
+            IsEnabled="False"
+          />
+          <Button Grid.Column="1" Name="StopButton" Content="Stop" IsVisible="False" ToolTip.Tip="Stop request (Esc)" />
+          <Button
+            Grid.Column="2"
+            Name="SendButton"
+            AutomationProperties.Name="Send request"
+            Classes="accent"
+            IsEnabled="False"
+            ToolTip.Tip="Send (Ctrl+Enter)"
+          >
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="Send" /><local:NativeIcon Kind="arrow-up" Width="16" Height="16" />
+            </StackPanel>
+          </Button>
+        </Grid>
+      </StackPanel>
+    </Border>
   </Grid>
 </UserControl>

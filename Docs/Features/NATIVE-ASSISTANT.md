@@ -23,7 +23,9 @@ requests. Switching it back on keeps executable/model settings; conversations
 are not restored. These switches do not load Obsidian community plugins or
 change vault `.obsidian/core-plugins.json`.
 
-Choose the provider. In **CLI settings**, set an absolute executable path if the
+Choose the provider in the toolbar. Open **CLI settings** with the gear
+button; the executable and model fields retain their drafts when you close and
+reopen the panel. In **CLI settings**, set an absolute executable path if the
 command is absent from the desktop's `PATH`. An optional model name is passed as
 one argument. Settings are stored in the private native profile; credentials are
 managed by the CLI and are not copied into application state.
@@ -43,7 +45,8 @@ Editing a note afterwards does not update an existing attachment.
 - **Note…** selects another Markdown note in the current vault.
 - **Linked notes** and **Backlinks** attach one level of related Markdown notes
   from the currently active note. They do not recursively load the vault.
-- **Inspect** shows the exact snapshot. Remove unwanted attachments before sending.
+- Click an attached snapshot row to inspect its exact text. The red trash button
+  removes that attachment. Reattach a note to refresh its snapshot after editing.
 
 Wikilinks, aliases and relative Markdown links resolve through the native vault
 model. Heading/block fragments remain in the reference map. Unresolved and
@@ -60,7 +63,13 @@ return the entire answer at completion. **Stop**, **Esc**, closing the window or
 switching vaults cancels a running request. Failed/stopped requests remain in the
 composer, and partial replies are excluded from follow-up context.
 
-Replies render as native Markdown. Citations open exact vault paths, headings or
+The composer stays below the conversation, with attached context visible above
+it. In a short window, opening CLI settings temporarily replaces the attachment
+controls with their summary; closing settings restores the same attachments.
+Request review, Stop and errors remain reachable. Blank requests cannot be sent.
+
+Replies render as native Markdown. Streaming output follows the bottom until you
+scroll up; completed replies follow appearance changes without clearing the chat. Citations open exact vault paths, headings or
 blocks. **Copy reply** copies Markdown. **Save as new note…** asks for a free path
 and uses the guarded vault API; it never replaces an existing note.
 

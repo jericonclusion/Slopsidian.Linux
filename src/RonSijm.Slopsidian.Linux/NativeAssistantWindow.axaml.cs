@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -16,7 +17,8 @@ public sealed partial class NativeAssistantWindow : Window
     private TextBox PromptBox => layout.FindControl<TextBox>("PromptBox")!;
     private TextBlock AssistantStatus => layout.FindControl<TextBlock>("AssistantStatus")!;
     private TextBlock ContextStatus => layout.FindControl<TextBlock>("ContextStatus")!;
-    private Expander CliSettings => layout.FindControl<Expander>("CliSettings")!;
+    private Border CliSettings => layout.FindControl<Border>("CliSettings")!;
+    private ToggleButton CliSettingsButton => layout.FindControl<ToggleButton>("CliSettingsButton")!;
     private WrapPanel AttachmentActions => layout.FindControl<WrapPanel>("AttachmentActions")!;
     private StackPanel AttachmentList => layout.FindControl<StackPanel>("AttachmentList")!;
     private StackPanel ConversationContent => layout.FindControl<StackPanel>("ConversationContent")!;
@@ -35,6 +37,8 @@ public sealed partial class NativeAssistantWindow : Window
     private readonly Func<NativeAssistantSettings, Task> persist;
     private readonly List<NativeAssistantAttachment> attachments = [];
     private readonly List<NativeAssistantTurn> history = [];
+    private readonly List<(StackPanel Body, string Answer, NativeAssistantAttachment[] Context)> renderedReplies = [];
+    private readonly App? appearanceApp;
     private NativeAssistantSettings settings;
     private CancellationTokenSource? request;
     private bool changingProvider;
@@ -61,7 +65,7 @@ public sealed partial class NativeAssistantWindow : Window
         epoch = workspace.VaultEpoch;
         Title = "Assistant — Slopsidian Linux";
         Width = 860;
-        Height = 900;
+        Height = 860;
         MinWidth = 560;
         MinHeight = 680;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -78,30 +82,25 @@ public sealed partial class NativeAssistantWindow : Window
         PreviewMessageButton.Click += PreviewMessage;
         SendButton.Click += SendRequest;
         StopButton.Click += StopRequest;
-        var contextExpander = layout.FindControl<Expander>("ContextExpander")!;
-        CliSettings.PropertyChanged += (_, args) =>
-        {
-            if (args.Property == Expander.IsExpandedProperty && CliSettings.IsExpanded)
-            {
-                contextExpander.IsExpanded = false;
-            }
-        };
-        contextExpander.PropertyChanged += (_, args) =>
-        {
-            if (args.Property == Expander.IsExpandedProperty && contextExpander.IsExpanded)
-            {
-                CliSettings.IsExpanded = false;
-            }
-        };
+        PromptBox.TextChanged += (_, _) => UpdateComposerActions();
         changingProvider = true;
         ProviderBox.SelectedIndex = (int)settings.Provider;
         LoadProvider();
         changingProvider = false;
         KeyDown += HandleKey;
+        appearanceApp = Application.Current as App;
+        if (appearanceApp is not null)
+        {
+            appearanceApp.AppearanceChanged += RefreshReplyAppearance;
+        }
         Closed += (_, _) =>
         {
             closed = true;
             request?.Cancel();
+            if (appearanceApp is not null)
+            {
+                appearanceApp.AppearanceChanged -= RefreshReplyAppearance;
+            }
         };
     }
 
@@ -123,24 +122,25 @@ public sealed partial class NativeAssistantWindow : Window
                 {
                     return;
                 }
-                var context = layout.FindControl<Expander>("ContextExpander")!;
-                var scrolling = CliSettings.IsExpanded ? layout.FindControl<ScrollViewer>("CliSettingsScroll") : null;
-                if (scrolling is null && context.IsExpanded)
-                {
-                    scrolling = layout.FindControl<ScrollViewer>("ContextScroll");
-                }
-                if (scrolling is null)
-                {
-                    return;
-                }
                 var grid = layout.FindControl<Grid>("AssistantRoot")!;
+                PromptBox.MaxHeight = ClientSize.Height < 760 ? 84 : 132;
+                var detailsVisible = !CliSettings.IsVisible || ClientSize.Height >= 800;
+                AttachmentActions.IsVisible = detailsVisible;
+                var context = layout.FindControl<ScrollViewer>("ContextScroll")!;
+                context.IsVisible = detailsVisible && attachments.Count > 0;
+                var scrolling = CliSettings.IsVisible
+                    ? layout.FindControl<ScrollViewer>("CliSettingsScroll")!
+                    : context;
                 var occupied =
                     grid.RowDefinitions[0].ActualHeight
-                    + grid.RowDefinitions[2].ActualHeight
-                    + grid.RowDefinitions[3].ActualHeight
-                    + 3 * grid.RowSpacing;
+                    + grid.RowDefinitions[1].ActualHeight
+                    + grid.RowDefinitions[3].ActualHeight;
                 // Measure the actual native font/control sizes before reserving a readable transcript.
-                var maximum = Math.Clamp(scrolling.Bounds.Height + grid.Bounds.Height - occupied - 120, 0, 200);
+                var maximum = Math.Clamp(
+                    scrolling.Bounds.Height + grid.Bounds.Height - occupied - 120,
+                    0,
+                    CliSettings.IsVisible ? 180 : 88
+                );
                 if (Math.Abs(scrolling.MaxHeight - maximum) > 1)
                 {
                     scrolling.MaxHeight = maximum;
@@ -191,6 +191,13 @@ public sealed partial class NativeAssistantWindow : Window
         AssistantStatus.Text = text;
     }
 
+    private void UpdateComposerActions()
+    {
+        var available = !IsRunning && !string.IsNullOrWhiteSpace(PromptBox.Text);
+        SendButton.IsEnabled = available;
+        PreviewMessageButton.IsEnabled = available;
+    }
+
     private NativeAssistantProvider Provider => (NativeAssistantProvider)ProviderBox.SelectedIndex;
 
     private void LoadProvider()
@@ -236,6 +243,7 @@ public sealed partial class NativeAssistantWindow : Window
     private void ResetConversation()
     {
         history.Clear();
+        renderedReplies.Clear();
         ConversationContent.Children.Clear();
         ConversationContent.Children.Add(ConversationEmpty);
         ConversationEmpty.IsVisible = true;

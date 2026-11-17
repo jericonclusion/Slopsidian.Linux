@@ -1,0 +1,751 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T08:50:42Z",
+  "title": "Design System: Slopsidian Linux",
+  "extensions": {
+    "colorMeta": {
+      "gradient-dark-surface-start": {
+        "role": "neutral",
+        "displayName": "gradient-dark SurfaceBrush start",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-dark-surface-middle": {
+        "role": "neutral",
+        "displayName": "gradient-dark SurfaceBrush middle",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-dark-surface-end": {
+        "role": "neutral",
+        "displayName": "gradient-dark SurfaceBrush end",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-dark-sidebar-start": {
+        "role": "neutral",
+        "displayName": "gradient-dark SidebarBrush start",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-dark-sidebar-end": {
+        "role": "neutral",
+        "displayName": "gradient-dark SidebarBrush end",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-dark-ribbon-start": {
+        "role": "neutral",
+        "displayName": "gradient-dark RibbonBrush start",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-dark-ribbon-end": {
+        "role": "neutral",
+        "displayName": "gradient-dark RibbonBrush end",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-light-surface-start": {
+        "role": "neutral",
+        "displayName": "gradient-light SurfaceBrush start",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-light-surface-middle": {
+        "role": "neutral",
+        "displayName": "gradient-light SurfaceBrush middle",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-light-surface-end": {
+        "role": "neutral",
+        "displayName": "gradient-light SurfaceBrush end",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-light-sidebar-start": {
+        "role": "neutral",
+        "displayName": "gradient-light SidebarBrush start",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-light-sidebar-end": {
+        "role": "neutral",
+        "displayName": "gradient-light SidebarBrush end",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-light-ribbon-start": {
+        "role": "neutral",
+        "displayName": "gradient-light RibbonBrush start",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "gradient-light-ribbon-end": {
+        "role": "neutral",
+        "displayName": "gradient-light RibbonBrush end",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-surface": {
+        "role": "neutral",
+        "displayName": "matrix SurfaceBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-sidebar": {
+        "role": "neutral",
+        "displayName": "matrix SidebarBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-ribbon": {
+        "role": "neutral",
+        "displayName": "matrix RibbonBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-divider": {
+        "role": "neutral",
+        "displayName": "matrix DividerBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-text": {
+        "role": "neutral",
+        "displayName": "matrix TextBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-muted": {
+        "role": "neutral",
+        "displayName": "matrix MutedBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-native-accent": {
+        "role": "primary",
+        "displayName": "matrix AccentBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-create": {
+        "role": "semantic",
+        "displayName": "matrix CreateBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "matrix-assistant-action": {
+        "role": "semantic",
+        "displayName": "matrix AssistantActionBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "dark SurfaceBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-sidebar": {
+        "role": "neutral",
+        "displayName": "dark SidebarBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-ribbon": {
+        "role": "neutral",
+        "displayName": "dark RibbonBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-divider": {
+        "role": "neutral",
+        "displayName": "dark DividerBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-text": {
+        "role": "neutral",
+        "displayName": "dark TextBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-muted": {
+        "role": "neutral",
+        "displayName": "dark MutedBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-native-accent": {
+        "role": "primary",
+        "displayName": "dark AccentBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-error": {
+        "role": "semantic",
+        "displayName": "dark ErrorBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-error-surface": {
+        "role": "semantic",
+        "displayName": "dark ErrorSurfaceBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-create": {
+        "role": "semantic",
+        "displayName": "dark CreateBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-assistant-action": {
+        "role": "semantic",
+        "displayName": "dark AssistantActionBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-surface": {
+        "role": "neutral",
+        "displayName": "light SurfaceBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-sidebar": {
+        "role": "neutral",
+        "displayName": "light SidebarBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-ribbon": {
+        "role": "neutral",
+        "displayName": "light RibbonBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-divider": {
+        "role": "neutral",
+        "displayName": "light DividerBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-text": {
+        "role": "neutral",
+        "displayName": "light TextBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-muted": {
+        "role": "neutral",
+        "displayName": "light MutedBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-native-accent": {
+        "role": "primary",
+        "displayName": "light AccentBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-error": {
+        "role": "semantic",
+        "displayName": "light ErrorBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-error-surface": {
+        "role": "semantic",
+        "displayName": "light ErrorSurfaceBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-create": {
+        "role": "semantic",
+        "displayName": "light CreateBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "light-assistant-action": {
+        "role": "semantic",
+        "displayName": "light AssistantActionBrush",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml"
+      },
+      "dark-fluent-accent": {
+        "role": "primary",
+        "displayName": "Dark Fluent control accent",
+        "source": "src/RonSijm.Slopsidian.Linux/App.axaml; App.axaml.cs"
+      }
+    },
+    "typographyMeta": {
+      "body": {
+        "displayName": "Native UI",
+        "purpose": "Window default and field labels."
+      },
+      "title": {
+        "displayName": "Settings section title",
+        "purpose": "Current native Settings section heading."
+      },
+      "tab": {
+        "displayName": "Native tabs",
+        "purpose": "App-owned TabItem size override."
+      },
+      "metadata": {
+        "displayName": "Supporting metadata",
+        "purpose": "Paths and secondary note-result content."
+      },
+      "editor": {
+        "displayName": "Source editor",
+        "purpose": "Saved preference defaults to 16 logical units; apply within 10–32."
+      },
+      "terminal": {
+        "displayName": "Native terminal",
+        "purpose": "PTY content in the existing native terminal."
+      }
+    },
+    "nativeAvalonia": {
+      "sourceAuthority": {
+        "platform": "Linux / Avalonia / .NET 10",
+        "commit": "bb1ac4e119f82edc437e5c4483e5e95bdb61f65c",
+        "branch": "feat/appearance-customization",
+        "unit": "Avalonia logical units; frontmatter px is a portable representation",
+        "note": "Native source is authoritative. No HTML/CSS component translation, synthesized tonal ramp, shadow, motion or breakpoint scale is introduced."
+      },
+      "sources": [
+        "src/RonSijm.Slopsidian.Linux/App.axaml",
+        "src/RonSijm.Slopsidian.Linux/App.axaml.cs",
+        "src/RonSijm.Slopsidian.Linux/NativeAppearance.cs",
+        "src/RonSijm.Slopsidian.Linux/NativeSettingsWindow.Appearance.cs",
+        "src/RonSijm.Slopsidian.Linux/NativeSettingsWindow.cs",
+        "src/RonSijm.Slopsidian.Linux/MainWindow.axaml",
+        "src/RonSijm.Slopsidian.Linux/MainWindow.Dialogs.cs",
+        "src/RonSijm.Slopsidian.Linux/NativeProfile.cs",
+        "src/RonSijm.Slopsidian.Linux/NativeTerminalWindow.cs"
+      ],
+      "themeChoices": [
+        {
+          "id": "dark",
+          "name": "Dark",
+          "variant": "Dark"
+        },
+        {
+          "id": "light",
+          "name": "Light",
+          "variant": "Light"
+        },
+        {
+          "id": "system",
+          "name": "System",
+          "variant": "Default",
+          "behavior": "Follows actual OS theme."
+        },
+        {
+          "id": "gradient-dark",
+          "name": "Gradient dark",
+          "variant": "GradientDark"
+        },
+        {
+          "id": "gradient-light",
+          "name": "Gradient light",
+          "variant": "GradientLight"
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix",
+          "variant": "Matrix"
+        }
+      ],
+      "palettes": {
+        "gradient-dark": {
+          "inherits": "dark",
+          "resources": {
+            "SurfaceBrush": {
+              "type": "LinearGradientBrush",
+              "startPoint": "0%,0%",
+              "endPoint": "100%,100%",
+              "stops": [
+                {
+                  "offset": 0.0,
+                  "color": "{colors.gradient-dark-surface-start}"
+                },
+                {
+                  "offset": 0.5,
+                  "color": "{colors.gradient-dark-surface-middle}"
+                },
+                {
+                  "offset": 1.0,
+                  "color": "{colors.gradient-dark-surface-end}"
+                }
+              ]
+            },
+            "SidebarBrush": {
+              "type": "LinearGradientBrush",
+              "startPoint": "0%,0%",
+              "endPoint": "0%,100%",
+              "stops": [
+                {
+                  "offset": 0.0,
+                  "color": "{colors.gradient-dark-sidebar-start}"
+                },
+                {
+                  "offset": 1.0,
+                  "color": "{colors.gradient-dark-sidebar-end}"
+                }
+              ]
+            },
+            "RibbonBrush": {
+              "type": "LinearGradientBrush",
+              "startPoint": "0%,0%",
+              "endPoint": "0%,100%",
+              "stops": [
+                {
+                  "offset": 0.0,
+                  "color": "{colors.gradient-dark-ribbon-start}"
+                },
+                {
+                  "offset": 1.0,
+                  "color": "{colors.gradient-dark-ribbon-end}"
+                }
+              ]
+            }
+          }
+        },
+        "gradient-light": {
+          "inherits": "light",
+          "resources": {
+            "SurfaceBrush": {
+              "type": "LinearGradientBrush",
+              "startPoint": "0%,0%",
+              "endPoint": "100%,100%",
+              "stops": [
+                {
+                  "offset": 0.0,
+                  "color": "{colors.gradient-light-surface-start}"
+                },
+                {
+                  "offset": 0.5,
+                  "color": "{colors.gradient-light-surface-middle}"
+                },
+                {
+                  "offset": 1.0,
+                  "color": "{colors.gradient-light-surface-end}"
+                }
+              ]
+            },
+            "SidebarBrush": {
+              "type": "LinearGradientBrush",
+              "startPoint": "0%,0%",
+              "endPoint": "0%,100%",
+              "stops": [
+                {
+                  "offset": 0.0,
+                  "color": "{colors.gradient-light-sidebar-start}"
+                },
+                {
+                  "offset": 1.0,
+                  "color": "{colors.gradient-light-sidebar-end}"
+                }
+              ]
+            },
+            "RibbonBrush": {
+              "type": "LinearGradientBrush",
+              "startPoint": "0%,0%",
+              "endPoint": "0%,100%",
+              "stops": [
+                {
+                  "offset": 0.0,
+                  "color": "{colors.gradient-light-ribbon-start}"
+                },
+                {
+                  "offset": 1.0,
+                  "color": "{colors.gradient-light-ribbon-end}"
+                }
+              ]
+            }
+          }
+        },
+        "matrix": {
+          "inherits": "dark",
+          "resources": {
+            "TerminalSurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-surface}"
+            },
+            "SurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-surface}"
+            },
+            "SidebarBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-sidebar}"
+            },
+            "RibbonBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-ribbon}"
+            },
+            "DividerBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-divider}"
+            },
+            "TextBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-text}"
+            },
+            "MutedBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-muted}"
+            },
+            "AccentBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-native-accent}"
+            },
+            "CreateBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-create}"
+            },
+            "AssistantActionBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.matrix-assistant-action}"
+            }
+          }
+        },
+        "dark": {
+          "inherits": null,
+          "resources": {
+            "TerminalSurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-surface}"
+            },
+            "SurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-surface}"
+            },
+            "SidebarBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-sidebar}"
+            },
+            "RibbonBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-ribbon}"
+            },
+            "DividerBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-divider}"
+            },
+            "TextBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-text}"
+            },
+            "MutedBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-muted}"
+            },
+            "AccentBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-native-accent}"
+            },
+            "ErrorBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-error}"
+            },
+            "ErrorSurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-error-surface}"
+            },
+            "CreateBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-create}"
+            },
+            "AssistantActionBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.dark-assistant-action}"
+            }
+          }
+        },
+        "light": {
+          "inherits": null,
+          "resources": {
+            "TerminalSurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-surface}"
+            },
+            "SurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-surface}"
+            },
+            "SidebarBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-sidebar}"
+            },
+            "RibbonBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-ribbon}"
+            },
+            "DividerBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-divider}"
+            },
+            "TextBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-text}"
+            },
+            "MutedBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-muted}"
+            },
+            "AccentBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-native-accent}"
+            },
+            "ErrorBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-error}"
+            },
+            "ErrorSurfaceBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-error-surface}"
+            },
+            "CreateBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-create}"
+            },
+            "AssistantActionBrush": {
+              "type": "SolidColorBrush",
+              "color": "{colors.light-assistant-action}"
+            }
+          }
+        }
+      },
+      "fluentAccents": {
+        "darkDefault": "{colors.dark-fluent-accent}",
+        "lightDefault": "{colors.light-native-accent}",
+        "matrixDefault": "NativeAppearance.ControlAccent({colors.matrix-native-accent})",
+        "custom": "NativeAppearance.ControlAccent(selectedRGB)",
+        "nativeAccentIsSeparate": true
+      },
+      "customAccentPolicy": {
+        "format": "Opaque #RRGGBB only; FormatAccent uses uppercase hex. Stored RGB channels remain exact.",
+        "textRole": "NativeAppearance.ReadableAccent(selectedRGB, actualThemeVariant)",
+        "controlRole": "NativeAppearance.ControlAccent(selectedRGB)",
+        "contrastMinimum": 4.5,
+        "textContrastAnchors": {
+          "dark": "#2D2D2D",
+          "light": "#E5E5E5",
+          "matrix": "#0E1B11"
+        },
+        "textBlendTarget": {
+          "dark": "white",
+          "light": "black",
+          "matrix": "white"
+        },
+        "controlContrastBackground": "white",
+        "controlBlendTarget": "black",
+        "algorithm": "Keep compliant color; otherwise 20-step binary search over blend amount, with RGB channels rounded to bytes.",
+        "application": "App updates Fluent palette control accents and the custom AccentBrush text shade; actual-theme changes reapply derivation. No custom override restores the original theme resource and distinct default Fluent roles."
+      },
+      "components": [
+        {
+          "name": "Native button",
+          "source": "App.axaml: Button",
+          "refersTo": "button",
+          "states": "Inherited Fluent hover, focus, pressed and disabled templates."
+        },
+        {
+          "name": "Native icon button",
+          "source": "App.axaml: Button.icon",
+          "refersTo": "button-icon-dark",
+          "properties": {
+            "BorderThickness": "0",
+            "MinWidth": 28,
+            "MinHeight": 28,
+            "Foreground": "{DynamicResource MutedBrush}"
+          },
+          "classOverrides": "create and dismiss change foreground to their semantic native resource."
+        },
+        {
+          "name": "Document tab",
+          "source": "App.axaml: ListBox.document-tabs ListBoxItem",
+          "refersTo": "document-tab-selected-dark",
+          "properties": {
+            "Margin": "0,3,2,0",
+            "MinHeight": 36,
+            "SelectedBackground": "{DynamicResource SurfaceBrush}",
+            "SelectedForeground": "{DynamicResource TextBrush}"
+          }
+        },
+        {
+          "name": "Settings navigation",
+          "source": "NativeSettingsWindow.cs: SettingsSections",
+          "control": "ListBox",
+          "selection": "Fluent palette control accent; retain native interaction."
+        },
+        {
+          "name": "Theme selector",
+          "source": "NativeSettingsWindow.Appearance.cs: ThemePicker",
+          "control": "ComboBox",
+          "properties": {
+            "Width": 240,
+            "ItemsSource": "NativeAppearance.Choices"
+          }
+        },
+        {
+          "name": "Accent picker",
+          "source": "NativeSettingsWindow.Appearance.cs: AccentColorPicker",
+          "control": "Avalonia.Controls.ColorPicker",
+          "properties": {
+            "Width": 100,
+            "IsAlphaEnabled": false,
+            "IsAlphaVisible": false,
+            "IsColorComponentsVisible": true,
+            "IsColorModelVisible": false,
+            "IsHexInputVisible": true,
+            "AutomationName": "Accent color"
+          },
+          "behavior": "Spectrum and palette tabs plus RGB/hex on the components/sliders tab. Adjacent value displays selected RGB; rendered accent shades may differ for contrast."
+        },
+        {
+          "name": "Accent reset",
+          "source": "NativeSettingsWindow.Appearance.cs: ResetAccentButton",
+          "control": "Button",
+          "content": "Use theme default",
+          "behavior": "Clears optional AccentColor and previews the current preset; disabled without a custom value."
+        },
+        {
+          "name": "Source editor",
+          "source": "MainWindow.axaml: Editor",
+          "refersTo": "editor-dark",
+          "variants": [
+            "editor-light",
+            "editor-matrix"
+          ],
+          "bindings": {
+            "Background": "{DynamicResource SurfaceBrush}",
+            "Foreground": "{DynamicResource TextBrush}"
+          }
+        },
+        {
+          "name": "Native terminal",
+          "source": "NativeTerminalWindow.cs: CreateTerminal",
+          "control": "TerminalControl",
+          "bindings": {
+            "Background": "{DynamicResource TerminalSurfaceBrush}",
+            "Foreground": "{DynamicResource TextBrush}",
+            "CursorColor": "Foreground.Color"
+          },
+          "invariant": "Background is solid in every preset; live theme switches preserve the existing PTY."
+        }
+      ],
+      "settingsBehavior": {
+        "preview": "Theme, custom color and reset apply immediately.",
+        "presetChange": "Preserves selected custom RGB.",
+        "done": "Return NativePreferences to owner, apply and persist in private profile.",
+        "cancel": "Close without Done restores saved appearance and keeps independently persisted native-module choices.",
+        "profile": "Optional AccentColor preserves backward compatibility; preferences save without an open vault."
+      },
+      "evidence": {
+        "reviewRecord": "Docs/Engineering/NativeLinux/2026-11-17/APPEARANCE-REVIEW.md",
+        "captureDirectory": ".impeccable/review/appearance",
+        "captures": [
+          "gradient-dark-workspace.png",
+          "gradient-light-workspace.png",
+          "matrix-workspace.png",
+          "appearance-gradient-dark.png",
+          "appearance-gradient-light.png",
+          "appearance-matrix.png",
+          "appearance-narrow.png",
+          "appearance-color-picker.png",
+          "accent-custom-workspace.png"
+        ],
+        "pickerCapture": "900×950 native flyout open on spectrum tab, with components/sliders tab present. RGB/hex enablement is verified in source; fields are on that other tab.",
+        "scope": "Scoped native appearance extraction; parent validation records 18 focused cases, 371 full-suite passes and strict lint with zero warnings/errors; independent finish review disposition ship."
+      }
+    }
+  },
+  "narrative": {
+    "overview": "Slopsidian Linux is a native Avalonia workspace for operating on notes. Preserve\nthe incumbent typography, icon geometry, pane layout and Fluent controls. The\napproved appearance expansion adds a custom accent, subtle neutral gradients and\na classic black/green Matrix preset to the existing Dark, Light and System modes.\n\nThe direction is neutral and restrained, with static, readable green content for\nMatrix. Theme choice changes color and surface treatment within the same native\ninterface. This document extracts the implementation at commit `bb1ac4e`; native\nsource remains authoritative. `.impeccable/design.json` maps these tokens to\nresource keys, gradient stops and native behavior without an HTML recreation.",
+    "keyCharacteristics": [
+      "Existing flat Dark and Light palettes, with System following the actual OS theme.",
+      "Subtle gradients made exclusively from gray, white and black stops.",
+      "Near-black Matrix surfaces, green text and a green default accent.",
+      "Native controls, visible labels and immediate appearance previews."
+    ],
+    "rules": [
+      {
+        "name": "The Solid Terminal Rule",
+        "body": "TerminalSurfaceBrush always remains a solid brush, including under gradient themes, because the native terminal's ANSI renderer requires a solid background. Theme changes keep the existing PTY alive.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do preserve the flat palettes, native fonts, icon geometry and existing pane layout.",
+      "Do use the active native resource role and variant inheritance for new controls.",
+      "Do keep every gradient stop monochrome and its shading subtle.",
+      "Do retain the exact selected RGB while deriving readable text and control accents.",
+      "Do keep terminal buffers solid and preserve the live PTY during theme changes."
+    ],
+    "donts": [
+      "Don't merge Dark's native and Fluent default violet roles.",
+      "Don't replace semantic create, assistant or error colors with the custom accent.",
+      "Don't add Matrix rain, a new font or new motion to the approved static preset.",
+      "Don't substitute an HTML, Electron or WebView rendering for native controls."
+    ]
+  }
+}

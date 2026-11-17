@@ -2,6 +2,13 @@
 
 ## 0.3.0-preview.3
 
+- Add configurable accent colors with a native color picker, live preview and
+  restore-to-default behavior in Appearance settings.
+- Add subtle neutral Gradient dark/Gradient light presets and a black/green Matrix
+  preset, retaining flat Dark/Light and system appearance.
+- Persist appearance choices and restore the previous look when settings are
+  cancelled; keep terminal text readable across all presets.
+
 - Add contextual recovery buttons to native error messages: open/create a vault
   directly, or jump to Native modules settings for a disabled assistant/terminal.
 - Keep errors when recovery is cancelled, prevent duplicate dialogs and retain

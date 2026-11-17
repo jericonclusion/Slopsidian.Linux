@@ -1,8 +1,8 @@
 # Native Linux client
 
 Slopsidian Linux is a local Markdown workspace built with .NET 10/Avalonia 12 widgets.
-Avalonia 12.1.6, AvaloniaEdit 12.0.0 and DataGrid 12.1.2 use their `net10.0`
-assemblies. The self-contained Linux package includes the .NET 10 runtime.
+Avalonia 12.1.6, AvaloniaEdit 12.0.0, DataGrid 12.1.2 and ColorPicker 12.1.6
+use their `net10.0` assemblies. The self-contained Linux package includes the .NET 10 runtime.
 Some transitive shaping/D-Bus libraries retain compatible `net8.0`/`net9.0`
 assemblies; those do not require installing an older .NET runtime.
 
@@ -90,6 +90,20 @@ The interface preserves Slopsidian's dark/light neutral palette, violet accent,
 source icon geometry and workspace arrangement. The Linux application icon is
 an original generated Tux with an absurd violet notebook. Its generation prompt
 is retained in the asset provenance file and PNG metadata.
+
+## Appearance
+
+Open Settings → Appearance to choose Dark, Light, System, Gradient dark,
+Gradient light or Matrix. Gradient presets use subtle gray-only backgrounds;
+Matrix uses near-black panes and green text/accents.
+
+Use the native color picker for an accent color. Its components tab (sliders
+icon) includes RGB controls and hex input.
+**Use theme default** restores the current preset’s accent. A custom choice is
+kept when switching presets; accent shades adapt for readability. Changes preview
+immediately. **Done** saves them in the private profile; closing Settings without
+Done restores the previously saved look. Native module switches remain immediate
+and independent. Terminal buffers retain solid backgrounds for ANSI readability.
 
 ## Build and verify
 

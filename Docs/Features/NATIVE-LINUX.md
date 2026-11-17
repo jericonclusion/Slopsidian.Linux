@@ -76,6 +76,12 @@ This independently maintained application remains a preview.
   through native forms. These forms preserve unknown configuration fields and
   refuse stale configuration writes.
 
+Missing-vault errors include **Open vault…**, which opens the vault chooser
+with existing-folder and new-vault options. Disabled assistant/terminal errors
+include **Open settings…**, opening Native modules directly. Cancelling keeps
+the error; completing the required step dismisses it. Long diagnostics scroll
+inside the error banner so recovery and dismiss controls stay available.
+
 Keyboard: **Ctrl+O** quick switcher, **Ctrl+P** command palette,
 **Ctrl+Shift+O** open/create vault, **Ctrl+N** new note, **Ctrl+S** save,
 **Ctrl+,** settings, **Alt+Left/Right** navigation and **F5** refresh.
@@ -119,7 +125,7 @@ blanket-reformatted.
 
 The Linux client has an independent SemVer release line. Its project file is the
 single version source for About, `--version`, archives and Debian packages.
-Development builds use a prerelease such as `0.3.0-preview.2`; Linux tags use
+Development builds use a prerelease such as `0.3.0-preview.3`; Linux tags use
 `linux-v<version>`. See `NATIVE-LINUX-VERSIONING.md` for the release conventions.
 
 ## Packages
@@ -137,7 +143,7 @@ declared glibc baseline; Alpine/musl is not a supported target.
 
 Extract the archive and run `./slopsidian-linux`, optionally with `--vault` and
 `--profile`. On Debian/Ubuntu install the package with
-`sudo apt install ./slopsidian-linux_0.3.0-preview.2_amd64.deb`, then launch Slopsidian Linux
+`sudo apt install ./slopsidian-linux_0.3.0-preview.3_amd64.deb`, then launch Slopsidian Linux
 from the application menu. Removing the package retains vaults and profiles.
 The packaging script stages publish outputs, notices and launchers only.
 

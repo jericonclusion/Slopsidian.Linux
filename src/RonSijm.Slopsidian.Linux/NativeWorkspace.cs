@@ -360,7 +360,8 @@ public sealed partial class NativeWorkspace : IDisposable
             "This note was not found or its name is ambiguous. Open it from the file tree or create the note."
         );
 
-    private string RequireRoot() => Snapshot.Root ?? throw new InvalidOperationException("Open a vault first.");
+    private string RequireRoot() =>
+        Snapshot.Root ?? throw new NativeActionRequiredException("Open a vault first.", NativeErrorAction.OpenVault);
 
     private void RequireClean()
     {

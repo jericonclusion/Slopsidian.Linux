@@ -12,29 +12,36 @@ public partial class MainWindow
 {
     private async void ChooseVault(object? sender, RoutedEventArgs args) => await ChooseVaultAsync();
 
-    private Task ChooseVaultAsync() =>
-        RunAsync(async () =>
-        {
-            var choice = await new NativeVaultDialog(profile.State.RecentVaults).ShowDialog<NativeVaultChoice?>(this);
-            if (choice is null || !await ConfirmAllEditsAsync())
+    private Task ChooseVaultAsync() => ChooseVaultAsync(true);
+
+    private Task ChooseVaultAsync(bool clearError) =>
+        RunAsync(
+            async () =>
             {
-                return;
-            }
-            await PersistProfileAsync();
-            if (choice.CreateName is not null)
-            {
-                var snapshot = await Workspace.Vault.CreateAsync(
-                    new CreateVaultRequest(choice.CreateName, choice.Path),
-                    CancellationToken.None
+                var choice = await new NativeVaultDialog(profile.State.RecentVaults).ShowDialog<NativeVaultChoice?>(
+                    this
                 );
-                await Workspace.OpenVaultAsync(snapshot.Root!);
-            }
-            else
-            {
-                await Workspace.OpenVaultAsync(choice.Path);
-            }
-            await FinishVaultOpenAsync();
-        });
+                if (choice is null || !await ConfirmAllEditsAsync())
+                {
+                    return;
+                }
+                await PersistProfileAsync();
+                if (choice.CreateName is not null)
+                {
+                    var snapshot = await Workspace.Vault.CreateAsync(
+                        new CreateVaultRequest(choice.CreateName, choice.Path),
+                        CancellationToken.None
+                    );
+                    await Workspace.OpenVaultAsync(snapshot.Root!);
+                }
+                else
+                {
+                    await Workspace.OpenVaultAsync(choice.Path);
+                }
+                await FinishVaultOpenAsync();
+            },
+            clearError: clearError
+        );
 
     private async void NewNote(object? sender, RoutedEventArgs args) => await NewNoteAsync();
 

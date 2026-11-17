@@ -52,7 +52,8 @@ public sealed class NativeCanvasView : UserControl, IDisposable
         workspace = selectedWorkspace;
         tab = selectedTab;
         source = document;
-        root = workspace.Snapshot.Root ?? throw new InvalidOperationException("Open a vault first.");
+        root = workspace.Snapshot.Root
+            ?? throw new NativeActionRequiredException("Open a vault first.", NativeErrorAction.OpenVault);
         epoch = workspace.VaultEpoch;
         openPath = openFile;
         navigate = navigateLink;

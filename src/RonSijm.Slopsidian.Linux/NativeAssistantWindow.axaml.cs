@@ -56,7 +56,8 @@ public sealed partial class NativeAssistantWindow : Window
         this.openNote = openNote;
         this.saveAnswer = saveAnswer;
         this.persist = persist;
-        root = workspace.Snapshot.Root ?? throw new InvalidOperationException("Open a vault first.");
+        root = workspace.Snapshot.Root
+            ?? throw new NativeActionRequiredException("Open a vault first.", NativeErrorAction.OpenVault);
         epoch = workspace.VaultEpoch;
         Title = "Assistant — Slopsidian Linux";
         Width = 860;

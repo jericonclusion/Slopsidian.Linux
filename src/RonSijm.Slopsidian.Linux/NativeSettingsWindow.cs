@@ -79,6 +79,8 @@ public sealed class NativeSettingsWindow : Window
         navigation.SelectedIndex = 0;
     }
 
+    public void ShowNativeModules() => navigation.SelectedItem = "Native modules";
+
     private async Task ShowPageAsync()
     {
         page.Children.Clear();

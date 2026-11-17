@@ -415,10 +415,11 @@ public partial class MainWindow : Window
             return;
         }
         busy = true;
+        ErrorActionButton.IsEnabled = false;
         Editor.IsReadOnly = true;
         if (clearError)
         {
-            ErrorPanel.IsVisible = false;
+            ClearError();
         }
         OpenVaultButton.IsEnabled = false;
         UpdateStatus();
@@ -434,19 +435,12 @@ public partial class MainWindow : Window
         finally
         {
             busy = false;
+            ErrorActionButton.IsEnabled = !recoveringError;
             Editor.IsReadOnly = false;
             OpenVaultButton.IsEnabled = true;
             UpdateStatus();
         }
     }
-
-    private void ShowError(Exception exception)
-    {
-        ErrorText.Text = exception.Message;
-        ErrorPanel.IsVisible = true;
-    }
-
-    private void DismissError(object? sender, RoutedEventArgs args) => ErrorPanel.IsVisible = false;
 
     private async Task<bool> ConfirmTabEditsAsync(NativeTab tab)
     {

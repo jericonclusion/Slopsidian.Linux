@@ -742,7 +742,7 @@ public sealed partial class VaultService(ILogger<VaultService> logger, VaultWatc
     {
         if (root is null)
         {
-            throw new VaultException("Open a vault first.", StatusCodes.Status409Conflict);
+            throw new VaultException("Open a vault first.", StatusCodes.Status409Conflict) { VaultRequired = true };
         }
 
         return root;

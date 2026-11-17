@@ -1,5 +1,7 @@
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -48,7 +50,7 @@ public sealed class AssistantWindowTests : IDisposable
             var save = window
                 .GetVisualDescendants()
                 .OfType<Button>()
-                .Single(button => Equals(button.Content, "Save as new note…"));
+                .Single(button => button.Name == "SaveReplyButton");
             save.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert.StartsWith("# Result", saved);
             view.FindControl<TextBox>("PromptBox")!.Text = "Explain more";
@@ -202,15 +204,66 @@ public sealed class AssistantWindowTests : IDisposable
                 bottom <= window.ClientSize.Height,
                 $"Send bottom {bottom} exceeds window height {window.ClientSize.Height}."
             );
-            view.FindControl<Expander>("CliSettings")!.IsExpanded = true;
+            view.FindControl<ToggleButton>("CliSettingsButton")!.IsChecked = true;
             window.UpdateLayout();
             Dispatcher.UIThread.RunJobs();
             window.UpdateLayout();
             Dispatcher.UIThread.RunJobs();
             Assert.True(view.FindControl<ScrollViewer>("ConversationScroll")!.Bounds.Height >= 119);
-            Assert.False(view.FindControl<Expander>("ContextExpander")!.IsExpanded);
+            Assert.False(view.FindControl<WrapPanel>("AttachmentActions")!.IsVisible);
+            Assert.Equal(2, window.Attachments.Count);
             bottom = send.TranslatePoint(new Avalonia.Point(0, send.Bounds.Height), window)!.Value.Y;
             Assert.True(bottom <= window.ClientSize.Height, $"Settings pushed Send to {bottom}.");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact]
+    public async Task CompactContextCanBeInspectedAndRemovedAndSettingsKeepComposerDrafts()
+    {
+        await PrepareVaultAsync();
+        var window = CreateWindow("/missing-cli");
+        window.Show();
+        try
+        {
+            await window.AttachActiveAsync();
+            var view = (NativeAssistantLayout)window.Content!;
+            var prompt = view.FindControl<TextBox>("PromptBox")!;
+            var toggle = view.FindControl<ToggleButton>("CliSettingsButton")!;
+            Assert.False(view.FindControl<Button>("SendButton")!.IsEnabled);
+            prompt.Text = "Keep my question";
+            Dispatcher.UIThread.RunJobs();
+            Assert.True(view.FindControl<Button>("SendButton")!.IsEnabled);
+            toggle.IsChecked = true;
+            view.FindControl<TextBox>("ExecutableBox")!.Text = "/custom/cli";
+            view.FindControl<TextBox>("ModelBox")!.Text = "chosen-model";
+            toggle.IsChecked = false;
+            toggle.IsChecked = true;
+            Assert.Equal("Keep my question", prompt.Text);
+            Assert.Equal("/custom/cli", view.FindControl<TextBox>("ExecutableBox")!.Text);
+            Assert.Equal("chosen-model", view.FindControl<TextBox>("ModelBox")!.Text);
+            Assert.Single(window.Attachments);
+            toggle.IsChecked = false;
+            window.UpdateLayout();
+            var attachment = Assert.Single(window.Attachments);
+            var buttons = view.GetVisualDescendants().OfType<Button>().ToArray();
+            var inspect = buttons.Single(button =>
+                AutomationProperties.GetName(button) == "Inspect attached " + attachment.Label
+            );
+            inspect.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            var snapshot = Assert.Single(window.OwnedWindows);
+            Assert.Equal(attachment.Content, Assert.IsType<TextBox>(snapshot.Content).Text);
+            snapshot.Close();
+            buttons
+                .Single(button => AutomationProperties.GetName(button) == "Remove attached " + attachment.Label)
+                .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert.Empty(window.Attachments);
+            Assert.False(view.FindControl<ScrollViewer>("ContextScroll")!.IsVisible);
+            Assert.Equal("Keep my question", prompt.Text);
+            Assert.Equal("Draft [[Evidence#The result]]", workspace.Text);
         }
         finally
         {

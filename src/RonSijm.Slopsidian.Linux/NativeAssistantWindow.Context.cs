@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -30,30 +29,46 @@ public sealed partial class NativeAssistantWindow
         AttachmentList.Children.Clear();
         foreach (var attachment in attachments.ToArray())
         {
-            var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto"), ColumnSpacing = 6 };
-            var title = new StackPanel { Spacing = 2, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+            var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 6 };
+            var title = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 8 };
             title.Children.Add(
-                new TextBlock { Text = attachment.Label, TextTrimming = TextTrimming.CharacterEllipsis }
-            );
-            title.Children.Add(
-                new TextBlock
+                new NativeIcon
                 {
-                    Text = attachment.Description,
-                    FontSize = 12,
-                    Classes = { "muted" },
+                    Kind = "file",
+                    Width = 14,
+                    Height = 14,
                 }
             );
-            ToolTip.SetTip(title, attachment.Label);
-            row.Children.Add(title);
-            var inspect = new Button { Content = "Inspect", Padding = new Thickness(8, 4) };
+            var label = new TextBlock
+            {
+                Text = attachment.Label,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                FontSize = 13,
+            };
+            Grid.SetColumn(label, 1);
+            title.Children.Add(label);
+            var inspect = new Button
+            {
+                Content = title,
+                Classes = { "assistant-tool" },
+                HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+            };
             AutomationProperties.SetName(inspect, "Inspect attached " + attachment.Label);
+            ToolTip.SetTip(
+                inspect,
+                attachment.Label + "\n" + attachment.Description + "\nClick to inspect the exact snapshot."
+            );
             inspect.Click += (_, _) => ShowText(attachment.Label + " — attached snapshot", attachment.Content);
-            Grid.SetColumn(inspect, 1);
             row.Children.Add(inspect);
             var remove = new Button
             {
-                Content = new NativeIcon { Kind = "close" },
-                Classes = { "icon" },
+                Content = new NativeIcon
+                {
+                    Kind = "trash",
+                    Width = 14,
+                    Height = 14,
+                },
+                Classes = { "icon", "dismiss" },
             };
             AutomationProperties.SetName(remove, "Remove attached " + attachment.Label);
             ToolTip.SetTip(remove, "Remove attachment");
@@ -62,14 +77,16 @@ public sealed partial class NativeAssistantWindow
                 attachments.Remove(attachment);
                 RenderAttachments();
             };
-            Grid.SetColumn(remove, 2);
+            Grid.SetColumn(remove, 1);
             row.Children.Add(remove);
             AttachmentList.Children.Add(row);
         }
+        var snapshotLabel = attachments.Count == 1 ? "snapshot" : "snapshots";
         ContextStatus.Text =
             attachments.Count == 0
                 ? "No notes attached."
-                : $"{attachments.Count} snapshots · {attachments.Sum(item => item.Content.Length):N0} characters. Reattach to refresh edited text.";
+                : $"{attachments.Count} {snapshotLabel} · {attachments.Sum(item => item.Content.Length):N0} characters";
+        layout.FindControl<ScrollViewer>("ContextScroll")!.IsVisible = attachments.Count > 0;
     }
 
     private async void AttachActive(object? sender, RoutedEventArgs args) => await GuardAsync(AttachActiveAsync);

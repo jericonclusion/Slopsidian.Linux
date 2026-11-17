@@ -28,6 +28,8 @@ public sealed record NativePreferences
     public bool Autosave { get; init; } = true;
     public bool CliAssistantEnabled { get; init; } = true;
     public bool TerminalEnabled { get; init; } = true;
+    public bool TerminalDocked { get; init; } = true;
+    public double TerminalDockHeight { get; init; } = 280;
     public string DefaultMode { get; init; } = "source";
     public double LeftWidth { get; init; } = 260;
     public double RightWidth { get; init; } = 260;
@@ -186,6 +188,7 @@ public sealed class NativeProfile(string? directory = null) : IDisposable
             !double.IsFinite(preferences.FontSize)
             || !double.IsFinite(preferences.LeftWidth)
             || !double.IsFinite(preferences.RightWidth)
+            || !double.IsFinite(preferences.TerminalDockHeight)
             || state.RecentVaults.Any(string.IsNullOrWhiteSpace)
             || state.Bookmarks.Any(key => key is null)
         )

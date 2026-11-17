@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
@@ -23,7 +24,7 @@ public sealed partial class NativeAssistantWindow
     public Task SendAsync() =>
         GuardAsync(async () =>
         {
-            if (request is not null)
+            if (request is not null || string.IsNullOrWhiteSpace(PromptBox.Text))
             {
                 return;
             }
@@ -43,7 +44,24 @@ public sealed partial class NativeAssistantWindow
                 ConversationEmpty.IsVisible = false;
                 AddQuestion(prompt, context);
                 reply = new StackPanel { Spacing = 12 };
-                reply.Children.Add(new TextBlock { Text = ProviderName(provider), FontWeight = FontWeight.SemiBold });
+                var byline = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+                byline.Children.Add(
+                    new NativeIcon
+                    {
+                        Kind = "assistant",
+                        Width = 16,
+                        Height = 16,
+                    }
+                );
+                byline.Children.Add(
+                    new TextBlock
+                    {
+                        Text = ProviderName(provider),
+                        FontSize = 13,
+                        FontWeight = FontWeight.SemiBold,
+                    }
+                );
+                reply.Children.Add(byline);
                 var body = new StackPanel { Spacing = 12 };
                 var streaming = new SelectableTextBlock { Text = "", TextWrapping = TextWrapping.Wrap };
                 body.Children.Add(streaming);
@@ -61,12 +79,8 @@ public sealed partial class NativeAssistantWindow
                 RequireVault();
                 cancellation.Token.ThrowIfCancellationRequested();
                 history.Add(new NativeAssistantTurn(prompt, answer));
-                NativeMarkdown.Render(
-                    body,
-                    answer,
-                    link => _ = OpenCitationAsync(link, false, context),
-                    link => _ = OpenCitationAsync(link, true, context)
-                );
+                renderedReplies.Add((body, answer, context));
+                RenderReply(body, answer, context);
                 AddReplyActions(reply, answer, context);
                 PromptBox.Text = "";
                 SetStatus("Reply complete. Copy it or save it as a new note.");
@@ -108,19 +122,66 @@ public sealed partial class NativeAssistantWindow
         );
     }
 
+    private void RefreshReplyAppearance(object? sender, EventArgs args)
+    {
+        foreach (var reply in renderedReplies)
+        {
+            RenderReply(reply.Body, reply.Answer, reply.Context);
+        }
+    }
+
+    private void RenderReply(StackPanel body, string answer, NativeAssistantAttachment[] context)
+    {
+        NativeMarkdown.Render(
+            body,
+            answer,
+            link => _ = OpenCitationAsync(link, false, context),
+            link => _ = OpenCitationAsync(link, true, context)
+        );
+        foreach (var heading in body.Children.OfType<SelectableTextBlock>().Where(text => text.FontSize > 20))
+        {
+            heading.FontSize = 20;
+            heading.LineHeight = 28;
+        }
+    }
+
     private void AppendOutput(SelectableTextBlock target, string chunk, CancellationTokenSource cancellation) =>
         Dispatcher.UIThread.Post(() =>
         {
             if (!closed && request == cancellation && !cancellation.IsCancellationRequested)
             {
+                var follow =
+                    ConversationScroll.Extent.Height - ConversationScroll.Viewport.Height - ConversationScroll.Offset.Y
+                    < 32;
                 target.Text += chunk;
+                if (follow)
+                {
+                    Dispatcher.UIThread.Post(
+                        () =>
+                        {
+                            if (!closed && request == cancellation)
+                            {
+                                ConversationScroll.ScrollToEnd();
+                            }
+                        },
+                        DispatcherPriority.Background
+                    );
+                }
             }
         });
 
     private void AddQuestion(string prompt, NativeAssistantAttachment[] context)
     {
         var question = new StackPanel { Spacing = 6 };
-        question.Children.Add(new TextBlock { Text = "You", FontWeight = FontWeight.SemiBold });
+        question.Children.Add(
+            new TextBlock
+            {
+                Text = "You",
+                FontSize = 12,
+                FontWeight = FontWeight.SemiBold,
+                Classes = { "muted" },
+            }
+        );
         question.Children.Add(new SelectableTextBlock { Text = prompt, TextWrapping = TextWrapping.Wrap });
         if (context.Length > 0)
         {
@@ -134,26 +195,41 @@ public sealed partial class NativeAssistantWindow
                 }
             );
         }
-        ConversationContent.Children.Add(question);
+        var surface = new Border
+        {
+            Child = question,
+            Padding = new Thickness(14, 12),
+            CornerRadius = new CornerRadius(6),
+        };
+        surface.Bind(
+            Border.BackgroundProperty,
+            new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SidebarBrush")
+        );
+        ConversationContent.Children.Add(surface);
     }
 
     private void SetRunning(bool running)
     {
         ProviderBox.IsEnabled = !running;
         CliSettings.IsEnabled = !running;
+        CliSettingsButton.IsEnabled = !running;
         PromptBox.IsEnabled = !running;
         AttachmentActions.IsEnabled = !running;
         AttachmentList.IsEnabled = !running;
         NewConversationButton.IsEnabled = !running;
-        PreviewMessageButton.IsEnabled = !running;
-        SendButton.IsEnabled = !running;
+        UpdateComposerActions();
         StopButton.IsVisible = running;
     }
 
     private void AddReplyActions(StackPanel reply, string answer, NativeAssistantAttachment[] context)
     {
         var actions = new WrapPanel { Orientation = Orientation.Horizontal };
-        var copy = new Button { Content = "Copy reply", Margin = new Thickness(0, 0, 8, 6) };
+        var copy = new Button
+        {
+            Content = ReplyActionContent("clipboard-copy", "Copy reply"),
+            Classes = { "assistant-tool" },
+            Margin = new Thickness(0, 0, 8, 6),
+        };
         copy.Click += async (_, _) =>
             await GuardAsync(async () =>
             {
@@ -164,18 +240,25 @@ public sealed partial class NativeAssistantWindow
                 await Clipboard.SetTextAsync(answer);
                 SetStatus("Reply copied.");
             });
+        AutomationProperties.SetName(copy, "Copy reply");
         actions.Children.Add(copy);
         var save = new Button
         {
-            Content = "Save as new note…",
-            Foreground = NativePalette.Brush("AssistantActionBrush"),
+            Name = "SaveReplyButton",
+            Content = ReplyActionContent("plus", "Save as new note…"),
+            Classes = { "assistant-tool" },
             Margin = new Thickness(0, 0, 8, 6),
         };
+        save.Bind(
+            Button.ForegroundProperty,
+            new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("AssistantActionBrush")
+        );
         save.Click += async (_, _) =>
             await GuardAsync(async () =>
             {
                 await saveAnswer(answer);
             });
+        AutomationProperties.SetName(save, "Save reply as a new note");
         actions.Children.Add(save);
         reply.Children.Add(actions);
         if (context.Length == 0)
@@ -187,15 +270,14 @@ public sealed partial class NativeAssistantWindow
         {
             var source = new Button
             {
-                Content = new TextBlock
-                {
-                    Text = path,
-                    TextWrapping = TextWrapping.Wrap,
-                    MaxWidth = 360,
-                },
+                Content = ReplyActionContent("file", path),
+                MaxWidth = 360,
+                Classes = { "assistant-tool" },
                 Margin = new Thickness(0, 0, 6, 6),
             };
             source.Click += async (_, _) => await GuardAsync(() => openNote(path, null));
+            AutomationProperties.SetName(source, "Open attached source " + path);
+            ToolTip.SetTip(source, path);
             sources.Children.Add(source);
         }
         reply.Children.Add(
@@ -207,6 +289,28 @@ public sealed partial class NativeAssistantWindow
             }
         );
         reply.Children.Add(sources);
+    }
+
+    private static StackPanel ReplyActionContent(string icon, string text)
+    {
+        var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 7 };
+        content.Children.Add(
+            new NativeIcon
+            {
+                Kind = icon,
+                Width = 14,
+                Height = 14,
+            }
+        );
+        content.Children.Add(
+            new TextBlock
+            {
+                Text = text,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                MaxWidth = 300,
+            }
+        );
+        return content;
     }
 
     public Task OpenCitationAsync(string target, bool markdown, NativeAssistantAttachment[] context) =>

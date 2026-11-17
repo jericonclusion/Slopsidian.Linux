@@ -1,180 +1,49 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Data;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Media;
 using Iciclecreek.Terminal;
 
 namespace RonSijm.Slopsidian.Linux;
 
-/// <summary>A native XTerm surface backed by a real local PTY, not a browser terminal.</summary>
+/// <summary>A detachable host. The pane owns the shell and can move without restarting it.</summary>
 public sealed class NativeTerminalWindow : Window
 {
-    private readonly NativeTerminalLayout layout = new();
-    private readonly string directory;
-    private readonly string shell;
-    private readonly string[] arguments;
-    private bool closed;
-    private bool starting;
-    private bool launched;
-    private Button NewSession => layout.FindControl<Button>("NewSessionButton")!;
-    private Button EndSession => layout.FindControl<Button>("EndSessionButton")!;
-    private TextBlock Status => layout.FindControl<TextBlock>("TerminalStatus")!;
-
     public NativeTerminalWindow(string directory, string? shell = null, IReadOnlyList<string>? arguments = null)
+        : this(new NativeTerminalPane(directory, shell, arguments)) { }
+
+    internal NativeTerminalWindow(NativeTerminalPane pane)
     {
-        this.directory = Path.GetFullPath(directory);
-        this.shell = shell ?? SelectShell(Environment.GetEnvironmentVariable("SHELL"));
-        this.arguments = arguments?.ToArray() ?? ["-i"];
+        Pane = pane;
         Title = "Terminal — Slopsidian Linux";
         Width = 1000;
         Height = 700;
         MinWidth = 600;
         MinHeight = 400;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        Content = layout;
-        var label = layout.FindControl<TextBlock>("StartDirectory")!;
-        label.Text = "Starts in: " + this.directory;
-        ToolTip.SetTip(label, this.directory);
-        Terminal = CreateTerminal();
-        layout.FindControl<ContentControl>("TerminalHost")!.Content = Terminal;
-        NewSession.Click += async (_, _) => await StartSessionAsync();
-        EndSession.Click += (_, _) => EndSessionNow();
-        layout.FindControl<Button>("CopyButton")!.Click += async (_, _) => await ClipboardActionAsync(false);
-        layout.FindControl<Button>("PasteButton")!.Click += async (_, _) => await ClipboardActionAsync(true);
+        Content = pane;
+        pane.CloseRequested += CloseRequested;
         Closed += (_, _) =>
         {
-            closed = true;
-            Terminal.Dispose();
-        };
-        UpdateActions();
-    }
-
-    public TerminalControl Terminal { get; private set; }
-
-    public static string SelectShell(string? configured)
-    {
-        if (!string.IsNullOrWhiteSpace(configured) && Path.IsPathFullyQualified(configured) && File.Exists(configured))
-        {
-            return configured;
-        }
-        return File.Exists("/bin/bash") ? "/bin/bash" : "/bin/sh";
-    }
-
-    private TerminalControl CreateTerminal()
-    {
-        var control = new TerminalControl
-        {
-            Process = "", // Only an explicit StartSessionAsync launches a process.
-            FontFamily = new FontFamily("DejaVu Sans Mono, monospace"),
-            FontSize = 14,
-            BufferSize = 2000,
-        };
-        control.Bind(TemplatedControl.BackgroundProperty, new DynamicResourceExtension("TerminalSurfaceBrush"));
-        control.Bind(TemplatedControl.ForegroundProperty, new DynamicResourceExtension("TextBrush"));
-        control.Bind(TerminalControl.CursorColorProperty, new Binding("Foreground.Color") { Source = control });
-        control.ProcessExited += (_, args) =>
-        {
-            if (!closed && ReferenceEquals(Terminal, control))
+            pane.CloseRequested -= CloseRequested;
+            if (ReferenceEquals(Content, pane))
             {
-                SetStatus($"Session finished (exit {args.ExitCode}). Choose New session to start again.");
-                UpdateActions();
+                pane.Dispose();
             }
         };
-        return control;
     }
 
-    public async Task StartSessionAsync()
-    {
-        if (closed || starting || Terminal.IsLive)
-        {
-            return;
-        }
-        starting = true;
-        UpdateActions();
-        try
-        {
-            if (!Directory.Exists(directory))
-            {
-                throw new DirectoryNotFoundException("The starting directory no longer exists.");
-            }
-            if (launched)
-            {
-                Terminal.Dispose();
-                Terminal = CreateTerminal();
-                layout.FindControl<ContentControl>("TerminalHost")!.Content = Terminal;
-            }
-            launched = true;
-            SetStatus("Starting shell…");
-            UpdateLayout();
-            await Terminal.LaunchProcess(directory, shell, arguments);
-            // Loaded must never automatically relaunch an exited or failed shell.
-            Terminal.Process = "";
-            if (!closed)
-            {
-                SetStatus(
-                    Terminal.IsLive
-                        ? "Interactive shell · closing this window ends the session."
-                        : "Shell did not stay open. Check the terminal output, then choose New session."
-                );
-                Terminal.Focus();
-            }
-        }
-        catch (Exception exception) when (exception is not OutOfMemoryException)
-        {
-            if (!closed)
-            {
-                SetStatus(exception.Message, true);
-            }
-        }
-        finally
-        {
-            starting = false;
-            if (!closed)
-            {
-                UpdateActions();
-            }
-        }
-    }
+    public NativeTerminalPane Pane { get; }
+    public TerminalControl Terminal => Pane.Terminal;
 
-    public void EndSessionNow()
-    {
-        using var connection = Terminal.DetachConnection();
-        connection?.Kill();
-        SetStatus("Session ended. Choose New session to start again.");
-        UpdateActions();
-    }
+    public static string SelectShell(string? configured) => NativeTerminalPane.SelectShell(configured);
 
-    private async Task ClipboardActionAsync(bool paste)
-    {
-        try
-        {
-            if (paste)
-            {
-                await Terminal.PasteAsync();
-            }
-            else if (!await Terminal.CopyAsync())
-            {
-                SetStatus("Select terminal text to copy.");
-            }
-            Terminal.Focus();
-        }
-        catch (Exception exception) when (exception is not OutOfMemoryException)
-        {
-            SetStatus(exception.Message, true);
-        }
-    }
+    public Task StartSessionAsync() => Pane.StartSessionAsync();
 
-    private void UpdateActions()
-    {
-        NewSession.IsEnabled = !starting && !Terminal.IsLive;
-        EndSession.IsEnabled = !starting && Terminal.IsLive;
-        layout.FindControl<Button>("PasteButton")!.IsEnabled = Terminal.IsLive;
-    }
+    public void EndSessionNow() => Pane.EndSessionNow();
 
-    private void SetStatus(string text, bool error = false)
+    private void CloseRequested(object? sender, EventArgs args) => Close();
+
+    internal void ReleasePane()
     {
-        Status.Text = text;
-        Status.Classes.Set("error", error);
+        Pane.CloseRequested -= CloseRequested;
+        Content = null;
     }
 }

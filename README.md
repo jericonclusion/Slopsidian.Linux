@@ -7,14 +7,14 @@
 A native Linux notebook for local Markdown vaults, built with **.NET 10 and
 Avalonia 12**. Keep your notes, links and writing tools in one desktop workspace.
 
-**Preview: 0.3.0-preview.3.** Independently developed for Linux. The feature set
+**Preview: 0.3.0-preview.4.** Independently developed for Linux. The feature set
 is growing; the current capabilities and remaining work are listed below.
 
-Ready-to-run downloads: https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.3
+Ready-to-run downloads: https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.4
 
 ![Native Linux build](https://github.com/jericonclusion/Slopsidian.Linux/actions/workflows/native_linux.yml/badge.svg)
 
-![Native assistant with explicit note context and a clearly labelled demonstration reply](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/assistant-dark.png)
+![Native assistant with explicit note context and a clearly labelled demonstration reply](Docs/Engineering/NativeLinux/2026-11-17/Screenshots/assistant-workspace-dark.png)
 
 ## What works today
 
@@ -25,7 +25,8 @@ Ready-to-run downloads: https://github.com/jericonclusion/Slopsidian.Linux/relea
 - An interactive graph, bookmarks, daily notes, templates and named workspaces.
 - A native assistant for Codex CLI, Claude Code and GitHub Copilot CLI, with note
   snapshots, selections, linked notes, backlinks, source navigation and saved replies.
-- A native interactive terminal with copy/paste, resizing and explicit session restart.
+- A dockable native terminal with a resizable bottom panel, a detachable window,
+  copy/paste and explicit session restart; moving it preserves the running shell.
 - Independent assistant/terminal switches under **Settings → Native modules**.
 - Dark, light, system, neutral gradient and Matrix appearances, with a configurable
   accent color, native settings and an independent Linux version number.
@@ -39,19 +40,19 @@ unfinished. See [the native roadmap](Docs/Project/NATIVE-PORT.md).
 
 ## Download a ready-to-run build
 
-**Preview 0.3.0-preview.3:**
-https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.3
+**Preview 0.3.0-preview.4:**
+https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.4
 
 | Linux system | Debian / Ubuntu package | Portable archive |
 | --- | --- | --- |
-| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.3/slopsidian-linux_0.3.0-preview.3_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.3/Slopsidian-Linux-0.3.0-preview.3-linux-x64.tar.gz) |
-| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.3/slopsidian-linux_0.3.0-preview.3_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.3/Slopsidian-Linux-0.3.0-preview.3-linux-arm64.tar.gz) |
+| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/slopsidian-linux_0.3.0-preview.4_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/Slopsidian-Linux-0.3.0-preview.4-linux-x64.tar.gz) |
+| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/slopsidian-linux_0.3.0-preview.4_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/Slopsidian-Linux-0.3.0-preview.4-linux-arm64.tar.gz) |
 
 These builds include .NET; **you do not need to compile the app or install the
 .NET SDK**. For Debian/Ubuntu, download the matching `.deb` and install it:
 
 ```sh
-sudo apt install ./slopsidian-linux_0.3.0-preview.3_amd64.deb
+sudo apt install ./slopsidian-linux_0.3.0-preview.4_amd64.deb
 slopsidian-linux
 ```
 
@@ -82,7 +83,10 @@ for setup, context limits and supported CLI versions.
 
 Choose **Terminal** in the ribbon or **Terminal: Open an interactive shell**
 in the command palette. It starts your Linux shell in the open vault, or your
-home directory when no vault is open. Use **Ctrl+C** to interrupt and
+home directory when no vault is open. Drag the divider to resize its bottom
+panel, or choose **Open in window** / **Dock at bottom** to move the same running
+session. Its height and dock/window choice are remembered. Use **Ctrl+C** to
+interrupt and
 **Ctrl+Shift+C/V** to copy/paste. **New session** restarts an ended shell.
 Closing the terminal or disabling its module ends that session.
 
@@ -90,7 +94,7 @@ The terminal runs ordinary commands with your user permissions and can change
 files. The assistant keeps its separate read-and-suggest workflow. See the
 [terminal guide](Docs/Features/NATIVE-TERMINAL.md).
 
-![Native interactive Linux terminal with synthetic demonstration commands](Docs/Engineering/NativeLinux/2026-11-16/Screenshots/terminal-dark.png)
+![Native interactive Linux terminal with synthetic demonstration commands](Docs/Engineering/NativeLinux/2026-11-17/Screenshots/terminal-docked-dark.png)
 
 ## Run from source
 

@@ -617,6 +617,11 @@ public partial class MainWindow
 
     private void HandleKey(object? sender, KeyEventArgs args)
     {
+        // A docked shell owns its input, including Ctrl+S/O/N and Alt+arrow sequences.
+        if (TerminalPane?.Terminal.IsKeyboardFocusWithin == true)
+        {
+            return;
+        }
         if (args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift) && args.Key == Key.O)
         {
             args.Handled = true;

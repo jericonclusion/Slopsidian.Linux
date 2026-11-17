@@ -73,6 +73,7 @@ public partial class MainWindow : Window
         Closing += OnClosing;
         Closed += OnClosed;
         SizeChanged += (_, _) => AdaptSidebars();
+        WorkspaceGrid.SizeChanged += (_, _) => AdaptTerminalDock();
         if (Avalonia.Application.Current is App app)
         {
             app.AppearanceChanged += RefreshAppearance;
@@ -536,7 +537,7 @@ public partial class MainWindow : Window
             app.AppearanceChanged -= RefreshAppearance;
         }
         assistantWindow?.Close();
-        terminalWindow?.Close();
+        CloseTerminal();
         StopTimers();
         search?.Cancel();
         search?.Dispose();

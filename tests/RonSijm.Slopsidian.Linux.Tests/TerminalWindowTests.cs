@@ -59,7 +59,7 @@ public sealed class TerminalWindowTests : IDisposable
             await UntilAsync(() => !window.Terminal.IsLive);
             await UntilAsync(() => !Alive(process));
             await UntilAsync(() =>
-                ((NativeTerminalLayout)window.Content!)
+                ((NativeTerminalLayout)window.Pane.Content!)
                     .FindControl<TextBlock>("TerminalStatus")!
                     .Text?.Contains("exit 7", StringComparison.Ordinal) == true
             );
@@ -82,10 +82,11 @@ public sealed class TerminalWindowTests : IDisposable
         {
             await main.OpenVaultAsync(directory);
             await main.OpenTerminalAsync("/bin/bash", ShellArguments);
+            await main.SetTerminalDockedAsync(false);
             var terminal = Assert.Single(main.OwnedWindows.OfType<NativeTerminalWindow>());
             Assert.True(
                 terminal.Terminal.IsLive,
-                ((NativeTerminalLayout)terminal.Content!).FindControl<TextBlock>("TerminalStatus")!.Text
+                ((NativeTerminalLayout)terminal.Pane.Content!).FindControl<TextBlock>("TerminalStatus")!.Text
             );
             var pid = terminal.Terminal.Pid;
             await main.SetNativeModuleEnabledAsync(NativeModule.Terminal, false);
@@ -124,7 +125,7 @@ public sealed class TerminalWindowTests : IDisposable
             Assert.False(window.Terminal.IsLive);
             Assert.Contains(
                 "starting directory",
-                ((NativeTerminalLayout)window.Content!).FindControl<TextBlock>("TerminalStatus")!.Text
+                ((NativeTerminalLayout)window.Pane.Content!).FindControl<TextBlock>("TerminalStatus")!.Text
             );
         }
         finally

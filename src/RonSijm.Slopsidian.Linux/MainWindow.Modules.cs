@@ -37,7 +37,7 @@ public partial class MainWindow
         TerminalButton.IsEnabled = TerminalButton.IsVisible;
         if (!profile.State.Preferences.TerminalEnabled)
         {
-            terminalWindow?.Close();
+            CloseTerminal();
         }
     }
 }

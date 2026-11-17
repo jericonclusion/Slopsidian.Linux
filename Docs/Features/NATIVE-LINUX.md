@@ -22,8 +22,9 @@ This independently maintained application remains a preview.
   save a reply as a new note. This preview supports reading and suggestions;
   conversations last while their window is open. See `NATIVE-ASSISTANT.md`.
 - Open an interactive native Terminal from the ribbon or command palette.
-  The shell starts in the open vault or home, supports normal PTY applications,
-  and ends when its window closes. See `NATIVE-TERMINAL.md`.
+  Resize its bottom dock or move the same live session into a separate window.
+  The shell starts in the open vault or home and ends when the terminal closes.
+  See `NATIVE-TERMINAL.md`.
 - Switch CLI assistant and Terminal independently under Settings → Native modules.
   These app-profile choices apply immediately and preserve provider settings.
 - Open or create a local vault; switch between recent vaults.
@@ -139,7 +140,7 @@ blanket-reformatted.
 
 The Linux client has an independent SemVer release line. Its project file is the
 single version source for About, `--version`, archives and Debian packages.
-Development builds use a prerelease such as `0.3.0-preview.3`; Linux tags use
+Development builds use a prerelease such as `0.3.0-preview.4`; Linux tags use
 `linux-v<version>`. See `NATIVE-LINUX-VERSIONING.md` for the release conventions.
 
 ## Packages
@@ -157,7 +158,7 @@ declared glibc baseline; Alpine/musl is not a supported target.
 
 Extract the archive and run `./slopsidian-linux`, optionally with `--vault` and
 `--profile`. On Debian/Ubuntu install the package with
-`sudo apt install ./slopsidian-linux_0.3.0-preview.3_amd64.deb`, then launch Slopsidian Linux
+`sudo apt install ./slopsidian-linux_0.3.0-preview.4_amd64.deb`, then launch Slopsidian Linux
 from the application menu. Removing the package retains vaults and profiles.
 The packaging script stages publish outputs, notices and launchers only.
 

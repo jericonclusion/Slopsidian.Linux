@@ -73,6 +73,10 @@ public partial class MainWindow : Window
         Closing += OnClosing;
         Closed += OnClosed;
         SizeChanged += (_, _) => AdaptSidebars();
+        if (Avalonia.Application.Current is App app)
+        {
+            app.AppearanceChanged += RefreshAppearance;
+        }
     }
 
     public NativeWorkspace Workspace { get; } = new();
@@ -527,6 +531,10 @@ public partial class MainWindow : Window
 
     private void OnClosed(object? sender, EventArgs args)
     {
+        if (Avalonia.Application.Current is App app)
+        {
+            app.AppearanceChanged -= RefreshAppearance;
+        }
         assistantWindow?.Close();
         terminalWindow?.Close();
         StopTimers();

@@ -1,13 +1,57 @@
 <Application
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:RonSijm.Slopsidian.Linux"
   x:Class="RonSijm.Slopsidian.Linux.App"
   RequestedThemeVariant="Dark"
 >
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="{x:Static local:NativeAppearance.GradientDark}">
+          <LinearGradientBrush x:Key="SurfaceBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#252525" Offset="0" />
+            <GradientStop Color="#1e1e1e" Offset="0.5" />
+            <GradientStop Color="#171717" Offset="1" />
+          </LinearGradientBrush>
+          <LinearGradientBrush x:Key="SidebarBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Color="#2b2b2b" Offset="0" />
+            <GradientStop Color="#222222" Offset="1" />
+          </LinearGradientBrush>
+          <LinearGradientBrush x:Key="RibbonBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Color="#292929" Offset="0" />
+            <GradientStop Color="#202020" Offset="1" />
+          </LinearGradientBrush>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="{x:Static local:NativeAppearance.GradientLight}">
+          <LinearGradientBrush x:Key="SurfaceBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#ffffff" Offset="0" />
+            <GradientStop Color="#f9f9f9" Offset="0.5" />
+            <GradientStop Color="#eeeeee" Offset="1" />
+          </LinearGradientBrush>
+          <LinearGradientBrush x:Key="SidebarBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Color="#f5f5f5" Offset="0" />
+            <GradientStop Color="#e8e8e8" Offset="1" />
+          </LinearGradientBrush>
+          <LinearGradientBrush x:Key="RibbonBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Color="#eeeeee" Offset="0" />
+            <GradientStop Color="#e5e5e5" Offset="1" />
+          </LinearGradientBrush>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="{x:Static local:NativeAppearance.Matrix}">
+          <SolidColorBrush x:Key="TerminalSurfaceBrush">#030803</SolidColorBrush>
+          <SolidColorBrush x:Key="SurfaceBrush">#030803</SolidColorBrush>
+          <SolidColorBrush x:Key="SidebarBrush">#071109</SolidColorBrush>
+          <SolidColorBrush x:Key="RibbonBrush">#050c07</SolidColorBrush>
+          <SolidColorBrush x:Key="DividerBrush">#183820</SolidColorBrush>
+          <SolidColorBrush x:Key="TextBrush">#b5f7c2</SolidColorBrush>
+          <SolidColorBrush x:Key="MutedBrush">#78ba88</SolidColorBrush>
+          <SolidColorBrush x:Key="AccentBrush">#00ff41</SolidColorBrush>
+          <SolidColorBrush x:Key="CreateBrush">#00ff41</SolidColorBrush>
+          <SolidColorBrush x:Key="AssistantActionBrush">#97e9b0</SolidColorBrush>
+        </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="TerminalSurfaceBrush">#1e1e1e</SolidColorBrush>
           <SolidColorBrush x:Key="SurfaceBrush">#1e1e1e</SolidColorBrush>
           <SolidColorBrush x:Key="SidebarBrush">#262626</SolidColorBrush>
           <SolidColorBrush x:Key="RibbonBrush">#242424</SolidColorBrush>
@@ -21,6 +65,7 @@
           <SolidColorBrush x:Key="AssistantActionBrush">#a3d9b1</SolidColorBrush>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="TerminalSurfaceBrush">#ffffff</SolidColorBrush>
           <SolidColorBrush x:Key="SurfaceBrush">#ffffff</SolidColorBrush>
           <SolidColorBrush x:Key="SidebarBrush">#f2f2f2</SolidColorBrush>
           <SolidColorBrush x:Key="RibbonBrush">#e8e8e8</SolidColorBrush>
@@ -46,6 +91,7 @@
     </FluentTheme>
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+    <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
     <Style Selector="Window">
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />

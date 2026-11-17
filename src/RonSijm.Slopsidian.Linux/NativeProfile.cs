@@ -21,6 +21,7 @@ public sealed record NativeSession(string Root, string? Active, IReadOnlyList<Na
 public sealed record NativePreferences
 {
     public string Theme { get; init; } = "dark";
+    public string? AccentColor { get; init; }
     public double FontSize { get; init; } = 16;
     public bool LineNumbers { get; init; } = true;
     public bool WordWrap { get; init; } = true;
@@ -176,6 +177,10 @@ public sealed class NativeProfile(string? directory = null) : IDisposable
             );
         }
         var preferences = state.Preferences;
+        if (preferences.AccentColor is not null && !NativeAppearance.TryParseAccent(preferences.AccentColor, out _))
+        {
+            throw new InvalidDataException("The native profile contains an invalid accent color.");
+        }
         NativeAssistantSettings.Validate(state.Assistant);
         if (
             !double.IsFinite(preferences.FontSize)

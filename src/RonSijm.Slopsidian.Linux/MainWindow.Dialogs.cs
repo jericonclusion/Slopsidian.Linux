@@ -2,7 +2,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.Styling;
 
 namespace RonSijm.Slopsidian.Linux;
 
@@ -133,7 +132,8 @@ public partial class MainWindow
         var window = new NativeSettingsWindow(
             profile.State.Preferences,
             Workspace.Snapshot.Root is null ? null : Workspace.Vault,
-            SetNativeModuleEnabledAsync
+            SetNativeModuleEnabledAsync,
+            PreviewAppearance
         );
         if (nativeModules)
         {
@@ -142,6 +142,7 @@ public partial class MainWindow
         var preferences = await window.ShowDialog<NativePreferences?>(this);
         if (preferences is null)
         {
+            PreviewAppearance(profile.State.Preferences);
             return;
         }
         profile.State = profile.State with { Preferences = preferences };
@@ -153,19 +154,7 @@ public partial class MainWindow
     {
         ApplyNativeModuleAvailability();
         var preferences = profile.State.Preferences;
-        if (Application.Current is not null)
-        {
-            Application.Current.RequestedThemeVariant = preferences.Theme switch
-            {
-                "light" => ThemeVariant.Light,
-                "system" => ThemeVariant.Default,
-                _ => ThemeVariant.Dark,
-            };
-        }
-        foreach (var view in canvasViews.Values)
-        {
-            view.RefreshTheme();
-        }
+        PreviewAppearance(preferences);
         Editor.FontSize = Math.Clamp(preferences.FontSize, 10, 32);
         Editor.ShowLineNumbers = preferences.LineNumbers;
         Editor.WordWrap = preferences.WordWrap;
@@ -174,6 +163,22 @@ public partial class MainWindow
         LeftSidebar.IsVisible = true;
         RightSidebar.IsVisible = true;
         AdaptSidebars();
+    }
+
+    private static void PreviewAppearance(NativePreferences preferences)
+    {
+        if (Application.Current is App app)
+        {
+            app.ApplyAppearance(preferences);
+        }
+    }
+
+    private void RefreshAppearance(object? sender, EventArgs args)
+    {
+        foreach (var view in canvasViews.Values)
+        {
+            view.RefreshTheme();
+        }
         if (EditorTabs.SelectedIndex == 1)
         {
             RenderReading();

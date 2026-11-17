@@ -3,6 +3,10 @@ Slopsidian Linux uses the existing Slopsidian vault services and these dependenc
 Avalonia 12.1.6 — MIT, Copyright AvaloniaUI OÜ and contributors
 https://github.com/AvaloniaUI/Avalonia/blob/12.1.6/licence.md
 
+Avalonia.Controls.ColorPicker 12.1.6 — MIT, Copyright The AvaloniaUI Project
+https://github.com/AvaloniaUI/Avalonia/tree/12.1.6/src/Avalonia.Controls.ColorPicker
+See licenses/Avalonia-MIT.txt.
+
 Avalonia.Controls.DataGrid 12.1.2 — MIT, Copyright The AvaloniaUI Project
 https://github.com/AvaloniaUI/Avalonia.Controls.DataGrid
 See licenses/Avalonia-DataGrid-MIT.txt.

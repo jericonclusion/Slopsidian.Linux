@@ -1,30 +1,83 @@
 <UserControl
   xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:RonSijm.Slopsidian.Linux"
   x:Class="RonSijm.Slopsidian.Linux.NativeTerminalLayout"
 >
   <Grid RowDefinitions="Auto,*,Auto">
-    <Border Background="{DynamicResource SidebarBrush}" Padding="16,12">
-      <StackPanel Spacing="10">
-        <TextBlock Text="Terminal" FontSize="20" FontWeight="SemiBold" />
-        <TextBlock Name="StartDirectory" Classes="muted" TextTrimming="CharacterEllipsis" />
+    <Border Background="{DynamicResource SidebarBrush}" Padding="12,8">
+      <StackPanel Spacing="4">
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+          <TextBlock Text="Terminal" FontWeight="SemiBold" VerticalAlignment="Center" />
+          <TextBlock
+            Grid.Column="1"
+            Name="StartDirectory"
+            Classes="muted"
+            TextTrimming="CharacterEllipsis"
+            VerticalAlignment="Center"
+            FontSize="12"
+          />
+          <Button
+            Grid.Column="2"
+            Name="DockButton"
+            IsVisible="False"
+            Background="Transparent"
+            BorderThickness="0"
+            Padding="7,5"
+          >
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <local:NativeIcon Name="DockActionIcon" Kind="panel-bottom" Width="16" Height="16" />
+              <TextBlock Name="DockActionText" Text="Dock at bottom" />
+            </StackPanel>
+          </Button>
+          <Button
+            Grid.Column="3"
+            Name="CloseTerminalButton"
+            Classes="icon dismiss"
+            AutomationProperties.Name="Close terminal and end session"
+            ToolTip.Tip="Close terminal and end session"
+          >
+            <local:NativeIcon Kind="close" Width="16" Height="16" />
+          </Button>
+        </Grid>
         <WrapPanel>
-          <Button Name="CopyButton" Content="Copy" Margin="0,0,8,4" ToolTip.Tip="Copy selected text (Ctrl+Shift+C)" />
+          <Button
+            Name="CopyButton"
+            Classes="icon"
+            Margin="0,0,4,0"
+            AutomationProperties.Name="Copy terminal selection"
+            ToolTip.Tip="Copy selected text (Ctrl+Shift+C)"
+          >
+            <local:NativeIcon Kind="clipboard-copy" Width="16" Height="16" />
+          </Button>
           <Button
             Name="PasteButton"
-            Content="Paste"
-            Margin="0,0,8,4"
+            Classes="icon"
+            Margin="0,0,12,0"
+            AutomationProperties.Name="Paste into terminal"
             ToolTip.Tip="Paste into terminal (Ctrl+Shift+V)"
-          />
-          <Button Name="NewSessionButton" Content="New session" Margin="0,0,8,4" />
-          <Button Name="EndSessionButton" Content="End session" Margin="0,0,8,4" />
+          >
+            <local:NativeIcon Kind="clipboard-paste" Width="16" Height="16" />
+          </Button>
+          <Button
+            Name="NewSessionButton"
+            Classes="create"
+            Margin="0,0,8,0"
+            Padding="8,5"
+            AutomationProperties.Name="Start a new terminal session"
+          >
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <local:NativeIcon Kind="plus" Width="14" Height="14" /><TextBlock Text="New session" />
+            </StackPanel>
+          </Button>
+          <Button Name="EndSessionButton" Content="End session" Padding="8,5" />
         </WrapPanel>
       </StackPanel>
     </Border>
-    <ContentControl Grid.Row="1" Name="TerminalHost" Margin="12,8" />
-    <Border Grid.Row="2" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,1,0,0" Padding="16,8">
-      <ScrollViewer MaxHeight="56" HorizontalScrollBarVisibility="Disabled">
-        <TextBlock Name="TerminalStatus" Text="Starting shell…" Classes="muted" TextWrapping="Wrap" />
+    <ContentControl Grid.Row="1" Name="TerminalHost" Margin="12,6" />
+    <Border Grid.Row="2" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,1,0,0" Padding="12,5">
+      <ScrollViewer MaxHeight="36" HorizontalScrollBarVisibility="Disabled">
+        <TextBlock Name="TerminalStatus" Text="Starting shell…" Classes="muted" TextWrapping="Wrap" FontSize="12" />
       </ScrollViewer>
     </Border>
   </Grid>

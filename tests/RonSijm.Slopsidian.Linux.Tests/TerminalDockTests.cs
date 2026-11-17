@@ -197,7 +197,7 @@ public sealed class TerminalDockTests : IDisposable
             main.UpdateLayout();
             Dispatcher.UIThread.RunJobs();
             var pane = main.TerminalPane!;
-            Assert.True(main.FindControl<Grid>("DocumentArea")!.Bounds.Height >= 299);
+            Assert.True(main.FindControl<Grid>("DocumentArea")!.Bounds.Height >= 279);
             var layout = (NativeTerminalLayout)pane.Content!;
             var close = layout.FindControl<Button>("CloseTerminalButton")!;
             var edge = close.TranslatePoint(new Point(close.Bounds.Width, close.Bounds.Height), main)!.Value;

@@ -128,7 +128,7 @@ public partial class MainWindow
         {
             return;
         }
-        var maximum = Math.Max(160, WorkspaceGrid.Bounds.Height - 304);
+        var maximum = Math.Max(160, WorkspaceGrid.Bounds.Height - 284);
         var row = WorkspaceGrid.RowDefinitions[2];
         row.MaxHeight = maximum;
         row.Height = new GridLength(Math.Clamp(profile.State.Preferences.TerminalDockHeight, 160, maximum));

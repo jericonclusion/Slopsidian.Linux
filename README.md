@@ -7,10 +7,10 @@
 A native Linux notebook for local Markdown vaults, built with **.NET 10 and
 Avalonia 12**. Keep your notes, links and writing tools in one desktop workspace.
 
-**Preview: 0.3.0-preview.4.** Independently developed for Linux. The feature set
+**Preview: 0.3.0-preview.5.** Independently developed for Linux. The feature set
 is growing; the current capabilities and remaining work are listed below.
 
-Ready-to-run downloads: https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.4
+Ready-to-run downloads: https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.5
 
 ![Native Linux build](https://github.com/jericonclusion/Slopsidian.Linux/actions/workflows/native_linux.yml/badge.svg)
 
@@ -40,19 +40,19 @@ unfinished. See [the native roadmap](Docs/Project/NATIVE-PORT.md).
 
 ## Download a ready-to-run build
 
-**Preview 0.3.0-preview.4:**
-https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.4
+**Preview 0.3.0-preview.5:**
+https://github.com/jericonclusion/Slopsidian.Linux/releases/tag/linux-v0.3.0-preview.5
 
 | Linux system | Debian / Ubuntu package | Portable archive |
 | --- | --- | --- |
-| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/slopsidian-linux_0.3.0-preview.4_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/Slopsidian-Linux-0.3.0-preview.4-linux-x64.tar.gz) |
-| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/slopsidian-linux_0.3.0-preview.4_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.4/Slopsidian-Linux-0.3.0-preview.4-linux-arm64.tar.gz) |
+| Intel / AMD 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.5/slopsidian-linux_0.3.0-preview.5_amd64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.5/Slopsidian-Linux-0.3.0-preview.5-linux-x64.tar.gz) |
+| ARM 64-bit | [Download .deb](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.5/slopsidian-linux_0.3.0-preview.5_arm64.deb) | [Download tar.gz](https://github.com/jericonclusion/Slopsidian.Linux/releases/download/linux-v0.3.0-preview.5/Slopsidian-Linux-0.3.0-preview.5-linux-arm64.tar.gz) |
 
 These builds include .NET; **you do not need to compile the app or install the
 .NET SDK**. For Debian/Ubuntu, download the matching `.deb` and install it:
 
 ```sh
-sudo apt install ./slopsidian-linux_0.3.0-preview.4_amd64.deb
+sudo apt install ./slopsidian-linux_0.3.0-preview.5_amd64.deb
 slopsidian-linux
 ```
 

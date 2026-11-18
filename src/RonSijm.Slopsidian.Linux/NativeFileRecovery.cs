@@ -32,6 +32,10 @@ public sealed class NativeFileRecovery(NativeWorkspace workspace, TimeProvider? 
         RunAsync<NativeCaptureResult?>(
             async context =>
             {
+                if (!ShouldCaptureFile(path, force))
+                {
+                    return null;
+                }
                 var options = await OptionsAsync(context, cancellationToken);
                 if (!options.Enabled)
                 {
@@ -329,6 +333,21 @@ public sealed class NativeFileRecovery(NativeWorkspace workspace, TimeProvider? 
                 "This file cannot be captured as exact UTF-8 text. Its bytes were retained."
             );
         }
+    }
+
+    private static bool ShouldCaptureFile(string path, bool force)
+    {
+        if (NativeRecoveryHistory.SupportsFileType(path))
+        {
+            return true;
+        }
+        if (force)
+        {
+            throw new InvalidOperationException(
+                "File recovery supports Markdown (.md), Canvas (.canvas) and Bases (.base) files."
+            );
+        }
+        return false;
     }
 
     public void Dispose() => gate.Dispose();

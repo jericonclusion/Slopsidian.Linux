@@ -10,7 +10,7 @@ public partial class MainWindow
 
     private void QueueRecovery(string path)
     {
-        if (System.IO.Path.GetExtension(path).ToLowerInvariant() is not (".md" or ".canvas" or ".base"))
+        if (!NativeRecoveryHistory.SupportsFileType(path))
         {
             return;
         }
@@ -44,6 +44,7 @@ public partial class MainWindow
         {
             var paths = pendingRecovery
                 .Concat(Workspace.Tabs.Select(tab => tab.Path))
+                .Where(NativeRecoveryHistory.SupportsFileType)
                 .Distinct(StringComparer.Ordinal)
                 .Take(64)
                 .ToArray();

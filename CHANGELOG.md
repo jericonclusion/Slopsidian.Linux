@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0-preview.5
+
+- Fix recurring invalid-recovery-snapshot errors when TXT or Python files are open.
+- Apply the same Markdown/Canvas/Bases file-type rule to the background queue,
+  periodic tab sweep and capture service; skip other files automatically.
+- Explain the supported types for explicit unsupported snapshots without
+  changing existing history, note bytes or recovery settings.
+- Add regressions for repeated mixed-file sweeps, exact history preservation,
+  skipped captures creating no history and continued recovery of supported notes.
+
 ## 0.3.0-preview.4
 
 - Refine the native assistant with a compact provider toolbar, explicit CLI

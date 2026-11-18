@@ -39,6 +39,9 @@ This independently maintained application remains a preview.
   existing files are retained. New profiles also retain the draft’s BOM flag.
 - Open File recovery from the command palette or file actions to search saved
   versions, preview/copy text, save a manual snapshot, or review a restore.
+  Recovery covers Markdown (`.md`), Canvas (`.canvas`) and Bases (`.base`);
+  other open files, such as TXT and Python, are skipped by automatic capture.
+  An explicit snapshot for an unsupported type explains which types are supported.
   Snapshots use the existing `.obsidian/vault-dotnet-recovery.json` format,
   honor the core plugin's interval/retention settings and never capture drafts.
   Restores retain exact UTF-8 BOM/line endings, preserve the replaced file in
@@ -140,7 +143,7 @@ blanket-reformatted.
 
 The Linux client has an independent SemVer release line. Its project file is the
 single version source for About, `--version`, archives and Debian packages.
-Development builds use a prerelease such as `0.3.0-preview.4`; Linux tags use
+Development builds use a prerelease such as `0.3.0-preview.5`; Linux tags use
 `linux-v<version>`. See `NATIVE-LINUX-VERSIONING.md` for the release conventions.
 
 ## Packages
@@ -158,7 +161,7 @@ declared glibc baseline; Alpine/musl is not a supported target.
 
 Extract the archive and run `./slopsidian-linux`, optionally with `--vault` and
 `--profile`. On Debian/Ubuntu install the package with
-`sudo apt install ./slopsidian-linux_0.3.0-preview.4_amd64.deb`, then launch Slopsidian Linux
+`sudo apt install ./slopsidian-linux_0.3.0-preview.5_amd64.deb`, then launch Slopsidian Linux
 from the application menu. Removing the package retains vaults and profiles.
 The packaging script stages publish outputs, notices and launchers only.
 

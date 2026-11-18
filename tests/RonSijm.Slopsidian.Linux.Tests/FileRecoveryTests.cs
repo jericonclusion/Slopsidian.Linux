@@ -275,6 +275,81 @@ public sealed class FileRecoveryTests : IDisposable
         );
     }
 
+    [Theory]
+    [InlineData("investigation/status.txt")]
+    [InlineData("investigation/analyze.py")]
+    public async Task UnsupportedOpenFilesAreSkippedWithoutChangingHistoryAndSupportedFilesStillRecover(string path)
+    {
+        await CreateSnapshotAsync();
+        var note = workspace.ActiveTab!;
+        var file = Path.Combine(directory, path);
+        Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+        byte[] original = Encoding.UTF8.GetBytes("Synthetic text file\r\n");
+        await File.WriteAllBytesAsync(file, original, TestContext.Current.CancellationToken);
+        await workspace.OpenTabAsync(path);
+        var historyFile = Path.Combine(directory, ".obsidian", NativeRecoveryHistory.ConfigurationId + ".json");
+        var before = await File.ReadAllBytesAsync(historyFile, TestContext.Current.CancellationToken);
+
+        for (var sweep = 0; sweep < 3; sweep++)
+        {
+            foreach (var tab in workspace.Tabs)
+            {
+                var result = await workspace.Recovery.CaptureAsync(
+                    tab.Path,
+                    cancellationToken: TestContext.Current.CancellationToken
+                );
+                if (tab == note)
+                {
+                    Assert.Equal(NativeCaptureResult.Unchanged, result);
+                }
+                else
+                {
+                    Assert.Null(result);
+                }
+            }
+        }
+        Assert.Equal(before, await File.ReadAllBytesAsync(historyFile, TestContext.Current.CancellationToken));
+        var error = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            workspace.Recovery.CaptureAsync(path, force: true, TestContext.Current.CancellationToken)
+        );
+        Assert.Contains("Markdown", error.Message);
+        Assert.Contains("Canvas", error.Message);
+        Assert.Contains("Bases", error.Message);
+        Assert.Equal(before, await File.ReadAllBytesAsync(historyFile, TestContext.Current.CancellationToken));
+
+        note.Text = "Second saved version";
+        await workspace.SaveTabAsync(note);
+        Assert.Equal(
+            NativeCaptureResult.Added,
+            await workspace.Recovery.CaptureAsync(note.Path, force: true, TestContext.Current.CancellationToken)
+        );
+        var history = await workspace.Recovery.ListAsync(TestContext.Current.CancellationToken);
+        Assert.Equal(2, history.Snapshots.Count);
+        Assert.Contains(history.Snapshots, snapshot => snapshot.Content == "Original");
+        Assert.Contains(history.Snapshots, snapshot => snapshot.Content == "Second saved version");
+        Assert.Equal(original, await File.ReadAllBytesAsync(file, TestContext.Current.CancellationToken));
+    }
+
+    [Theory]
+    [InlineData("status.txt")]
+    [InlineData("analyze.py")]
+    public async Task UnsupportedAutomaticCapturesDoNotCreateHistory(string path)
+    {
+        await File.WriteAllTextAsync(
+            Path.Combine(directory, path),
+            "Synthetic text",
+            TestContext.Current.CancellationToken
+        );
+        await workspace.OpenVaultAsync(directory);
+        await workspace.OpenTabAsync(path);
+        Assert.Null(
+            await workspace.Recovery.CaptureAsync(path, cancellationToken: TestContext.Current.CancellationToken)
+        );
+        Assert.False(
+            File.Exists(Path.Combine(directory, ".obsidian", NativeRecoveryHistory.ConfigurationId + ".json"))
+        );
+    }
+
     [Fact]
     public async Task FailureToPersistTheBackupLeavesTheFileUntouched()
     {

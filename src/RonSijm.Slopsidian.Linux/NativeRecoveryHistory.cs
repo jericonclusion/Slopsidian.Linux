@@ -111,6 +111,9 @@ public sealed class NativeRecoveryHistory
 
     public JsonElement Data => JsonSerializer.SerializeToElement(data, JsonOptions);
 
+    public static bool SupportsFileType(string path) =>
+        Path.GetExtension(path).ToLowerInvariant() is ".md" or ".canvas" or ".base";
+
     public NativeCaptureResult Capture(
         VaultDocument document,
         DateTimeOffset now,
@@ -236,7 +239,7 @@ public sealed class NativeRecoveryHistory
     private static bool ValidPath(string path) =>
         path.Length is > 0 and <= 4096
         && !Path.IsPathRooted(path)
-        && Path.GetExtension(path).ToLowerInvariant() is ".md" or ".canvas" or ".base"
+        && SupportsFileType(path)
         && path.Split('/')
             .All(part =>
                 part.Length is > 0 and <= 255
